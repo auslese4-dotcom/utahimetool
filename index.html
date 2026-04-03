@@ -1,69 +1,116 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>歌姫ツール（保護版）</title>
-<style>
-body{margin:0;font-family:sans-serif;background:#eef2ff;}
-#loginScreen{display:flex;align-items:center;justify-content:center;height:100vh;}
-.card{background:white;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.1);width:320px;text-align:center;}
-input{width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin-top:10px;font-size:16px;}
-button{margin-top:15px;width:100%;padding:12px;border:none;border-radius:10px;background:#4f6cff;color:white;font-weight:bold;cursor:pointer;}
-#error{color:red;margin-top:10px;display:none;}
-#app{display:none;}
-</style>
-</head>
-<body>
-
-<div id="loginScreen">
-  <div class="card">
-    <h2>ログイン</h2>
-    <input id="pw" type="password" placeholder="パスワード">
-    <button onclick="login()">入る</button>
-    <div id="error">パスワードが違います</div>
-  </div>
-</div>
-
-<div id="app">
-
-  <div id="loginScreen" class="screen">
-    <div class="auth-card">
-      <div class="auth-head">
-        <div class="auth-badge">限定公開 / Password Protected</div>
-        <h1 class="auth-title">歌姫計算ツール</h1>
-        <p class="auth-sub">
-          このページは限定公開です。<br>
-          パスワードを入力するとツール本体が表示されます。
-        </p>
-      </div>
-
-      <div class="auth-body">
-        <div class="field">
-          <label class="label" for="passwordInput">パスワード</label>
-          <div class="input-wrap">
-            <input id="passwordInput" class="input" type="password" placeholder="パスワードを入力" autocomplete="current-password" />
-            <button id="togglePasswordBtn" class="toggle" type="button">表示</button>
-          </div>
-        </div>
-
-        <button id="loginBtn" class="btn btn-primary" type="button">ログイン</button>
-
-        <div id="loginError" class="error">パスワードが違います。</div>
-
-        <div class="hint">
-          GitHub Pages などの公開URLでも、検索除外（noindex）つきで簡易保護できます。<br>
-          強い秘匿には向かないので、仲間内共有向けです。
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="appContent" class="content">
-  <!doctype html>
-<html>
-<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>歌姫計算ツール（限定公開）</title>
+  <style>
+    :root{
+      --bg1:#eef4ff;
+      --bg2:#f9fbff;
+      --card:#ffffff;
+      --line:#d9e3f2;
+      --text:#1d2433;
+      --muted:#667089;
+      --accent:#4063ff;
+      --accent2:#5b7bff;
+      --shadow:0 18px 46px rgba(35,56,118,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, rgba(255,255,255,.75) 18%, rgba(255,255,255,0) 40%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+    }
+    .screen{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .auth-card{
+      width:min(100%, 460px);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .auth-head{
+      padding:28px 26px 18px;
+      background:
+        linear-gradient(135deg, rgba(64,99,255,.10), rgba(64,99,255,.02)),
+        linear-gradient(180deg,#ffffff,#fbfdff);
+      border-bottom:1px solid #edf2fb;
+    }
+    .auth-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#eef3ff;
+      color:#3150d5;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      margin-bottom:14px;
+    }
+    .auth-title{margin:0 0 8px;font-size:28px;line-height:1.2;}
+    .auth-sub{margin:0;color:var(--muted);font-size:14px;line-height:1.7;}
+    .auth-body{padding:22px 26px 26px;}
+    .field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+    .label{font-size:13px;color:var(--muted);font-weight:700;}
+    .input-wrap{position:relative;}
+    .login-input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 46px 14px 14px;
+      font-size:16px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+    }
+    .login-input:focus{border-color:#aac0ff;box-shadow:0 0 0 4px rgba(64,99,255,.12);}
+    .toggle{
+      position:absolute;right:10px;top:50%;transform:translateY(-50%);
+      border:0;background:transparent;color:#5870c8;font-size:13px;font-weight:800;
+      cursor:pointer;width:auto;padding:6px 8px;border-radius:10px;
+    }
+    .toggle:hover{background:#f3f6ff}
+    .btn{
+      width:100%;
+      border:0;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:800;cursor:pointer;
+      color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 12px 28px rgba(64,99,255,.22);
+    }
+    .error{
+      display:none;margin-top:12px;padding:12px 14px;border-radius:14px;
+      background:#fff1f3;border:1px solid #ffd2da;color:#c12947;font-size:13px;font-weight:700;
+    }
+    .error.show{display:block}
+    .hint{
+      margin-top:14px;padding:12px 14px;border-radius:14px;border:1px dashed #d8e1f4;
+      background:#fbfcff;color:var(--muted);font-size:12px;line-height:1.7;
+    }
+    .content{display:none;min-height:100vh;}
+    .content.show{display:block}
+    @media (max-width: 640px){
+      .screen{padding:14px}
+      .auth-card{border-radius:20px}
+      .auth-head{padding:24px 18px 16px}
+      .auth-body{padding:18px 18px 20px}
+      .auth-title{font-size:24px}
+    }
+  </style>
+  
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -518,8 +565,36 @@ button{margin-top:15px;width:100%;padding:12px;border:none;border-radius:10px;ba
     }
 
   </style>
+
 </head>
 <body>
+  <div id="loginScreen" class="screen">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="auth-badge">限定公開 / Password Protected</div>
+        <h1 class="auth-title">歌姫計算ツール</h1>
+        <p class="auth-sub">
+          このページは限定公開です。<br>
+          パスワードを入力するとツール本体が表示されます。
+        </p>
+      </div>
+      <div class="auth-body">
+        <div class="field">
+          <label class="label" for="passwordInput">パスワード</label>
+          <div class="input-wrap">
+            <input id="passwordInput" class="login-input" type="password" placeholder="パスワードを入力" autocomplete="current-password" />
+            <button id="togglePasswordBtn" class="toggle" type="button">表示</button>
+          </div>
+        </div>
+        <button id="loginBtn" class="btn" type="button">ログイン</button>
+        <div id="loginError" class="error">パスワードが違います。</div>
+        <div class="hint">ログインは1回だけです。検索除外（noindex）つきです。</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appContent" class="content">
+
 <div class="wrap">
   <div class="topbar">
     <div>
@@ -3619,12 +3694,12 @@ function isValidImportData_(payload) {
 }
 
 </script>
-</body>
-</html>
-   
+
+  </div>
+
   <script>
     (() => {
-      const PASSWORD = "pya"; // ←ここを変更
+      const PASSWORD = "pya";
       const STORAGE_KEY = "utahime_auth_ok_v1";
 
       const loginScreen = document.getElementById("loginScreen");
@@ -3678,22 +3753,5 @@ function isValidImportData_(payload) {
       passwordInput.focus();
     })();
   </script>
-
-</div>
-
-<script>
-const PASSWORD = "pya";
-
-function login(){
-  const v = document.getElementById("pw").value;
-  if(v === PASSWORD){
-    document.getElementById("loginScreen").style.display="none";
-    document.getElementById("app").style.display="block";
-  }else{
-    document.getElementById("error").style.display="block";
-  }
-}
-</script>
-
 </body>
 </html>
