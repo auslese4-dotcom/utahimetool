@@ -946,7 +946,7 @@
         <div class="row">
           <div class="field"><button onclick="runSimulation()">単発シミュレーション実行</button></div>
           <div class="field"><button class="secondary" onclick="runCampaignAnalysis()">周回分析実行</button></div>
-          <div class="field"><button class="ghost" onclick="runLoadoutCompare()">固定編成の周回比較</button></div>
+          <div class="field"><button class="ghost" onclick="runLoadoutCompare()">固定比較を実行</button></div>
         </div>
         <div id="simStatus" class="status">待機中</div>
       </div>
@@ -973,8 +973,8 @@
           <div class="compare-box compare-active" id="compareBoxActive">
             <div class="compare-title-badge">ACTIVE</div>
             <h4 id="compareActiveTitle">現在編成</h4>
-            <div class="compare-row"><span>全体1T成功率</span><strong id="compareActiveKill">-</strong></div>
-            <div class="compare-row"><span>全体2T成功率</span><strong id="compareActiveVo">-</strong></div>
+            <div class="compare-row"><span>周回1T成功率</span><strong id="compareActiveKill">-</strong></div>
+            <div class="compare-row"><span>周回2T成功率</span><strong id="compareActiveVo">-</strong></div>
             <div class="compare-row"><span>平均オデ1T率</span><strong id="compareActiveDa">-</strong></div>
             <div class="compare-row"><span>平均オデ2T率</span><strong id="compareActiveVi">-</strong></div>
             <div class="compare-row"><span>残りオデ数</span><strong id="compareActiveDmg">-</strong></div>
@@ -982,8 +982,8 @@
           <div class="compare-box compare-pinned" id="compareBoxPinned">
             <div class="compare-title-badge">PINNED</div>
             <h4 id="comparePinnedTitle">固定編成</h4>
-            <div class="compare-row"><span>全体1T成功率</span><strong id="comparePinnedKill">-</strong></div>
-            <div class="compare-row"><span>全体2T成功率</span><strong id="comparePinnedVo">-</strong></div>
+            <div class="compare-row"><span>周回1T成功率</span><strong id="comparePinnedKill">-</strong></div>
+            <div class="compare-row"><span>周回2T成功率</span><strong id="comparePinnedVo">-</strong></div>
             <div class="compare-row"><span>平均オデ1T率</span><strong id="comparePinnedDa">-</strong></div>
             <div class="compare-row"><span>平均オデ2T率</span><strong id="comparePinnedVi">-</strong></div>
             <div class="compare-row"><span>残りオデ数</span><strong id="comparePinnedDmg">-</strong></div>
@@ -991,14 +991,14 @@
           <div class="compare-box compare-diff" id="compareBoxDiff">
             <div class="compare-title-badge">DIFF</div>
             <h4>差分（現在 - 固定）</h4>
-            <div class="diff-summary diff-zero" id="compareDiffSummary">まだ周回比較していません</div>
+            <div class="diff-summary diff-zero" id="compareDiffSummary">まだ比較していません</div>
 
             <div class="compare-row diff-row" id="compareRowKill">
-              <div class="diff-row-head"><span>全体1T成功率差</span><strong id="compareDiffKill">-</strong></div>
+              <div class="diff-row-head"><span>周回1T成功率差</span><strong id="compareDiffKill">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarKill"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowVo">
-              <div class="diff-row-head"><span>全体2T成功率差</span><strong id="compareDiffVo">-</strong></div>
+              <div class="diff-row-head"><span>周回2T成功率差</span><strong id="compareDiffVo">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarVo"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowDa">
@@ -1015,7 +1015,7 @@
             </div>
           </div>
         </div>
-        <div id="compareStatus" class="status">固定編成の周回比較はまだ実行していません。</div>
+        <div id="compareStatus" class="status">周回比較はまだ実行していません。</div>
       </div>
 
       <div class="subsec">
@@ -1069,10 +1069,10 @@
           <div class="metric">
             <div class="k">全オデ1T成功率</div>
             <div class="v" id="campaignAllSuccessRate">-</div>
-            <div class="s" id="campaignSummaryText">2T: -</div>
+            <div class="s" id="campaignSummaryText">-</div>
           </div>
           <div class="metric">
-            <div class="k">残りオデ数</div>
+            <div class="k">全オデ2T成功率</div>
             <div class="v" id="campaignRemainCount">-</div>
             <div class="s" id="campaignRouteText">-</div>
           </div>
@@ -2899,13 +2899,13 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
   });
 
   const trials = cfg.iterations;
-  let allSuccessCount1T = 0;
-  let allSuccessCount2T = 0;
+  let allSuccessCount1 = 0;
+  let allSuccessCount2 = 0;
   const logs = [];
 
   for (let i = 0; i < trials; i++) {
-    let successAll1T = true;
-    let successAll2T = true;
+    let successAll1 = true;
+    let successAll2 = true;
     const lines = [];
 
     for (let s = 0; s < schedule.length; s++) {
@@ -2914,32 +2914,34 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
 
       const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1);
       const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
-      if (!r1.killAll) successAll1T = false;
+      if (!r1.killAll) successAll1 = false;
 
       const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2);
       const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
       if (!r2.killAll) {
-        successAll2T = false;
-        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 失敗`);
-        break;
+        successAll2 = false;
+        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 2T失敗`);
       } else if (i < 5) {
-        lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
+        lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 2T成功`);
       }
     }
 
-    if (successAll1T) allSuccessCount1T++;
-    if (successAll2T) allSuccessCount2T++;
+    if (successAll1) allSuccessCount1++;
+    if (successAll2) allSuccessCount2++;
     if (i < 5) logs.push(lines.join("
 "));
   }
 
+  const avgOneTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
+  const avgTwoTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
+
   return {
     remainCount: schedule.length,
     perAudition,
-    allSuccessRate1T: allSuccessCount1T / trials,
-    allSuccessRate2T: allSuccessCount2T / trials,
-    avgPerAudition1T: perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0,
-    avgPerAudition2T: perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0,
+    allSuccessRate1: allSuccessCount1 / trials,
+    allSuccessRate2: allSuccessCount2 / trials,
+    avgOneTurnRate,
+    avgTwoTurnRate,
     trials,
     sampleLogs: logs
   };
@@ -2958,11 +2960,11 @@ function buildCfgForCampaignStep(baseCfg, step, turnCount) {
 }
 
 function renderCampaignResult(result, cfg) {
-  setText("campaignAllSuccessRate", pct(result.allSuccessRate1T || 0));
-  setText("campaignRemainCount", String(result.remainCount));
+  setText("campaignAllSuccessRate", pct(result.allSuccessRate1 || 0));
+  setText("campaignRemainCount", pct(result.allSuccessRate2 || 0));
   const s28Name = APP_DATA.auditions?.[cfg.campaignS28AuditionChoice]?.name || cfg.campaignS28AuditionChoice;
-  setText("campaignRouteText", `${cfg.campaignRoute}回ルート / S2-8=${s28Name}`, true);
-  setText("campaignSummaryText", `2T: ${pct(result.allSuccessRate2T || 0)} / ${cfg.campaignStartPoint} から最後まで / ${result.trials}試行`, true);
+  setText("campaignRouteText", `${cfg.campaignRoute}回ルート / 残り${result.remainCount}オデ / S2-8=${s28Name}`, true);
+  setText("campaignSummaryText", `${cfg.campaignStartPoint} から最後まで / ${result.trials}試行 / 平均オデ1T ${pct(result.avgOneTurnRate || 0)} / 平均オデ2T ${pct(result.avgTwoTurnRate || 0)}`, true);
 
   const body = document.getElementById("campaignResultBody");
   body.innerHTML = "";
@@ -3006,39 +3008,33 @@ async function runLoadoutCompare() {
     setText('compareStatus', '周回スケジュールが空です。', true);
     return;
   }
-  addOperationLog('固定編成の周回比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  setText('compareStatus', '固定編成の周回比較を実行中... 0%', true);
+  addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  setText('compareStatus', '周回比較を実行中... 0%', true);
   await yieldToUI();
 
   try {
-    const result = await runWorkerTask("campaignCompare", {
-      active,
-      pinned,
-      cfg,
-      schedule,
-      auditions: APP_DATA.auditions
-    }, (p) => {
-      if (p.phase === "activePerAudition") {
+    const result = await runWorkerTask("compareCampaign", { active, pinned, cfg, schedule, auditions: APP_DATA.auditions }, (p) => {
+      if (p.phase === "active1") {
         const rate = p.total ? Math.floor((p.done / p.total) * 25) : 0;
-        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
-      } else if (p.phase === "activeCampaign1T" || p.phase === "activeCampaign2T") {
+        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
+      } else if (p.phase === "active2") {
         const rate = p.total ? 25 + Math.floor((p.done / p.total) * 25) : 25;
-        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
-      } else if (p.phase === "pinnedPerAudition") {
+        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
+      } else if (p.phase === "pinned1") {
         const rate = p.total ? 50 + Math.floor((p.done / p.total) * 25) : 50;
-        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
+        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
       } else {
         const rate = p.total ? 75 + Math.floor((p.done / p.total) * 25) : 75;
-        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
+        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
       }
     });
-    renderCampaignLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
-    setText('compareStatus', `固定編成の周回比較完了: ${active.name} vs ${pinned.name}`, true);
-    addOperationLog('固定編成の周回比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
+    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
+    setText('compareStatus', `周回比較完了: ${active.name} vs ${pinned.name}`, true);
+    addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
   } catch (err) {
     console.error(err);
-    setText('compareStatus', '固定編成の周回比較失敗', true);
-    alert("固定編成の周回比較に失敗しました");
+    setText('compareStatus', '周回比較失敗', true);
+    alert("周回比較に失敗しました");
   }
 }
 
@@ -3064,25 +3060,25 @@ function runSimulationForLoadout(loadout, cfg, audition) {
   return monteCarloSimulation({ cfg, stats, deck, buffs, audition });
 }
 
-function renderCampaignLoadoutCompare(active, activeResult, pinned, pinnedResult) {
+function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
   setText('compareActiveTitle', `現在: ${active.name}`, true);
   setText('comparePinnedTitle', `固定: ${pinned.name}`, true);
 
-  setText('compareActiveKill', pct(activeResult.allSuccessRate1T || 0), true);
-  setText('comparePinnedKill', pct(pinnedResult.allSuccessRate1T || 0), true);
-  setText('compareActiveVo', pct(activeResult.allSuccessRate2T || 0), true);
-  setText('comparePinnedVo', pct(pinnedResult.allSuccessRate2T || 0), true);
-  setText('compareActiveDa', pct(activeResult.avgPerAudition1T || 0), true);
-  setText('comparePinnedDa', pct(pinnedResult.avgPerAudition1T || 0), true);
-  setText('compareActiveVi', pct(activeResult.avgPerAudition2T || 0), true);
-  setText('comparePinnedVi', pct(pinnedResult.avgPerAudition2T || 0), true);
+  setText('compareActiveKill', pct(activeResult.allSuccessRate1 || 0), true);
+  setText('comparePinnedKill', pct(pinnedResult.allSuccessRate1 || 0), true);
+  setText('compareActiveVo', pct(activeResult.allSuccessRate2 || 0), true);
+  setText('comparePinnedVo', pct(pinnedResult.allSuccessRate2 || 0), true);
+  setText('compareActiveDa', pct(activeResult.avgOneTurnRate || 0), true);
+  setText('comparePinnedDa', pct(pinnedResult.avgOneTurnRate || 0), true);
+  setText('compareActiveVi', pct(activeResult.avgTwoTurnRate || 0), true);
+  setText('comparePinnedVi', pct(pinnedResult.avgTwoTurnRate || 0), true);
   setText('compareActiveDmg', String(activeResult.remainCount || 0), true);
   setText('comparePinnedDmg', String(pinnedResult.remainCount || 0), true);
 
-  const diffKill = (activeResult.allSuccessRate1T || 0) - (pinnedResult.allSuccessRate1T || 0);
-  const diffVo = (activeResult.allSuccessRate2T || 0) - (pinnedResult.allSuccessRate2T || 0);
-  const diffDa = (activeResult.avgPerAudition1T || 0) - (pinnedResult.avgPerAudition1T || 0);
-  const diffVi = (activeResult.avgPerAudition2T || 0) - (pinnedResult.avgPerAudition2T || 0);
+  const diffKill = (activeResult.allSuccessRate1 || 0) - (pinnedResult.allSuccessRate1 || 0);
+  const diffVo = (activeResult.allSuccessRate2 || 0) - (pinnedResult.allSuccessRate2 || 0);
+  const diffDa = (activeResult.avgOneTurnRate || 0) - (pinnedResult.avgOneTurnRate || 0);
+  const diffVi = (activeResult.avgTwoTurnRate || 0) - (pinnedResult.avgTwoTurnRate || 0);
   const diffDmg = (activeResult.remainCount || 0) - (pinnedResult.remainCount || 0);
 
   setDiffText('compareDiffKill', diffKill, true, true);
@@ -3092,20 +3088,16 @@ function renderCampaignLoadoutCompare(active, activeResult, pinned, pinnedResult
   setDiffText('compareDiffDmg', diffDmg, false, true);
 
   const pctScale = Math.max(Math.abs(diffKill), Math.abs(diffVo), Math.abs(diffDa), Math.abs(diffVi), 0.01);
-  const dmgScale = Math.max(Math.abs(diffDmg), 1);
+  const countScale = Math.max(Math.abs(diffDmg), 1);
 
   updateDiffBar('compareBarKill', diffKill, pctScale);
   updateDiffBar('compareBarVo', diffVo, pctScale);
   updateDiffBar('compareBarDa', diffDa, pctScale);
   updateDiffBar('compareBarVi', diffVi, pctScale);
-  updateDiffBar('compareBarDmg', diffDmg, dmgScale);
+  updateDiffBar('compareBarDmg', diffDmg, countScale);
 
-  updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi);
+  updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg);
   animateCompareBoxes();
-}
-
-function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
-  return renderCampaignLoadoutCompare(active, activeResult, pinned, pinnedResult);
 }
 
 function animateCompareBoxes() {
@@ -3120,25 +3112,21 @@ function animateCompareBoxes() {
   });
 }
 
-function updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi) {
+function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
   const el = document.getElementById('compareDiffSummary');
   if (!el) return;
-  const score = diffKill * 130 + diffVo * 160 + diffDa * 40 + diffVi * 60;
+  const score = diffKill * 100 + diffVo * 80 + diffDa * 35 + diffVi * 35 + (diffDmg / Math.max(Math.abs(diffDmg), 1)) * 3;
   let cls = 'diff-zero';
-  let text = 'ほぼ互角です';
+  let text = '周回比較はほぼ互角です';
   if (score > 0.5) {
     cls = 'diff-plus';
-    text = `現在編成が優勢（全体2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
+    text = `現在編成が優勢（周回1T成功率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
   } else if (score < -0.5) {
     cls = 'diff-minus';
-    text = `固定編成が優勢（全体2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
+    text = `固定編成が優勢（周回1T成功率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
   }
   el.className = `diff-summary ${cls}`;
   setText('compareDiffSummary', text, true);
-}
-
-function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
-  return updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi);
 }
 
 function updateDiffBar(id, value, maxAbs) {
@@ -3351,7 +3339,7 @@ function resetAll() {
   toggleBuffPercentFields();
   setText("resultLog", "リセットしました。", true);
   setText("campaignLog", "リセットしました。", true);
-  setText("compareStatus", "固定編成の周回比較はまだ実行していません。", true);
+  setText("compareStatus", "固定比較はまだ実行していません。", true);
   addOperationLog("全リセット完了", "初期状態に戻しました", "op-log-clear");
   updateUndoButton();
 }
@@ -3475,7 +3463,12 @@ self.onmessage = function(e) {
       postMessage({ jobId, kind: "done", result });
       return;
     }
-    if (type === "campaignCompare") {
+    if (type === "compare") {
+      const result = compareLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    if (type === "compareCampaign") {
       const result = compareCampaignLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
       postMessage({ jobId, kind: "done", result });
       return;
@@ -3531,6 +3524,30 @@ function monteCarloSimulation({ cfg, stats, deck, buffs, audition }, progressCb)
   };
 }
 
+function compareLoadouts({ active, pinned, cfg, audition }, progressCb) {
+  const activeDeck = (active.cards || []).filter(c => c.enabled);
+  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
+  const activeStats = loadoutToStats(active);
+
+  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
+  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
+  const pinnedStats = loadoutToStats(pinned);
+
+  const activeResult = activeDeck.length
+    ? monteCarloSimulation({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, audition }, p => {
+        if (progressCb) progressCb({ phase: "active", done: p.done, total: p.total });
+      })
+    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+
+  const pinnedResult = pinnedDeck.length
+    ? monteCarloSimulation({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, audition }, p => {
+        if (progressCb) progressCb({ phase: "pinned", done: p.done, total: p.total });
+      })
+    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+
+  return { activeResult, pinnedResult };
+}
+
 function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, progressCb) {
   const activeDeck = (active.cards || []).filter(c => c.enabled);
   const activeBuffs = (active.buffs || []).filter(b => b.enabled);
@@ -3542,23 +3559,15 @@ function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, p
 
   const activeResult = activeDeck.length
     ? analyzeCampaign({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, schedule, auditions }, p => {
-        if (progressCb) progressCb({
-          phase: p.phase === "perAudition" ? "activePerAudition" : (p.phase === "campaign1T" ? "activeCampaign1T" : "activeCampaign2T"),
-          done: p.done,
-          total: p.total
-        });
+        if (progressCb) progressCb({ phase: p.phase === "campaign1" ? "active1" : "active2", done: p.done, total: p.total });
       })
-    : { remainCount:schedule.length, perAudition:[], allSuccessRate1T:0, allSuccessRate2T:0, avgPerAudition1T:0, avgPerAudition2T:0, trials:0, sampleLogs:[] };
+    : { remainCount:schedule.length, allSuccessRate1:0, allSuccessRate2:0, avgOneTurnRate:0, avgTwoTurnRate:0 };
 
   const pinnedResult = pinnedDeck.length
     ? analyzeCampaign({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, schedule, auditions }, p => {
-        if (progressCb) progressCb({
-          phase: p.phase === "perAudition" ? "pinnedPerAudition" : (p.phase === "campaign1T" ? "pinnedCampaign1T" : "pinnedCampaign2T"),
-          done: p.done,
-          total: p.total
-        });
+        if (progressCb) progressCb({ phase: p.phase === "campaign1" ? "pinned1" : "pinned2", done: p.done, total: p.total });
       })
-    : { remainCount:schedule.length, perAudition:[], allSuccessRate1T:0, allSuccessRate2T:0, avgPerAudition1T:0, avgPerAudition2T:0, trials:0, sampleLogs:[] };
+    : { remainCount:schedule.length, allSuccessRate1:0, allSuccessRate2:0, avgOneTurnRate:0, avgTwoTurnRate:0 };
 
   return { activeResult, pinnedResult };
 }
@@ -3584,20 +3593,19 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progr
       oneTurnRate: res1.killAllRate,
       twoTurnRate: res2.killAllRate
     });
-    if (progressCb) progressCb({ phase: "perAudition", done: idx + 1, total: schedule.length });
   }
 
   const trials = cfg.iterations;
   const chunk = 250;
-  let allSuccessCount1T = 0;
-  let allSuccessCount2T = 0;
+  let allSuccessCount1 = 0;
+  let allSuccessCount2 = 0;
   const logs = [];
 
   for (let start = 0; start < trials; start += chunk) {
     const end = Math.min(trials, start + chunk);
     for (let i = start; i < end; i++) {
-      let successAll1T = true;
-      let successAll2T = true;
+      let successAll1 = true;
+      let successAll2 = true;
       const lines = [];
       for (let s = 0; s < schedule.length; s++) {
         const step = schedule[s];
@@ -3605,33 +3613,35 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progr
 
         const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
         const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
-        if (!r1.killAll) successAll1T = false;
+        if (!r1.killAll) successAll1 = false;
 
         const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
         const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
         if (!r2.killAll) {
-          successAll2T = false;
-          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 失敗");
-          break;
+          successAll2 = false;
+          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 2T失敗");
         } else if (i < 5) {
-          lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 成功");
+          lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 2T成功");
         }
       }
-      if (successAll1T) allSuccessCount1T++;
-      if (successAll2T) allSuccessCount2T++;
-      if (i < 5) logs.push(lines.join("\n"));
+      if (successAll1) allSuccessCount1++;
+      if (successAll2) allSuccessCount2++;
+      if (i < 5) logs.push(lines.join("
+"));
     }
-    if (progressCb) progressCb({ phase: "campaign1T", done: end, total: trials });
+    if (progressCb) progressCb({ phase: "campaign1", done: end, total: trials });
   }
 
+  const avgOneTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
+  const avgTwoTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
 
   return {
     remainCount: schedule.length,
     perAudition,
-    allSuccessRate1T: allSuccessCount1T / trials,
-    allSuccessRate2T: allSuccessCount2T / trials,
-    avgPerAudition1T: perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0,
-    avgPerAudition2T: perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0,
+    allSuccessRate1: allSuccessCount1 / trials,
+    allSuccessRate2: allSuccessCount2 / trials,
+    avgOneTurnRate,
+    avgTwoTurnRate,
     trials,
     sampleLogs: logs
   };
