@@ -454,39 +454,7 @@
       .mono{font-size:11px; padding:10px;}
     }
 
-  
-    .save-monitor{
-      margin-bottom:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid #d8e1f4;
-      background:#f8fbff;
-      font-size:12px;
-      color:#4b5563;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .save-monitor-left{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-    .save-pill{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:4px 10px;border-radius:999px;
-      font-weight:700;font-size:12px;
-      background:#eef2ff;color:#3344cc;
-      border:1px solid #dbe4ff;
-    }
-    .save-pill.ok{background:#ecfdf3;color:#0f8a47;border-color:#c9f2da;}
-    .save-pill.ng{background:#fff1f2;color:#c81e4b;border-color:#ffd5dc;}
-    .save-monitor-actions{
-      display:flex;gap:8px;flex-wrap:wrap;align-items:center;
-    }
-    .save-monitor-actions button{
-      width:auto;padding:8px 10px;font-size:12px;border-radius:10px;
-    }
-
-</style>
+  </style>
 </head>
 <body>
 <div class="wrap">
@@ -509,20 +477,6 @@
       <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" onchange="importAppDataFromFile(event)">
     </div>
   </div>
-
-  
-  <div class="save-monitor" id="saveMonitor">
-    <div class="save-monitor-left">
-      <span class="save-pill" id="saveStorageStatus">保存状態: 未確認</span>
-      <span id="saveLastSaved">最終保存: -</span>
-      <span id="saveCurrentUrl">保存先URL: -</span>
-    </div>
-    <div class="save-monitor-actions">
-      <button type="button" class="ghost" onclick="forceSaveNow()">今すぐ保存確認</button>
-      <button type="button" class="ghost" onclick="showSaveDebugInfo()">保存デバッグ表示</button>
-    </div>
-  </div>
-
 
   <div class="help" style="margin-bottom:10px;">
     この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。
@@ -1648,7 +1602,7 @@ function onInitialDataLoaded(res) {
   if (APP_DATA.savedState) {
     restoreState(APP_DATA.savedState);
   } else {
-    const local = localStorage.getItem(SAVE_KEY);
+    const local = localStorage.getItem("utahime_calc_state_local");
     if (local) {
       try { restoreState(JSON.parse(local)); } catch (e) {}
     }
@@ -1660,8 +1614,6 @@ function onInitialDataLoaded(res) {
   updateDeckStatus();
   toggleCardRateFields();
   toggleBuffPercentFields();
-  const hasSavedData = !!safeReadLocalState_();
-  updateSaveMonitor(hasSavedData ? "保存状態: 読み込み済み" : "保存状態: まだ保存なし", hasSavedData);
 }
 
 
@@ -3130,17 +3082,13 @@ function setDiffText(id, value, asPercent, includeSign) {
 
 function saveLocal() {
   clearTimeout(saveLocalTimer);
-  localStorage.setItem(SAVE_KEY, JSON.stringify(exportState()));
-    localStorage.setItem(SAVE_META_KEY, JSON.stringify(makeSaveMeta_()));
-    updateSaveMonitor("保存状態: 保存済み", true);
+  localStorage.setItem("utahime_calc_state_local", JSON.stringify(exportState()));
 }
 
 function saveStateToServer() {
   const state = exportState();
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    localStorage.setItem(SAVE_META_KEY, JSON.stringify(makeSaveMeta_()));
-    updateSaveMonitor("保存状態: 保存済み", true);
+    localStorage.setItem("utahime_calc_state_local", JSON.stringify(state));
     setText("simStatus", "この端末に保存しました");
     addOperationLog("ローカル保存", "現在の状態をこの端末に保存しました", "op-log-save");
   } catch (e) {
@@ -3275,9 +3223,7 @@ function resetAll() {
   pushHistory('全リセット');
   if (!confirm("全リセットします。よろしいですか？")) return;
 
-  localStorage.removeItem(SAVE_KEY);
-  localStorage.removeItem(SAVE_META_KEY);
-  updateSaveMonitor("保存状態: 未保存", false);
+  localStorage.removeItem("utahime_calc_state_local");
   STATE = {
     activeLoadoutId: "L1",
     pinnedLoadoutId: "L1",
@@ -3417,100 +3363,6 @@ function deepClone(x) {
   return JSON.parse(JSON.stringify(x));
 }
 
-
-const SAVE_KEY = "utahime_calc_state_local";
-const SAVE_META_KEY = "utahime_calc_state_local_meta";
-
-function getCurrentStorageScopeText() {
-  try {
-    return location.origin + location.pathname;
-  } catch (e) {
-    return "(unknown)";
-  }
-}
-
-function updateSaveMonitor(statusText, ok) {
-  const pill = document.getElementById("saveStorageStatus");
-  const last = document.getElementById("saveLastSaved");
-  const url = document.getElementById("saveCurrentUrl");
-  if (pill) {
-    pill.textContent = statusText || "保存状態: 未確認";
-    pill.classList.remove("ok","ng");
-    pill.classList.add(ok ? "ok" : "ng");
-  }
-  try {
-    const metaRaw = localStorage.getItem(SAVE_META_KEY);
-    const meta = metaRaw ? JSON.parse(metaRaw) : null;
-    if (last) {
-      last.textContent = "最終保存: " + (meta && meta.savedAtText ? meta.savedAtText : "-");
-    }
-    if (url) {
-      url.textContent = "保存先URL: " + getCurrentStorageScopeText();
-      url.title = getCurrentStorageScopeText();
-    }
-  } catch (e) {
-    if (last) last.textContent = "最終保存: 読み取り失敗";
-    if (url) url.textContent = "保存先URL: " + getCurrentStorageScopeText();
-  }
-}
-
-function makeSaveMeta_() {
-  const now = new Date();
-  return {
-    savedAt: now.toISOString(),
-    savedAtText: now.getFullYear() + "/" +
-      String(now.getMonth() + 1).padStart(2, "0") + "/" +
-      String(now.getDate()).padStart(2, "0") + " " +
-      String(now.getHours()).padStart(2, "0") + ":" +
-      String(now.getMinutes()).padStart(2, "0") + ":" +
-      String(now.getSeconds()).padStart(2, "0"),
-    scope: getCurrentStorageScopeText()
-  };
-}
-
-function safeReadLocalState_() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-}
-
-function forceSaveNow() {
-  try {
-    saveLocal();
-    setText("simStatus", "この端末への保存を確認しました");
-    addOperationLog("保存確認", "localStorageへ保存済み", "op-log-save");
-  } catch (e) {
-    console.error(e);
-    updateSaveMonitor("保存状態: 保存失敗", false);
-    alert("保存確認に失敗しました");
-  }
-}
-
-function showSaveDebugInfo() {
-  try {
-    const metaRaw = localStorage.getItem(SAVE_META_KEY);
-    const stateRaw = localStorage.getItem(SAVE_KEY);
-    const meta = metaRaw ? JSON.parse(metaRaw) : null;
-    alert([
-      "保存デバッグ情報",
-      "URL: " + getCurrentStorageScopeText(),
-      "保存キー: " + SAVE_KEY,
-      "保存データ: " + (stateRaw ? "あり" : "なし"),
-      "最終保存: " + (meta && meta.savedAtText ? meta.savedAtText : "-"),
-      "保存scope: " + (meta && meta.scope ? meta.scope : "-")
-    ].join("\\n"));
-  } catch (e) {
-    console.error(e);
-    alert("保存デバッグ情報の取得に失敗しました");
-  }
-}
-
-
 function triggerImportAppData() {
   const input = document.getElementById("importFileInput");
   if (input) input.click();
@@ -3573,7 +3425,6 @@ function importAppDataFromFile(event) {
 
       saveLocal();
       saveStateToServer();
-      updateSaveMonitor("保存状態: インポート後に保存済み", true);
 
       addOperationLog("インポート", "JSONファイルから状態を復元しました", "op-log-save");
       setText("simStatus", "インポートしました");
@@ -3621,5 +3472,626 @@ function isValidImportData_(payload) {
 }
 
 </script>
+
+<script>
+/* ===== 爆速版追加: 常駐Worker + 結果キャッシュ + 軽量ログ ===== */
+const UTAHIME_FAST_WORKER_SCRIPT = `
+const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
+const ATTRS = ["Vo","Da","Vi"];
+const CACHE = new Map();
+function cacheGet(key){ return CACHE.has(key) ? cloneJson(CACHE.get(key)) : null; }
+function cacheSet(key, value){
+  CACHE.set(key, cloneJson(value));
+  if (CACHE.size > 120) {
+    const firstKey = CACHE.keys().next().value;
+    CACHE.delete(firstKey);
+  }
+}
+function cloneJson(x){ return JSON.parse(JSON.stringify(x)); }
+function num(v, def=0){ const n = +v; return isFinite(n) ? n : def; }
+function normalizeAttrKeys(obj){ return { Vo: obj.vo ?? obj.Vo ?? 0, Da: obj.da ?? obj.Da ?? 0, Vi: obj.vi ?? obj.Vi ?? 0 }; }
+function shuffle(arr){ for (let i = arr.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+function aliveJudgeAttrs(judgeHp){ return ATTRS.filter(a => judgeHp[a] > 0); }
+function sampleRivalJudgeMultiplier(){ return 1; } // 爆速版は固定1.0
+
+self.onmessage = function(e){
+  const { jobId, type, payload } = e.data || {};
+  try {
+    let result;
+    if (type === "simulateFast") {
+      result = monteCarloSimulation(payload, p => postMessage({ jobId, kind:"progress", progress:p }));
+    } else if (type === "campaignFast") {
+      result = analyzeCampaign(payload, p => postMessage({ jobId, kind:"progress", progress:p }));
+    } else if (type === "compareCampaignFast") {
+      result = compareCampaignLoadouts(payload, p => postMessage({ jobId, kind:"progress", progress:p }));
+    } else if (type === "clearCache") {
+      CACHE.clear();
+      result = { ok:true };
+    } else {
+      throw new Error("Unknown task: " + type);
+    }
+    postMessage({ jobId, kind:"done", result });
+  } catch (err) {
+    postMessage({ jobId, kind:"error", message:String(err && err.message ? err.message : err) });
+  }
+};
+
+function stableKey(type, payload){
+  return type + "::" + JSON.stringify(payload);
+}
+
+function monteCarloSimulation({ cfg, stats, deck, buffs, audition, debugLogs=false }, progressCb) {
+  const cacheKey = stableKey("simulateFast", { cfg, stats, deck, buffs, audition, debugLogs: !!debugLogs });
+  const cached = cacheGet(cacheKey);
+  if (cached) {
+    if (progressCb) progressCb({ done: cfg.iterations || 0, total: cfg.iterations || 0, cached: true });
+    return cached;
+  }
+
+  let killAllCount = 0;
+  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
+  let remainSum = { Vo:0, Da:0, Vi:0 };
+  let playerDamageSum = 0;
+  let rivalDamageSum = 0;
+  const logs = [];
+  const trials = cfg.iterations;
+  const chunk = 250;
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: debugLogs && i < 2 });
+      if (r.killAll) killAllCount++;
+      ATTRS.forEach(a => {
+        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
+        remainSum[a] += Math.max(0, r.finalHp[a]);
+      });
+      playerDamageSum += r.playerDamage;
+      rivalDamageSum += r.rivalDamage;
+      if (debugLogs && i < 2) logs.push(r.logText);
+    }
+    if (progressCb) progressCb({ done: end, total: trials });
+  }
+
+  const result = {
+    trials,
+    killAllRate: killAllCount / trials,
+    judgeKillRates: {
+      Vo: judgeKillCounts.Vo / trials,
+      Da: judgeKillCounts.Da / trials,
+      Vi: judgeKillCounts.Vi / trials
+    },
+    avgRemain: {
+      Vo: remainSum.Vo / trials,
+      Da: remainSum.Da / trials,
+      Vi: remainSum.Vi / trials
+    },
+    avgPlayerDamage: playerDamageSum / trials,
+    avgRivalDamage: rivalDamageSum / trials,
+    sampleLogs: logs
+  };
+  cacheSet(cacheKey, result);
+  return result;
+}
+
+function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, progressCb) {
+  const activeStats = loadoutToStats(active);
+  const activeDeck = (active.cards || []).filter(c => c.enabled);
+  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
+  const pinnedStats = loadoutToStats(pinned);
+  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
+  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
+
+  const activeResult = activeDeck.length
+    ? analyzeCampaign({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({ phase:"active", done:p.done || 0, total:p.total || 1 });
+      })
+    : { remainCount: schedule.length, allSuccessRateOneTurn:0, allSuccessRateTwoTurn:0, averagePerAuditionOneTurnRate:0, averagePerAuditionTwoTurnRate:0 };
+
+  const pinnedResult = pinnedDeck.length
+    ? analyzeCampaign({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({ phase:"pinned", done:p.done || 0, total:p.total || 1 });
+      })
+    : { remainCount: schedule.length, allSuccessRateOneTurn:0, allSuccessRateTwoTurn:0, averagePerAuditionOneTurnRate:0, averagePerAuditionTwoTurnRate:0 };
+
+  return { activeResult, pinnedResult };
+}
+
+function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progressCb) {
+  const cacheKey = stableKey("campaignFast", { cfg, stats, deck, buffs, schedule });
+  const cached = cacheGet(cacheKey);
+  if (cached) {
+    if (progressCb) progressCb({ phase:"campaign", done:cfg.iterations || 0, total:cfg.iterations || 0, cached:true });
+    return cached;
+  }
+
+  const perAudition = [];
+  for (let idx = 0; idx < schedule.length; idx++) {
+    const step = schedule[idx];
+    const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+    const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+    const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+
+    const res1 = monteCarloSimulation({ cfg: stepCfg1, stats, deck, buffs, audition, debugLogs:false });
+    const res2 = monteCarloSimulation({ cfg: stepCfg2, stats, deck, buffs, audition, debugLogs:false });
+
+    perAudition.push({
+      index: idx + 1,
+      point: step.point,
+      label: step.label,
+      auditionId: step.auditionId,
+      auditionName: auditions?.[step.auditionId]?.name || step.auditionId,
+      w: step.w,
+      oneTurnRate: res1.killAllRate,
+      twoTurnRate: res2.killAllRate
+    });
+    if (progressCb) progressCb({ phase:"perAudition", done: idx + 1, total: schedule.length });
+  }
+
+  const trials = cfg.iterations;
+  const chunk = 250;
+  let allSuccessCount1 = 0;
+  let allSuccessCount2 = 0;
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      let successAll1 = true;
+      let successAll2 = true;
+
+      for (let s = 0; s < schedule.length; s++) {
+        const step = schedule[s];
+        const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+
+        const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+        const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log:false });
+        if (!r1.killAll) successAll1 = false;
+
+        const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+        const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log:false });
+        if (!r2.killAll) successAll2 = false;
+
+        if (!successAll1 && !successAll2) break;
+      }
+
+      if (successAll1) allSuccessCount1++;
+      if (successAll2) allSuccessCount2++;
+    }
+    if (progressCb) progressCb({ phase:"campaign", done:end, total:trials });
+  }
+
+  const avgOne = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
+  const avgTwo = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
+
+  const result = {
+    remainCount: schedule.length,
+    perAudition,
+    allSuccessRateOneTurn: allSuccessCount1 / trials,
+    allSuccessRateTwoTurn: allSuccessCount2 / trials,
+    averagePerAuditionOneTurnRate: avgOne,
+    averagePerAuditionTwoTurnRate: avgTwo,
+    trials,
+    sampleLogs: []
+  };
+  cacheSet(cacheKey, result);
+  return result;
+}
+
+function buildCfgForCampaignStep(baseCfg, step, turnCount, auditions) {
+  const data = auditions?.[step.auditionId]?.[baseCfg.difficulty];
+  const hp = data?.judgeHp || 0;
+  return { ...baseCfg, auditionId: step.auditionId, w: step.w, turnCount, judgeHp: { Vo: hp, Da: hp, Vi: hp } };
+}
+
+function loadoutToStats(loadout) {
+  return {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0; acc.da += +s.da || 0; acc.vi += +s.vi || 0; return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 }; return acc;
+    }, {})
+  };
+}
+
+function simulateOneRun({ cfg, stats, deck, buffs, audition, log }) {
+  const judgeHp = { Vo: cfg.judgeHp.Vo, Da: cfg.judgeHp.Da, Vi: cfg.judgeHp.Vi };
+  let playerMental = cfg.playerMental;
+  let playerDamage = 0;
+  let rivalDamage = 0;
+  const logLines = [];
+
+  const shuffledDeck = shuffle(deck.slice());
+  let hand = shuffledDeck.splice(0, Math.min(3, shuffledDeck.length));
+  const buffStates = buffs.map(b => ({ id: b.id, activated:false, attempted:false, remainingUses:0 }));
+
+  for (let turn = 1; turn <= cfg.turnCount; turn++) {
+    if (aliveJudgeAttrs(judgeHp).length === 0 || playerMental <= 0) break;
+    const action = chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn });
+
+    if (action) {
+      const damageResult = applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn });
+      playerDamage += damageResult.effectiveDamage;
+      if (log) logLines.push("T" + turn + " PLAYER: " + action.card.name);
+      hand = hand.filter(c => c.id !== action.card.id);
+    }
+
+    if (aliveJudgeAttrs(judgeHp).length === 0) break;
+    const rivalTurn = applyRivalActions({ judgeHp, cfg, audition, turn });
+    rivalDamage += rivalTurn.totalDamage;
+
+    if (cfg.enableJudgeReaction && aliveJudgeAttrs(judgeHp).length > 0) {
+      playerMental = applyJudgeReactionsSimplified({ playerMental, audition });
+    }
+    if (turn < cfg.turnCount && shuffledDeck.length > 0) hand.push(shuffledDeck.shift());
+  }
+
+  return { killAll: ATTRS.every(a => judgeHp[a] <= 0), finalHp:{...judgeHp}, playerDamage, rivalDamage, logText: logLines.join("\\n") };
+}
+
+function chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn }) {
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!hand.length || !aliveTargets.length) return null;
+  let best = null;
+  let bestScore = -Infinity;
+  for (const card of hand) {
+    const candidates = card.targetMode === "all_judges" ? [{ card, targetAttr:null }] : aliveTargets.map(targetAttr => ({ card, targetAttr }));
+    for (const candidate of candidates) {
+      const tmpJudgeHp = { ...judgeHp };
+      const tmpBuffStates = deepClone(buffStates);
+      const result = applyPlayerAction({ action:candidate, judgeHp:tmpJudgeHp, stats, cfg, buffs, buffStates:tmpBuffStates, turn, dryRun:true });
+      const remainScore = Math.max(0,tmpJudgeHp.Vo) + Math.max(0,tmpJudgeHp.Da) + Math.max(0,tmpJudgeHp.Vi);
+      const killBonus = (tmpJudgeHp.Vo<=0?1:0)+(tmpJudgeHp.Da<=0?1:0)+(tmpJudgeHp.Vi<=0?1:0);
+      const score = result.effectiveDamage + killBonus * 100000 - remainScore;
+      if (score > bestScore) { bestScore = score; best = candidate; }
+    }
+  }
+  return best;
+}
+
+function applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun=false }) {
+  const card = action.card;
+  if (card.targetMode === "all_judges") {
+    return applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+  }
+  return applyPlayerActionSingle({ card, targetAttr:action.targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+}
+
+function applyPlayerActionSingle({ card, targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun });
+  const rawDamage = calcCardDamageToJudge(card, targetAttr, stats, cfg.w, activeBuffInfo);
+  const effectiveDamage = Math.min(rawDamage, Math.max(0, judgeHp[targetAttr]));
+  judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - effectiveDamage);
+  if (!dryRun) consumeBuffUsesForAction({ buffStates, activeBuffInfo });
+  return { rawDamage, effectiveDamage, activatedBuffNames: activeBuffInfo.activatedIds };
+}
+
+function applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr:null, turn, buffs, buffStates, dryRun });
+  let rawDamage = 0, effectiveDamage = 0;
+  for (const judgeAttr of ATTRS) {
+    if (judgeHp[judgeAttr] <= 0) continue;
+    const raw = calcCardDamageToJudge(card, judgeAttr, stats, cfg.w, activeBuffInfo);
+    const eff = Math.min(raw, Math.max(0, judgeHp[judgeAttr]));
+    judgeHp[judgeAttr] = Math.max(0, judgeHp[judgeAttr] - eff);
+    rawDamage += raw; effectiveDamage += eff;
+  }
+  if (!dryRun) consumeBuffUsesForAction({ buffStates, activeBuffInfo });
+  return { rawDamage, effectiveDamage, activatedBuffNames: activeBuffInfo.activatedIds };
+}
+
+function evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun }) {
+  const totalPercentByAttr = { Vo:0, Da:0, Vi:0 };
+  const activatedIds = [];
+  for (const buff of buffs) {
+    const st = buffStates.find(x => x.id === buff.id);
+    if (!st || !buff.enabled) continue;
+    if (st.remainingUses > 0) {
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+      continue;
+    }
+    if (st.attempted) continue;
+    if (!isBuffConditionMet(buff, { card, targetAttr, turn })) continue;
+    if (!dryRun) st.attempted = true;
+    if (Math.random() <= buff.procRate) {
+      if (!dryRun) { st.activated = true; st.remainingUses = Math.max(1, buff.uses); }
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+    }
+  }
+  return { totalPercentByAttr, activatedIds };
+}
+
+function consumeBuffUsesForAction({ buffStates, activeBuffInfo }) {
+  for (const id of activeBuffInfo.activatedIds) {
+    const st = buffStates.find(x => x.id === id);
+    if (!st) continue;
+    if (st.remainingUses > 0) st.remainingUses = Math.max(0, st.remainingUses - 1);
+  }
+}
+
+function applyBuffPercent(targetMap, buff) {
+  if (buff.attr === "ALL") {
+    targetMap.Vo += num(buff.percentVo, 0);
+    targetMap.Da += num(buff.percentDa, 0);
+    targetMap.Vi += num(buff.percentVi, 0);
+  } else {
+    targetMap[buff.attr] += num(buff.percent, 0);
+  }
+}
+
+function isBuffConditionMet(buff, ctx) {
+  const c = buff.condition;
+  if (c === "always") return true;
+  if (c === "turn_gte_2") return ctx.turn >= 2;
+  if (c === "turn_gte_3") return ctx.turn >= 3;
+  if (c === "p_card") return ctx.card.kind === "P";
+  if (c === "s_card") return ctx.card.kind === "S";
+  if (c === "vo_card") return ctx.card.attackType === "Vo";
+  if (c === "da_card") return ctx.card.attackType === "Da";
+  if (c === "vi_card") return ctx.card.attackType === "Vi";
+  if (c === "all_card") return ctx.card.attackType === "ALL";
+  if (c === "exe_card") return ctx.card.attackType === "EXE";
+  return false;
+}
+
+function calcCardDamageToJudge(card, targetJudgeAttr, stats, w, buffInfo) {
+  if (card.attackType === "Vo" || card.attackType === "Da" || card.attackType === "Vi") {
+    return calcSingleAttrDamage({ card, usedAttr:card.attackType, targetJudgeAttr, stats, w, buffInfo, forceMatch:false });
+  }
+  if (card.attackType === "ALL") {
+    return ATTRS.reduce((sum, attr) => sum + calcSingleAttrDamage({ card, usedAttr:attr, targetJudgeAttr, stats, w, buffInfo, forceMatch:false }), 0);
+  }
+  if (card.attackType === "EXE") {
+    return calcSingleAttrDamage({ card, usedAttr:targetJudgeAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch:true });
+  }
+  return 0;
+}
+
+function getCardAppealRate(card, usedAttr) {
+  if (card.attackType === "ALL") {
+    if (usedAttr === "Vo") return num(card.rateVo, 0);
+    if (usedAttr === "Da") return num(card.rateDa, 0);
+    if (usedAttr === "Vi") return num(card.rateVi, 0);
+    return 0;
+  }
+  return num(card.rate, 0);
+}
+
+function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch }) {
+  const P = stats.p[usedAttr] || 0;
+  const S = stats.sTotal[usedAttr] || 0;
+  const ownerStats = card.kind === "S" ? (stats.supports[card.ownerId] || { Vo:0, Da:0, Vi:0 }) : null;
+  const iS = ownerStats ? (ownerStats[usedAttr] || 0) : 0;
+  let base = 0;
+  if (card.kind === "P") base = Math.floor(2 * P) + Math.floor(S * 0.2 * (1 + 0.1 * w));
+  else base = Math.floor(0.5 * P) + Math.floor((S + 3 * iS) * 0.2 * (1 + 0.1 * w));
+  const buffPercent = buffInfo?.totalPercentByAttr?.[usedAttr] || 0;
+  const buffMul = 1 + buffPercent / 100;
+  const appealRate = getCardAppealRate(card, usedAttr);
+  const judgeMul = JUDGE_MULT[card.judge] || 1.0;
+  const matchMul = (forceMatch || usedAttr === targetJudgeAttr) ? 2 : 1;
+  let x = base;
+  x = Math.floor(x * buffMul);
+  x = Math.floor(x * appealRate);
+  x = Math.floor(x * judgeMul);
+  x = Math.floor(x * matchMul);
+  return x;
+}
+
+function applyRivalActions({ judgeHp, cfg, audition, turn }) {
+  let totalDamage = 0;
+  const logs = [];
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!aliveTargets.length) return { totalDamage, logs };
+  for (const rival of (audition.rivals || [])) {
+    const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
+    if (!targetAttr) continue;
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
+    judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
+    totalDamage += eff;
+  }
+  return { totalDamage, logs };
+}
+
+function chooseRivalTarget(rival, judgeHp, popularity, turn) {
+  const alive = aliveJudgeAttrs(judgeHp);
+  if (!alive.length) return null;
+  if (rival.patternType === "spear") {
+    for (const rank of rival.pattern) {
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+  if (rival.patternType === "transition") {
+    const seq = String(rival.pattern).split("").map(x => +x);
+    for (let shift = 0; shift < seq.length; shift++) {
+      const idx = ((turn - 1) + shift) % seq.length;
+      const rank = seq[idx];
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+  return alive[0] || null;
+}
+
+function applyJudgeReactionsSimplified({ playerMental, audition }) {
+  return Math.max(0, playerMental - (audition.meDamage || 0));
+}
+`;
+
+let UTAHIME_FAST_WORKER_URL = null;
+let UTAHIME_FAST_WORKER = null;
+let UTAHIME_FAST_JOB_SEQ = 0;
+const FAST_COMPARE_PREP_CACHE = new Map();
+
+function getFastWorkerUrl() {
+  if (!UTAHIME_FAST_WORKER_URL) {
+    UTAHIME_FAST_WORKER_URL = URL.createObjectURL(new Blob([UTAHIME_FAST_WORKER_SCRIPT], { type: "text/javascript" }));
+  }
+  return UTAHIME_FAST_WORKER_URL;
+}
+function getFastWorker() {
+  if (!UTAHIME_FAST_WORKER) {
+    UTAHIME_FAST_WORKER = new Worker(getFastWorkerUrl());
+  }
+  return UTAHIME_FAST_WORKER;
+}
+function runFastWorkerTask(type, payload, onProgress) {
+  const worker = getFastWorker();
+  const jobId = "fast_" + (++UTAHIME_FAST_JOB_SEQ) + "_" + Date.now();
+  return new Promise((resolve, reject) => {
+    const onMessage = (e) => {
+      const msg = e.data || {};
+      if (msg.jobId !== jobId) return;
+      if (msg.kind === "progress") {
+        if (onProgress) onProgress(msg.progress || {});
+        return;
+      }
+      worker.removeEventListener("message", onMessage);
+      if (msg.kind === "done") {
+        resolve(msg.result);
+      } else {
+        reject(new Error(msg.message || "Worker error"));
+      }
+    };
+    worker.addEventListener("message", onMessage);
+    worker.postMessage({ jobId, type, payload });
+  });
+}
+
+function buildComparePrep(cfg) {
+  const key = JSON.stringify({
+    difficulty: cfg.difficulty,
+    start: cfg.campaignStartPoint,
+    route: cfg.campaignRoute,
+    s28: cfg.campaignS28AuditionChoice,
+    pop: cfg.popularity,
+    rival: cfg.rivalJudgeMultiplier,
+    reaction: cfg.enableJudgeReaction,
+    me: cfg.playerMental,
+    iter: cfg.iterations
+  });
+  if (FAST_COMPARE_PREP_CACHE.has(key)) return FAST_COMPARE_PREP_CACHE.get(key);
+  const prep = {
+    schedule: buildCampaignSchedule(cfg.campaignStartPoint, cfg.campaignRoute, cfg.campaignS28AuditionChoice),
+    auditions: APP_DATA.auditions
+  };
+  FAST_COMPARE_PREP_CACHE.set(key, prep);
+  if (FAST_COMPARE_PREP_CACHE.size > 20) {
+    const firstKey = FAST_COMPARE_PREP_CACHE.keys().next().value;
+    FAST_COMPARE_PREP_CACHE.delete(firstKey);
+  }
+  return prep;
+}
+
+async function runSimulation() {
+  const cfg = readConfig();
+  const stats = buildStats();
+  const deck = STATE.cards.filter(c => c.enabled);
+  const buffs = STATE.buffs.filter(b => b.enabled);
+  const audition = APP_DATA.auditions?.[cfg.auditionId]?.[cfg.difficulty];
+  if (!audition) { setText("simStatus", "オーディション設定が不正です。"); return; }
+  if (!deck.length) { setText("simStatus", "有効な札がありません。"); return; }
+
+  addOperationLog("単発シミュレーション開始", `${cfg.turnCount}T / ${cfg.iterations}回`, "op-log-run");
+  setText("simStatus", "単発シミュレーション中... 0%");
+  try {
+    const result = await runFastWorkerTask("simulateFast", { cfg, stats, deck, buffs, audition, debugLogs:false }, (p) => {
+      const total = p.total || cfg.iterations || 1;
+      const rate = Math.floor(((p.done || 0) / total) * 100);
+      setText("simStatus", p.cached ? "単発シミュレーション完了（キャッシュ）" : `単発シミュレーション中... ${rate}%`);
+    });
+    if (!result.sampleLogs || !result.sampleLogs.length) {
+      result.sampleLogs = ["爆速モードのため詳細ログは省略しています。"];
+    }
+    renderResult(result, cfg);
+    setText("simStatus", "単発シミュレーション完了");
+    addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
+    saveLocal();
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "単発シミュレーション失敗");
+    alert("シミュレーションに失敗しました");
+  }
+}
+
+async function runCampaignAnalysis() {
+  const cfg = readConfig();
+  const stats = buildStats();
+  const deck = STATE.cards.filter(c => c.enabled);
+  const buffs = STATE.buffs.filter(b => b.enabled);
+  if (!deck.length) { setText("simStatus", "有効な札がありません。"); return; }
+  const prep = buildComparePrep(cfg);
+  if (!prep.schedule.length) { setText("simStatus", "周回スケジュールが空です。"); return; }
+
+  addOperationLog("周回分析開始", `${cfg.campaignRoute}回ルート / ${cfg.iterations}回`, "op-log-run");
+  setText("simStatus", "周回分析中... 0%");
+  try {
+    const result = await runFastWorkerTask("campaignFast", { cfg, stats, deck, buffs, schedule: prep.schedule, auditions: prep.auditions }, (p) => {
+      if (p.cached) {
+        setText("simStatus", "周回分析完了（キャッシュ）");
+        return;
+      }
+      if (p.phase === "perAudition") {
+        setText("simStatus", `周回分析中... オデ別試算 ${p.done}/${p.total}`);
+      } else {
+        const total = p.total || cfg.iterations || 1;
+        const rate = Math.floor(((p.done || 0) / total) * 100);
+        setText("simStatus", `周回分析中... 全体集計 ${rate}%`);
+      }
+    });
+    if (!result.sampleLogs || !result.sampleLogs.length) {
+      result.sampleLogs = ["爆速モードのため周回ログは省略しています。"];
+    }
+    renderCampaignResult(result, cfg);
+    setText("simStatus", "周回分析完了");
+    addOperationLog("周回分析完了", `1T ${pct(result.allSuccessRateOneTurn)} / 2T ${pct(result.allSuccessRateTwoTurn)}`, "op-log-run");
+    saveLocal();
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "周回分析失敗");
+    alert("周回分析に失敗しました");
+  }
+}
+
+async function runLoadoutCompare() {
+  const active = getActiveLoadout();
+  const pinned = getPinnedLoadout();
+  if (!active || !pinned) { setText("compareStatus", "比較対象がありません。"); return; }
+  const cfg = readConfig();
+  const prep = buildComparePrep(cfg);
+  if (!prep.schedule.length) { setText("compareStatus", "周回スケジュールが空です。"); return; }
+
+  addOperationLog("固定比較開始", `${active.name} vs ${pinned.name}`, "op-log-run");
+  setText("compareStatus", "固定比較（周回）を実行中... 0%");
+  try {
+    const result = await runFastWorkerTask("compareCampaignFast", { active, pinned, cfg, schedule: prep.schedule, auditions: prep.auditions }, (p) => {
+      if (p.cached) {
+        setText("compareStatus", "固定比較（周回）完了（キャッシュ）");
+        return;
+      }
+      const phaseBase = p.phase === "pinned" ? 50 : 0;
+      const total = p.total || cfg.iterations || 1;
+      const rate = phaseBase + Math.floor(((p.done || 0) / total) * 50);
+      setText("compareStatus", `固定比較（周回）を実行中... ${rate}%`);
+    });
+    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
+    setText("compareStatus", `固定比較（周回）完了: ${active.name} vs ${pinned.name}`);
+    addOperationLog("固定比較完了", `${active.name} vs ${pinned.name}`, "op-log-run");
+  } catch (err) {
+    console.error(err);
+    setText("compareStatus", "固定比較失敗");
+    alert("固定比較に失敗しました");
+  }
+}
+</script>
+
 </body>
 </html>
