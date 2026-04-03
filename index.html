@@ -1,0 +1,3436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 検索除外 -->
+<meta name="robots" content="noindex, nofollow">
+
+<title>歌姫計算ツール（限定版）</title>
+
+<script>
+// ===== パスワードガード =====
+(function(){
+  const PASSWORD = "mochi"; // ←ここ変更
+  const input = prompt("パスワードを入力してください");
+
+  if(input !== PASSWORD){
+    document.write("<h2 style='text-align:center;margin-top:40px;'>アクセスできません</h2>");
+    throw new Error("Unauthorized");
+  }
+})();
+</script>
+
+<style>
+body{
+  font-family: system-ui, sans-serif;
+  padding:20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>歌姫 全返し期待値計算機</h1>
+<p>このページはパスワード保護されています。</p>
+
+<hr>
+
+<p><!doctype html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>歌姫 全返し期待値計算機</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --line:#d9e0ea;
+      --text:#1d2433;
+      --muted:#657089;
+      --accent:#4063ff;
+      --danger:#d83a52;
+      --vo:#ff6b6b;
+      --da:#4d8bff;
+      --vi:#f0b429;
+      --all:#8a5cff;
+      --exe:#17a2b8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1700px;margin:0 auto;padding:16px;}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      margin-bottom:16px;flex-wrap:wrap;
+    }
+    h1{margin:0;font-size:24px;}
+    .muted{color:var(--muted);font-size:13px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 0.78fr 1.05fr 1.05fr;
+      gap:16px;
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 8px 24px rgba(20,30,60,.05);
+    }
+    .card h2{margin:0 0 12px;font-size:18px;}
+    .subsec{
+      margin-top:14px;
+      padding-top:14px;
+      border-top:1px solid #edf1f7;
+    }
+    .subsec:first-child{margin-top:0;padding-top:0;border-top:0;}
+    .subsec h3{margin:0 0 10px;font-size:15px;}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:8px;}
+    .field{display:flex;flex-direction:column;gap:4px;min-width:96px;flex:1 1 96px;}
+    .field.lg{min-width:160px;flex:1 1 160px;}
+    label{font-size:12px;color:var(--muted);}
+    input,select,button{
+      width:100%;border:1px solid var(--line);border-radius:12px;
+      padding:10px 12px;font-size:14px;background:#fff;
+    }
+    button{cursor:pointer;border:0;background:var(--accent);color:#fff;font-weight:700;}
+    button.secondary{background:#edf2ff;color:#2944c7;border:1px solid #dbe4ff;}
+    button.ghost{background:#f3f5f8;color:#39455c;border:1px solid var(--line);}
+    button.danger{background:#ffe9ed;color:#c52746;border:1px solid #ffd2db;}
+    table{width:100%;border-collapse:collapse;font-size:13px;}
+    th,td{border-bottom:1px solid #edf1f7;padding:8px 6px;text-align:center;vertical-align:middle;}
+    th{color:var(--muted);font-weight:700;background:#fbfcfe;}
+    .pill{
+      display:inline-block;padding:4px 8px;border-radius:999px;
+      font-size:12px;font-weight:700;color:#fff;
+    }
+    .vo{background:var(--vo)}
+    .da{background:var(--da)}
+    .vi{background:var(--vi);color:#2c2000}
+    .all{background:var(--all)}
+    .exe{background:var(--exe)}
+    .kindP{background:#1f7a8c}
+    .kindS{background:#8f5bd8}
+    .modeSingle{background:#2563eb}
+    .modeAll{background:#059669}
+    .list{display:flex;flex-direction:column;gap:10px;}
+    .item{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;}
+    .item-head{
+      display:flex;justify-content:space-between;gap:8px;align-items:center;
+      margin-bottom:8px;flex-wrap:wrap;
+    }
+    .item-title{font-weight:700;font-size:15px;}
+    .kv{
+      display:grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap:6px 12px;
+      font-size:13px;
+    }
+    .kv div span{color:var(--muted);margin-right:6px;}
+    .result-grid{
+      display:grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .metric{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fbfcff;
+    }
+    .metric .k{color:var(--muted);font-size:12px;margin-bottom:6px;}
+    .metric .v{font-size:24px;font-weight:800;}
+    .metric .s{font-size:12px;color:var(--muted);margin-top:4px;}
+    .status{
+      padding:10px 12px;border-radius:12px;background:#eef4ff;
+      color:#2e49d3;font-size:13px;margin-top:10px;
+    }
+    .help{
+      font-size:12px;color:var(--muted);line-height:1.6;
+      background:#fbfcff;border:1px dashed #d8e1f4;border-radius:12px;padding:10px 12px;
+    }
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+      white-space:pre-wrap;word-break:break-word;background:#0f172a;color:#e2e8f0;
+      padding:12px;border-radius:12px;font-size:12px;
+    }
+    .warn{
+      color:#b26a00;background:#fff6e4;border:1px solid #ffe0a3;
+      padding:10px 12px;border-radius:12px;font-size:13px;
+    }
+    .campaign-table-wrap{
+      max-height:420px; overflow:auto; border:1px solid var(--line); border-radius:14px;
+    }
+    .buff-form-grid{
+      display:grid;
+      grid-template-columns: 1.4fr 0.9fr 1fr 1fr 0.8fr;
+      gap:10px;
+      align-items:end;
+    }
+    .buff-form-grid .field{min-width:0;flex:0 0 auto;}
+    .buff-item{position:relative;overflow:hidden;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);}
+    .buff-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#8a5cff;}
+    .buff-score{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#4338ca;font-size:12px;font-weight:800;}
+    .buff-kv{display:grid;grid-template-columns: repeat(3,minmax(0,1fr));gap:8px 12px;font-size:13px;margin-top:6px;}
+    .buff-kv div span{color:var(--muted);margin-right:6px;}
+    .buff-main-rate input{background:#f2fbf5;font-weight:700;}
+    .buff-main-proc input{background:#f0f7ff;}
+    .buff-main-uses input{background:#fffaf0;}
+
+    .loadout-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:10px;}
+    .loadout-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end;margin-bottom:10px;}
+    .grid > .card:first-child .loadout-bar select{grid-column:span 1;}
+    .grid > .card:first-child .loadout-bar .field{min-width:0;flex:0 0 auto;}
+    .grid > .card:first-child .loadout-bar .field:nth-child(1),
+    .grid > .card:first-child .loadout-bar .field:nth-child(2){grid-column:span 1;}
+    .grid > .card:first-child .loadout-bar button{width:100%;padding:8px 6px;font-size:12px;border-radius:10px;}
+    .loadout-chip{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#eef2ff;color:#3b4acb;}
+    .compare-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .compare-box{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfcff;}
+    .compare-box h4{margin:0 0 8px;font-size:14px;}
+    .compare-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13px;border-bottom:1px dashed #eef2f7;}
+    .compare-row:last-child{border-bottom:0;}
+    .grid > .card:first-child{padding:12px;}
+    .grid > .card:first-child h2{font-size:17px;margin-bottom:10px;}
+    .grid > .card:first-child .subsec{margin-top:10px;padding-top:10px;}
+    .grid > .card:first-child .subsec h3{font-size:14px;margin-bottom:8px;}
+    .grid > .card:first-child .row{gap:6px;margin-bottom:6px;}
+    .grid > .card:first-child .field{min-width:70px;flex:1 1 70px;}
+    .grid > .card:first-child label{font-size:11px;}
+    .grid > .card:first-child input,
+    .grid > .card:first-child select{padding:8px 10px;font-size:13px;border-radius:10px;}
+    .grid > .card:first-child table{font-size:12px;}
+    .grid > .card:first-child th,
+    .grid > .card:first-child td{padding:6px 4px;}
+    .grid > .card:first-child #supportTableBody input[type="number"]{width:72px !important;padding:6px 8px;font-size:12px;border-radius:8px;}
+    .grid > .card:first-child #supportTableBody .support-name-input{width:100% !important;min-width:110px;padding:6px 8px;font-size:12px;border-radius:8px;}
+    #supportTableBody td.support-name-cell{min-width:120px;}
+    .grid > .card:first-child .help,
+    .grid > .card:first-child .status{font-size:11px;padding:8px 10px;border-radius:10px;}
+    .grid > .card:nth-child(2){padding:14px;}
+    .diff-plus{color:#14804a;font-weight:800;}
+    .diff-minus{color:#c52746;font-weight:800;}
+    .diff-zero{color:var(--muted);font-weight:700;}
+
+    .compare-box{position:relative;overflow:hidden;}
+    .compare-box::after{
+      content:"";
+      position:absolute;inset:0;
+      background:linear-gradient(120deg,rgba(64,99,255,0) 0%,rgba(64,99,255,.06) 45%,rgba(64,99,255,0) 100%);
+      transform:translateX(-120%);
+      pointer-events:none;
+    }
+    .compare-box.is-live::after{animation:compareSweep .65s ease;}
+    .compare-title-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;
+      background:#eef2ff;color:#3344cc;margin-bottom:8px;
+    }
+    .compare-box.compare-active .compare-title-badge{background:#ecfdf3;color:#0f8a47;}
+    .compare-box.compare-pinned .compare-title-badge{background:#eff6ff;color:#1d4ed8;}
+    .compare-box.compare-diff .compare-title-badge{background:#f5f3ff;color:#6d28d9;}
+    .diff-summary{
+      display:flex;align-items:center;justify-content:center;
+      min-height:42px;margin-bottom:10px;padding:10px 12px;border-radius:12px;
+      font-size:13px;font-weight:800;background:#f8fafc;border:1px solid #edf1f7;
+    }
+    .diff-summary.diff-plus{background:#ecfdf3;border-color:#c9f2da;}
+    .diff-summary.diff-minus{background:#fff1f2;border-color:#ffd5dc;}
+    .diff-summary.diff-zero{background:#f8fafc;border-color:#edf1f7;}
+    .compare-row strong{transition:transform .18s ease,color .18s ease,opacity .18s ease;}
+    .compare-row strong.flash-updated{animation:valuePulse .48s ease;}
+    .diff-row{
+      display:block;
+      padding:8px 0;
+    }
+    .diff-row-head{
+      display:flex;justify-content:space-between;gap:8px;align-items:center;
+      font-size:13px;margin-bottom:6px;
+    }
+    .diff-bar{
+      position:relative;height:10px;border-radius:999px;
+      background:linear-gradient(90deg,#fee2e2 0%,#f8fafc 50%,#dcfce7 100%);
+      overflow:hidden;border:1px solid #edf1f7;
+    }
+    .diff-bar::before{
+      content:"";position:absolute;left:50%;top:-1px;bottom:-1px;width:2px;
+      transform:translateX(-50%);background:#cbd5e1;z-index:2;
+    }
+    .diff-bar-fill{
+      position:absolute;top:0;bottom:0;width:0%;
+      transition:left .35s ease,width .35s ease,background-color .2s ease;
+      z-index:1;
+    }
+    .diff-bar-fill.positive{left:50%;background:#16a34a;}
+    .diff-bar-fill.negative{background:#e11d48;}
+    .metric,.item,.compare-box,.card{transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-color .18s ease;}
+    .metric:hover,.item:hover,.compare-box:hover{transform:translateY(-1px);}
+    .metric.flash-updated .v,
+    .metric.flash-updated .s,
+    .metric.flash-updated .k{animation:valuePulse .48s ease;}
+    .compare-box.flash-updated{box-shadow:0 10px 26px rgba(64,99,255,.09);border-color:#ced7ff;}
+    .status.flash-updated,.help.flash-updated{animation:valuePulse .48s ease;}
+
+    .log-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .log-head-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .log-summary{font-size:11px;color:var(--muted);padding:4px 8px;border-radius:999px;background:#f8fafc;border:1px solid #e5eaf3;}
+    .op-log-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto;}
+    .op-log-item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #e7ecf4;border-radius:12px;background:#fff;}
+    .op-log-item.latest{background:#eef6ff;border-color:#cfe0ff;box-shadow:0 6px 16px rgba(64,99,255,.08);}
+    .op-log-main{min-width:0;flex:1 1 auto;}
+    .op-log-title{font-size:13px;font-weight:800;color:#334155;line-height:1.4;}
+    .op-log-meta{font-size:11px;color:var(--muted);line-height:1.4;word-break:break-word;}
+    .op-log-item .op-log-meta:last-child{white-space:nowrap;flex:0 0 auto;}
+    .op-log-title.undo-ready{color:#1d4ed8;}
+    .op-log-title.op-log-undo{color:#d97706;}
+    .op-log-title.op-log-run{color:#6d28d9;}
+    .op-log-title.op-log-save{color:#0f766e;}
+    .op-log-title.op-log-clear{color:#c2410c;}
+    .log-clear-btn{width:auto;padding:8px 10px;font-size:12px;}
+    .compact-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;}
+    .compact-card-main{min-width:0;flex:1 1 auto;}
+    .compact-card-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;margin-top:10px;font-size:13px;}
+    .compact-card-meta div{min-width:0;}
+    .compact-card-meta span{color:var(--muted);margin-right:6px;}
+    .card-detail-toggle{margin-top:10px;border:1px solid #e5eaf3;border-radius:12px;background:#f8fbff;overflow:hidden;}
+    .card-detail-toggle summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:12px;font-weight:700;color:#334155;}
+    .card-detail-toggle summary::-webkit-details-marker{display:none;}
+    .card-detail-body{padding:0 12px 12px;}
+    .card-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;font-size:12px;}
+    .card-detail-grid div span{color:var(--muted);margin-right:6px;}
+
+    /* ===== Topbar actions: main 2 buttons + sub 4 buttons ===== */
+    .topbar-actions{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      width:min(520px, 100%);
+      margin-left:auto;
+      align-self:start;
+    }
+    .topbar-actions-main{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .topbar-actions-sub{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:8px;
+    }
+    .topbar-actions-main > button{
+      width:100%;
+      min-width:0;
+    }
+    .topbar-actions-sub > button{
+      width:100%;
+      min-width:0;
+      padding:8px 10px;
+      font-size:13px;
+      line-height:1.2;
+      border-radius:10px;
+    }
+
+    @keyframes valuePulse{
+      0%{transform:scale(1);opacity:.72;}
+      45%{transform:scale(1.05);opacity:1;}
+      100%{transform:scale(1);opacity:1;}
+    }
+    @keyframes compareSweep{
+      0%{transform:translateX(-120%);}
+      100%{transform:translateX(120%);}
+    }
+    @media (max-width:1280px){
+      .compare-grid{grid-template-columns:1fr;}
+    }
+    @media (max-width:1280px){
+      .grid{grid-template-columns:1fr}
+    }
+    @media (max-width:900px){
+      .buff-form-grid{grid-template-columns:1fr 1fr;}
+      .buff-form-grid .field.lg{grid-column:1 / -1;}
+      #allBuffWrap{grid-column:1 / -1;}
+    }
+  
+
+    /* ===== Smartphone optimized ===== */
+    .mobile-nav, .mobile-tip{display:none;}
+
+    .grid > .card:nth-child(3){
+      position:sticky;
+      top:16px;
+      max-height:calc(100vh - 32px);
+      overflow:auto;
+    }
+
+    @media (max-width: 900px){
+      body{background:#eef3fb;}
+      .wrap{padding:10px;}
+      .topbar{margin-bottom:10px;}
+      h1{font-size:20px;}
+      .muted{font-size:12px;}
+      .topbar-actions{
+        width:100%;
+        max-width:none;
+        margin-left:0;
+      }
+      .topbar-actions-main,
+      .topbar-actions-sub{
+        grid-template-columns:1fr;
+      }
+      .topbar-actions-main > button,
+      .topbar-actions-sub > button{
+        padding:12px;
+        font-size:16px;
+        border-radius:12px;
+      }
+
+      .mobile-nav{
+        display:grid;
+        grid-template-columns: repeat(3,1fr);
+        gap:8px;
+        position:sticky;
+        top:8px;
+        z-index:30;
+        margin-bottom:8px;
+      }
+      .mobile-nav-btn{
+        padding:10px 8px;
+        border-radius:12px;
+        border:1px solid #dbe4ff;
+        background:#fff;
+        color:#2944c7;
+        font-size:13px;
+        font-weight:700;
+        box-shadow:0 6px 16px rgba(20,30,60,.06);
+      }
+      .mobile-nav-btn.is-active{
+        background:var(--accent);
+        color:#fff;
+        border-color:var(--accent);
+      }
+      .mobile-tip{
+        display:block;
+        font-size:11px;
+        color:var(--muted);
+        margin:0 2px 8px;
+      }
+
+      .grid{
+        display:block;
+      }
+      .grid > .card{
+        display:none;
+        margin-bottom:12px;
+        padding:12px;
+        border-radius:16px;
+      }
+      .grid.mobile-section-base > .card:nth-child(1),
+      .grid.mobile-section-edit > .card:nth-child(2),
+      .grid.mobile-section-result > .card:nth-child(3){
+        display:block;
+      }
+
+      .grid > .card:nth-child(3){
+        position:static;
+        max-height:none;
+        overflow:visible;
+      }
+
+      .grid > .card:first-child .loadout-bar{
+        grid-template-columns: 1fr;
+      }
+      .grid > .card:first-child .loadout-bar select,
+      .grid > .card:first-child #pinnedLabel{
+        grid-column: span 1;
+      }
+
+      input,select,button{
+        font-size:16px;
+      }
+
+      .row{gap:6px;margin-bottom:6px;}
+      .field{min-width:unset;flex:1 1 calc(50% - 6px);}
+      .field.lg{flex-basis:100%;min-width:100%;}
+
+      .grid > .card:first-child .field{
+        min-width:unset;
+        flex:1 1 calc(33.333% - 6px);
+      }
+      .grid > .card:first-child .field.lg{
+        flex-basis:100%;
+      }
+
+      #allRateWrap .field,
+      #allBuffWrap .field{
+        flex:1 1 calc(33.333% - 6px);
+        min-width:unset;
+      }
+
+      .compact-card-meta,
+      .card-detail-grid{grid-template-columns:1fr;}
+      .compact-card-top > div:last-child{width:100%;display:grid !important;grid-template-columns:repeat(3,1fr);gap:6px;}
+      .compact-card-top > div:last-child button{width:100%;}
+      .result-grid{grid-template-columns:1fr;}
+      .metric{padding:12px;}
+      .metric .v{font-size:22px;}
+      .item-head{align-items:flex-start;}
+      .item-head > div:last-child{width:100%;}
+      .item-head > div:last-child button{width:100%;}
+      .item-head > div:last-child{display:grid !important;grid-template-columns:repeat(3,1fr);}
+      .kv{grid-template-columns:1fr;}
+      .campaign-table-wrap{max-height:none; overflow:visible;}
+      table{font-size:12px;}
+      .mono{font-size:11px; padding:10px;}
+    }
+
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <h1>歌姫 全返し期待値計算機</h1>
+      <div class="muted">ローカル保存専用 / URLを開いたら即使える最軽量版</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="topbar-actions-main">
+        <button class="secondary" onclick="saveStateToServer()">保存</button>
+        <button class="danger" onclick="resetAll()">全リセット</button>
+      </div>
+      <div class="topbar-actions-sub">
+        <button class="ghost" id="undoBtn" onclick="undoLastAction()" disabled>Undo</button>
+        <button class="ghost" onclick="exportAppData()">エクスポート</button>
+        <button class="ghost" onclick="triggerImportAppData()">インポート</button>
+        <button class="ghost" onclick="loadSampleData()">サンプル読込</button>
+      </div>
+      <input type="file" id="importFileInput" accept=".json,application/json" style="display:none;" onchange="importAppDataFromFile(event)">
+    </div>
+  </div>
+
+  <div class="help" style="margin-bottom:10px;">
+    この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。
+    共有時はそのままHTMLを置くだけで使えます。
+  </div>
+
+  <div class="mobile-nav" id="mobileNav">
+    <button type="button" class="mobile-nav-btn is-active" data-mobile-section="base">基礎</button>
+    <button type="button" class="mobile-nav-btn" data-mobile-section="edit">登録</button>
+    <button type="button" class="mobile-nav-btn" data-mobile-section="result">結果</button>
+  </div>
+
+  <div class="mobile-tip">スマホでは「基礎 / 登録 / 結果」を切り替えて操作できます。</div>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="card">
+      <h2>① 基礎ステータス</h2>
+
+      <div class="subsec">
+        <h3>編成管理</h3>
+        <div class="loadout-bar">
+          <div class="field lg">
+            <label>現在編集中の編成</label>
+            <select id="activeLoadoutSelect"></select>
+          </div>
+          <div class="field lg">
+            <label>固定比較対象</label>
+            <select id="pinnedLoadoutSelect"></select>
+          </div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="secondary" onclick="createEmptyLoadout()">空で新規</button></div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="secondary" onclick="createLoadoutFromCurrent()">複製して新規</button></div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="ghost" onclick="renameCurrentLoadout()">名前変更</button></div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="ghost" onclick="pinCurrentLoadout()">この編成を固定</button></div>
+          <div class="field"><label>&nbsp;</label><button type="button" class="danger" onclick="deleteCurrentLoadout()">編成削除</button></div>
+        </div>
+        <div class="help">
+          最大5編成まで保存できます。常に編集中は1件、固定比較対象は1件です。
+          「空で新規」はゼロから作成、「複製して新規」は現在編成のP/S/札/バフを丸ごとコピーします。
+        </div>
+      </div>
+
+      <div class="subsec">
+        <h3>Pアイドル</h3>
+        <div class="row">
+          <div class="field"><label>PVo</label><input type="number" id="pVo" min="0" value="1200"></div>
+          <div class="field"><label>PDa</label><input type="number" id="pDa" min="0" value="1000"></div>
+          <div class="field"><label>PVi</label><input type="number" id="pVi" min="0" value="900"></div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <h3>Sアイドル個別</h3>
+        <table>
+          <thead>
+            <tr><th>S</th><th>名前</th><th>Vo</th><th>Da</th><th>Vi</th></tr>
+          </thead>
+          <tbody id="supportTableBody"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="2">合計</th>
+              <th id="sumVo">0</th>
+              <th id="sumDa">0</th>
+              <th id="sumVi">0</th>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="row" style="margin-top:10px;">
+          <div class="field lg">
+            <label>ゲスト枠名（S5）</label>
+            <input type="text" id="guestSupportName" placeholder="例: ゲスト / サポート外">
+          </div>
+        </div>
+        <div style="margin-top:10px" class="help">
+          <div><b>S合計</b> = 編成中サポート全員の合計値（S1〜S4のみ）</div>
+          <div><b>iS</b> = そのS札を持っている特定サポート1人の値</div>
+          <div><b>S5ゲスト枠</b> = 名前だけ管理する枠です。ステータス参照・S札所持者には使いません。</div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <h3>② 単発シミュレーション条件</h3>
+        <div class="row">
+          <div class="field lg">
+            <label>オーディション</label>
+            <select id="auditionId"></select>
+          </div>
+          <div class="field">
+            <label>難易度</label>
+            <select id="difficulty">
+              <option value="middle">ミドル</option>
+              <option value="master">マスター</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>W</label>
+            <input type="number" id="wValue" min="0" value="24">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>1位流行</label>
+            <select id="pop1">
+              <option value="Vo">Vo</option>
+              <option value="Da">Da</option>
+              <option value="Vi">Vi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>2位流行</label>
+            <select id="pop2">
+              <option value="Da">Da</option>
+              <option value="Vo">Vo</option>
+              <option value="Vi">Vi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>3位流行</label>
+            <select id="pop3">
+              <option value="Vi">Vi</option>
+              <option value="Vo">Vo</option>
+              <option value="Da">Da</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>ターン数</label>
+            <select id="turnCount">
+              <option value="1">1ターン</option>
+              <option value="2" selected>2ターン</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>試行回数</label>
+            <select id="iterations">
+              <option value="1000">1000</option>
+              <option value="3000">3000</option>
+              <option value="5000" selected>5000</option>
+              <option value="10000">10000</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ライバル係数</label>
+            <input type="number" id="rivalJudgeMultiplier" step="0.1" min="0" value="1.0">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Vo残HP</label><input type="number" id="judgeHpVo" min="0"></div>
+          <div class="field"><label>Da残HP</label><input type="number" id="judgeHpDa" min="0"></div>
+          <div class="field"><label>Vi残HP</label><input type="number" id="judgeHpVi" min="0"></div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>審査員リアクションを使う</label>
+            <select id="enableJudgeReaction">
+              <option value="0" selected>OFF</option>
+              <option value="1">ON（簡略）</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>プレイヤー初期Me</label>
+            <input type="number" id="playerMental" min="1" value="300">
+          </div>
+        </div>
+
+        <div class="status" id="deckStatus">デッキ枚数を確認してください。</div>
+      </div>
+
+      <div class="subsec">
+        <h3>③ 周回シミュレーション条件</h3>
+        <div class="row">
+          <div class="field lg">
+            <label>開始地点</label>
+            <select id="campaignStartPoint"></select>
+          </div>
+          <div class="field">
+            <label>周回ルート</label>
+            <select id="campaignRoute">
+              <option value="16">16回ルート</option>
+              <option value="17">17回ルート</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field lg">
+            <label>S2-8オーディション</label>
+            <select id="campaignS28AuditionChoice"></select>
+          </div>
+        </div>
+        <div class="help">
+          各オーディションは独立試行として扱います。<br>
+          毎回、山札8枚・初手3枚・バフ状態はリセット。Wだけ進行に応じて自動更新します。<br>
+          17回ルートでは S2-8 の行き先を「夕方ワイドアイドル一番！」か「エレぇベスト」から直接選べます。
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="card">
+      <h2>④ 札登録</h2>
+      <div class="subsec">
+        <div class="row">
+          <div class="field lg">
+            <label>札名</label>
+            <input type="text" id="cardName" placeholder="例: Vo主砲 / ALL札 / 全体札">
+          </div>
+          <div class="field">
+            <label>種別</label>
+            <select id="cardKind" onchange="toggleCardOwnerField()">
+              <option value="P">P札</option>
+              <option value="S">S札</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>属性タイプ</label>
+            <select id="cardAttackType" onchange="toggleCardRateFields()">
+              <option value="Vo">Vo</option>
+              <option value="Da">Da</option>
+              <option value="Vi">Vi</option>
+              <option value="ALL">ALL</option>
+              <option value="EXE">EXE</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>攻撃範囲</label>
+            <select id="cardTargetMode">
+              <option value="single">単体</option>
+              <option value="all_judges">3人全体</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field" id="singleRateWrap">
+            <label>倍率</label>
+            <input type="number" id="cardRate" min="0" step="0.1" value="2.5">
+          </div>
+
+          <div id="allRateWrap" style="display:none; width:100%;">
+            <div class="row">
+              <div class="field"><label>Vo倍率</label><input type="number" id="cardRateVo" min="0" step="0.1" value="2.0"></div>
+              <div class="field"><label>Da倍率</label><input type="number" id="cardRateDa" min="0" step="0.1" value="2.0"></div>
+              <div class="field"><label>Vi倍率</label><input type="number" id="cardRateVi" min="0" step="0.1" value="2.0"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>判定</label>
+            <select id="cardJudge">
+              <option value="P">Perfect</option>
+              <option value="G">Good</option>
+              <option value="N" selected>Normal</option>
+              <option value="B">Bad</option>
+            </select>
+          </div>
+
+          <div class="field" id="cardOwnerWrap" style="display:none;">
+            <label>所持S</label>
+            <select id="cardOwnerId"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field lg">
+            <label>メモ</label>
+            <input type="text" id="cardMemo" placeholder="任意">
+          </div>
+        </div>
+
+        <div class="help">
+          P札は <b>Pステ + S合計</b> を参照。<br>
+          S札は <b>Pステ + S合計 + 所持SのiS</b> を参照。<br>
+          ALL札は <b>Vo / Da / Vi の倍率を別々</b> に持てます。<br>
+          3人全体札は <b>Vo / Da / Vi の3審査員全員に同時に攻撃</b> します。
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="field">
+            <button onclick="addOrUpdateCard()">札を登録 / 更新</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <h2 style="margin:0 0 12px;">⑤ バフ登録</h2>
+        <div class="buff-form-grid">
+          <div class="field lg">
+            <label>バフ名</label>
+            <input type="text" id="buffName" placeholder="例: 2T以降ALL別％">
+          </div>
+          <div class="field">
+            <label>属性</label>
+            <select id="buffAttr" onchange="toggleBuffPercentFields()">
+              <option value="Vo">Vo</option>
+              <option value="Da">Da</option>
+              <option value="Vi">Vi</option>
+              <option value="ALL">ALL</option>
+            </select>
+          </div>
+
+          <div class="field buff-main-rate" id="singleBuffPercentWrap">
+            <label>効果量(%)</label>
+            <input type="number" id="buffPercent" step="0.1" value="30">
+          </div>
+
+          <div class="field buff-main-proc" id="singleBuffWrap">
+            <label>発動率(%)</label>
+            <input type="number" id="buffProcRate" min="0" max="100" step="1" value="100">
+          </div>
+
+          <div class="field buff-main-uses">
+            <label>発動回数</label>
+            <input type="number" id="buffUses" min="1" step="1" value="1">
+          </div>
+
+          <div id="allBuffWrap" style="display:none; width:100%; grid-column:1 / -1;">
+            <div class="row">
+              <div class="field"><label>Vo%</label><input type="number" id="buffPercentVo" step="0.1" value="0"></div>
+              <div class="field"><label>Da%</label><input type="number" id="buffPercentDa" step="0.1" value="0"></div>
+              <div class="field"><label>Vi%</label><input type="number" id="buffPercentVi" step="0.1" value="0"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="field">
+            <label>発動条件</label>
+            <select id="buffCondition">
+              <option value="always">常時</option>
+              <option value="turn_gte_2">2ターン目以降</option>
+              <option value="turn_gte_3">3ターン目以降</option>
+              <option value="p_card">P札使用時</option>
+              <option value="s_card">S札使用時</option>
+              <option value="vo_card">Vo札使用時</option>
+              <option value="da_card">Da札使用時</option>
+              <option value="vi_card">Vi札使用時</option>
+              <option value="all_card">ALL札使用時</option>
+              <option value="exe_card">EXE札使用時</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>メモ</label>
+            <input type="text" id="buffMemo" placeholder="任意">
+          </div>
+        </div>
+
+        <div class="help">
+          入力順は <b>効果量 → 発動率 → 回数</b> に変更。<br>
+          登録一覧は <b>期待値寄与（効果量 × 発動率 × 回数）</b> の強い順で自動表示します。<br>
+          ALLパッシブは <b>Vo / Da / Vi を別％</b> で登録できます。
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div class="field">
+            <button onclick="addOrUpdateBuff()">バフを登録 / 更新</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <div class="row">
+          <div class="field"><button onclick="runSimulation()">単発シミュレーション実行</button></div>
+          <div class="field"><button class="secondary" onclick="runCampaignAnalysis()">周回分析実行</button></div>
+          <div class="field"><button class="ghost" onclick="runLoadoutCompare()">固定比較を実行</button></div>
+        </div>
+        <div id="simStatus" class="status">待機中</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <h2>⑥ 登録札 / バフ / 結果</h2>
+
+      <div class="subsec">
+        <h3>登録札一覧</h3>
+        <div id="cardList" class="list"></div>
+      </div>
+
+      <div class="subsec">
+        <h3>登録バフ一覧</h3>
+        <div id="buffList" class="list"></div>
+      </div>
+
+
+      <div class="subsec">
+        <h3>固定比較結果</h3>
+        <div class="compare-grid">
+          <div class="compare-box compare-active" id="compareBoxActive">
+            <div class="compare-title-badge">ACTIVE</div>
+            <h4 id="compareActiveTitle">現在編成</h4>
+            <div class="compare-row"><span>全返し率</span><strong id="compareActiveKill">-</strong></div>
+            <div class="compare-row"><span>Vo撃破率</span><strong id="compareActiveVo">-</strong></div>
+            <div class="compare-row"><span>Da撃破率</span><strong id="compareActiveDa">-</strong></div>
+            <div class="compare-row"><span>Vi撃破率</span><strong id="compareActiveVi">-</strong></div>
+            <div class="compare-row"><span>平均与ダメ</span><strong id="compareActiveDmg">-</strong></div>
+          </div>
+          <div class="compare-box compare-pinned" id="compareBoxPinned">
+            <div class="compare-title-badge">PINNED</div>
+            <h4 id="comparePinnedTitle">固定編成</h4>
+            <div class="compare-row"><span>全返し率</span><strong id="comparePinnedKill">-</strong></div>
+            <div class="compare-row"><span>Vo撃破率</span><strong id="comparePinnedVo">-</strong></div>
+            <div class="compare-row"><span>Da撃破率</span><strong id="comparePinnedDa">-</strong></div>
+            <div class="compare-row"><span>Vi撃破率</span><strong id="comparePinnedVi">-</strong></div>
+            <div class="compare-row"><span>平均与ダメ</span><strong id="comparePinnedDmg">-</strong></div>
+          </div>
+          <div class="compare-box compare-diff" id="compareBoxDiff">
+            <div class="compare-title-badge">DIFF</div>
+            <h4>差分（現在 - 固定）</h4>
+            <div class="diff-summary diff-zero" id="compareDiffSummary">まだ比較していません</div>
+
+            <div class="compare-row diff-row" id="compareRowKill">
+              <div class="diff-row-head"><span>全返し率差</span><strong id="compareDiffKill">-</strong></div>
+              <div class="diff-bar"><span class="diff-bar-fill" id="compareBarKill"></span></div>
+            </div>
+            <div class="compare-row diff-row" id="compareRowVo">
+              <div class="diff-row-head"><span>Vo撃破率差</span><strong id="compareDiffVo">-</strong></div>
+              <div class="diff-bar"><span class="diff-bar-fill" id="compareBarVo"></span></div>
+            </div>
+            <div class="compare-row diff-row" id="compareRowDa">
+              <div class="diff-row-head"><span>Da撃破率差</span><strong id="compareDiffDa">-</strong></div>
+              <div class="diff-bar"><span class="diff-bar-fill" id="compareBarDa"></span></div>
+            </div>
+            <div class="compare-row diff-row" id="compareRowVi">
+              <div class="diff-row-head"><span>Vi撃破率差</span><strong id="compareDiffVi">-</strong></div>
+              <div class="diff-bar"><span class="diff-bar-fill" id="compareBarVi"></span></div>
+            </div>
+            <div class="compare-row diff-row" id="compareRowDmg">
+              <div class="diff-row-head"><span>平均与ダメ差</span><strong id="compareDiffDmg">-</strong></div>
+              <div class="diff-bar"><span class="diff-bar-fill" id="compareBarDmg"></span></div>
+            </div>
+          </div>
+        </div>
+        <div id="compareStatus" class="status">固定比較はまだ実行していません。</div>
+      </div>
+
+      <div class="subsec">
+        <h3>単発結果</h3>
+        <div class="result-grid">
+          <div class="metric">
+            <div class="k">全返し率</div>
+            <div class="v" id="resultKillRate">-</div>
+            <div class="s" id="resultTurns">-</div>
+          </div>
+          <div class="metric">
+            <div class="k">試行回数</div>
+            <div class="v" id="resultTrials">-</div>
+            <div class="s">Monte Carlo</div>
+          </div>
+          <div class="metric">
+            <div class="k">Vo撃破率</div>
+            <div class="v" id="resultVoRate">-</div>
+            <div class="s" id="resultVoRemain">平均残HP: -</div>
+          </div>
+          <div class="metric">
+            <div class="k">Da撃破率</div>
+            <div class="v" id="resultDaRate">-</div>
+            <div class="s" id="resultDaRemain">平均残HP: -</div>
+          </div>
+          <div class="metric">
+            <div class="k">Vi撃破率</div>
+            <div class="v" id="resultViRate">-</div>
+            <div class="s" id="resultViRemain">平均残HP: -</div>
+          </div>
+          <div class="metric">
+            <div class="k">平均プレイヤー与ダメ</div>
+            <div class="v" id="resultPlayerDamage">-</div>
+            <div class="s" id="resultRivalDamage">平均ライバル与ダメ: -</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;" class="warn">
+          ライバル火力は簡略モデルです。<br>
+          「基礎攻撃 × 一致補正 × ライバル係数」で処理しています。
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="mono" id="resultLog">まだ実行していません。</div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <h3>周回結果</h3>
+        <div class="result-grid">
+          <div class="metric">
+            <div class="k">全部全返し成功率</div>
+            <div class="v" id="campaignAllSuccessRate">-</div>
+            <div class="s" id="campaignSummaryText">-</div>
+          </div>
+          <div class="metric">
+            <div class="k">残りオデ数</div>
+            <div class="v" id="campaignRemainCount">-</div>
+            <div class="s" id="campaignRouteText">-</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;" class="campaign-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>地点</th>
+                <th>オデ</th>
+                <th>W</th>
+                <th>1T全返し率</th>
+                <th>2T全返し率</th>
+              </tr>
+            </thead>
+            <tbody id="campaignResultBody">
+              <tr><td colspan="6" class="muted">まだ実行していません。</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="mono" id="campaignLog">周回ログはここに出ます。</div>
+        </div>
+      </div>
+
+      <div class="subsec">
+        <div class="log-head">
+          <h3>操作ログ</h3>
+          <div class="log-head-right">
+            <div id="logSummary" class="log-summary">履歴: 0件 / Undo可能: 0件</div>
+            <button type="button" class="ghost log-clear-btn" onclick="clearOperationLog()">ログクリア</button>
+          </div>
+        </div>
+        <div id="operationLog" class="op-log-list">
+          <div class="muted">まだ操作ログはありません。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BUILT_IN_APP_DATA = {
+  auditions: {
+    yuu_wide: {
+      name: "夕方ワイドアイドル一番！",
+      middle: { judgeHp: 12000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 850, patternType: "transition", pattern: "123" }
+      ] },
+      master: { judgeHp: 18000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 1150, patternType: "transition", pattern: "123" }
+      ] }
+    },
+    ele_best: {
+      name: "エレぇベスト",
+      middle: { judgeHp: 12000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vi", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Vo", baseAttack: 850, patternType: "transition", pattern: "231" }
+      ] },
+      master: { judgeHp: 18000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vi", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Vo", baseAttack: 1150, patternType: "transition", pattern: "231" }
+      ] }
+    },
+    spot_light: {
+      name: "SPOT LIGHT のせいにして…",
+      middle: { judgeHp: 40000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 1800, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 1700, patternType: "transition", pattern: "132" },
+        { name: "Rival C", attr: "Vi", baseAttack: 1600, patternType: "spear", pattern: [2,1,3] }
+      ] },
+      master: { judgeHp: 60000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2500, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2400, patternType: "transition", pattern: "132" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2300, patternType: "spear", pattern: [2,1,3] }
+      ] }
+    },
+    odotteiitomo: {
+      name: "踊っていいとも？増刊号",
+      middle: { judgeHp: 52000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2100, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2000, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 1900, patternType: "spear", pattern: [3,2,1] }
+      ] },
+      master: { judgeHp: 78000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3000, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2900, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2800, patternType: "spear", pattern: [3,2,1] }
+      ] }
+    },
+    the_legend: {
+      name: "THE LEGEND",
+      middle: { judgeHp: 75000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2600, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2500, patternType: "transition", pattern: "231" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2400, patternType: "spear", pattern: [2,3,1] }
+      ] },
+      master: { judgeHp: 112500, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3600, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 3500, patternType: "transition", pattern: "231" },
+        { name: "Rival C", attr: "Vi", baseAttack: 3400, patternType: "spear", pattern: [2,3,1] }
+      ] }
+    },
+    nanairo: {
+      name: "七彩メモリーズ",
+      middle: { judgeHp: 90000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2800, patternType: "transition", pattern: "312" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2700, patternType: "spear", pattern: [2,1,3] }
+      ] },
+      master: { judgeHp: 135000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 4200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 4100, patternType: "transition", pattern: "312" },
+        { name: "Rival C", attr: "Vi", baseAttack: 4000, patternType: "spear", pattern: [2,1,3] }
+      ] }
+    },
+    utahime: {
+      name: "歌姫楽宴",
+      middle: { judgeHp: 144000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3400, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 3300, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 3200, patternType: "spear", pattern: [3,1,2] }
+      ] },
+      master: { judgeHp: 216000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 5200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 5100, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 5000, patternType: "spear", pattern: [3,1,2] }
+      ] }
+    }
+  },
+  savedState: null
+};
+
+let APP_DATA = cloneJson(BUILT_IN_APP_DATA);
+let STATE = {
+  activeLoadoutId: "L1",
+  pinnedLoadoutId: "L1",
+  loadouts: [],
+  editingCardId: null,
+  editingBuffId: null
+};
+let HISTORY_STACK = [];
+let OPERATION_LOG = [];
+const HISTORY_LIMIT = 30;
+const OPERATION_LOG_LIMIT = 20;
+let IS_UNDO_RESTORING = false;
+let saveLocalTimer = null;
+const PREVIEW_CACHE = new Map();
+
+
+function invalidatePreviewCache() {
+  PREVIEW_CACHE.clear();
+}
+
+function saveLocalDebounced() {
+  clearTimeout(saveLocalTimer);
+  saveLocalTimer = setTimeout(() => {
+    saveLocalDebounced();
+  }, 350);
+}
+
+function nowTimeText() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+}
+
+function cloneJson(x) {
+  return JSON.parse(JSON.stringify(x));
+}
+
+function updateUndoButton() {
+  const btn = document.getElementById('undoBtn');
+  if (btn) {
+    btn.disabled = HISTORY_STACK.length === 0;
+    btn.textContent = HISTORY_STACK.length ? `Undo (${HISTORY_STACK.length})` : 'Undo';
+  }
+  renderLogSummary();
+}
+
+function renderLogSummary() {
+  const el = document.getElementById('logSummary');
+  if (!el) return;
+  el.textContent = `履歴: ${OPERATION_LOG.length}件 / Undo可能: ${HISTORY_STACK.length}件`;
+}
+
+function renderOperationLog() {
+  const root = document.getElementById('operationLog');
+  if (!root) return;
+  if (!OPERATION_LOG.length) {
+    root.innerHTML = '<div class="muted">まだ操作ログはありません。</div>';
+    renderLogSummary();
+    return;
+  }
+  root.innerHTML = OPERATION_LOG.map((item, idx) => `
+    <div class="op-log-item ${idx === 0 ? 'latest' : ''} ${escapeHtml(item.kind || '')}">
+      <div class="op-log-main">
+        <div class="op-log-title ${escapeHtml(item.kind || '')}">${escapeHtml(item.title || '')}</div>
+        <div class="op-log-meta">${escapeHtml(item.meta || '')}</div>
+      </div>
+      <div class="op-log-meta">${escapeHtml(item.time || '')}</div>
+    </div>
+  `).join('');
+  renderLogSummary();
+}
+
+function addOperationLog(title, meta, kind) {
+  OPERATION_LOG.unshift({
+    title: title || '',
+    meta: meta || '',
+    kind: kind || '',
+    time: nowTimeText()
+  });
+  if (OPERATION_LOG.length > OPERATION_LOG_LIMIT) OPERATION_LOG.length = OPERATION_LOG_LIMIT;
+  renderOperationLog();
+}
+
+function clearOperationLog() {
+  OPERATION_LOG = [];
+  renderOperationLog();
+}
+
+function pushHistory(label) {
+  if (IS_UNDO_RESTORING) return;
+  try {
+    HISTORY_STACK.push({
+      label: label || '変更',
+      state: cloneJson(exportState())
+    });
+    if (HISTORY_STACK.length > HISTORY_LIMIT) HISTORY_STACK.shift();
+    updateUndoButton();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function undoLastAction() {
+  const item = HISTORY_STACK.pop();
+  if (!item) return;
+  IS_UNDO_RESTORING = true;
+  try {
+    restoreState(cloneJson(item.state));
+    renderAll();
+    updateDeckStatus();
+    toggleCardRateFields();
+    toggleBuffPercentFields();
+    saveLocal();
+    addOperationLog(`Undo: ${item.label}`, 'ひとつ前の状態に戻しました', 'op-log-undo');
+  } catch (e) {
+    console.error(e);
+    addOperationLog('Undo失敗', String(e && e.message ? e.message : e), 'op-log-clear');
+  } finally {
+    IS_UNDO_RESTORING = false;
+    updateUndoButton();
+  }
+}
+
+function bindHistoryFocus(ids, labelPrefix) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('focus', () => {
+      const token = `${Date.now()}_${Math.random()}`;
+      el.dataset.historyToken = token;
+      pushHistory(`${labelPrefix}: ${id}`);
+    }, true);
+    el.addEventListener('change', () => {
+      if (el.dataset.historyToken) {
+        addOperationLog(`${labelPrefix}を変更`, id, 'undo-ready');
+        delete el.dataset.historyToken;
+      }
+    });
+  });
+}
+
+
+function normalizeSupportEntry(s, fallbackId) {
+  return {
+    id: s?.id || fallbackId,
+    name: (s?.name || s?.id || fallbackId),
+    vo: +s?.vo || 0,
+    da: +s?.da || 0,
+    vi: +s?.vi || 0
+  };
+}
+
+function defaultSupports(values) {
+  const base = values || [
+    { id: "S1", name:"S1", vo: 800, da: 700, vi: 650 },
+    { id: "S2", name:"S2", vo: 900, da: 600, vi: 700 },
+    { id: "S3", name:"S3", vo: 750, da: 850, vi: 720 },
+    { id: "S4", name:"S4", vo: 850, da: 780, vi: 690 }
+  ];
+  const normalized = base.slice(0,4).map((s, i) => normalizeSupportEntry(s, `S${i+1}`));
+  while (normalized.length < 4) {
+    normalized.push(normalizeSupportEntry({}, `S${normalized.length+1}`));
+  }
+  return normalized;
+}
+
+function defaultGuestSupport(v) {
+  return {
+    id: "S5",
+    name: String(v?.name || v?.id || "ゲスト").trim() || "ゲスト"
+  };
+}
+
+function createDefaultLoadout(id, name, supports, guestSupport) {
+  return {
+    id,
+    name: name || `編成${id.replace(/^L/, '')}`,
+    pVo: 1200,
+    pDa: 1000,
+    pVi: 900,
+    supports: defaultSupports(supports),
+    guestSupport: defaultGuestSupport(guestSupport),
+    cards: [],
+    buffs: []
+  };
+}
+
+function getActiveLoadout() {
+  let found = STATE.loadouts.find(x => x.id === STATE.activeLoadoutId);
+  if (!found) {
+    found = STATE.loadouts[0] || createDefaultLoadout('L1', '編成1');
+    if (!STATE.loadouts.length) STATE.loadouts = [found];
+    STATE.activeLoadoutId = found.id;
+  }
+  return found;
+}
+
+function getPinnedLoadout() {
+  let found = STATE.loadouts.find(x => x.id === STATE.pinnedLoadoutId);
+  if (!found) {
+    found = getActiveLoadout();
+    STATE.pinnedLoadoutId = found.id;
+  }
+  return found;
+}
+
+function syncStateAliases() {
+  Object.defineProperty(STATE, 'supports', {
+    configurable: true,
+    enumerable: false,
+    get() { return getActiveLoadout().supports; },
+    set(v) { getActiveLoadout().supports = Array.isArray(v) ? v : []; }
+  });
+  Object.defineProperty(STATE, 'cards', {
+    configurable: true,
+    enumerable: false,
+    get() { return getActiveLoadout().cards; },
+    set(v) { getActiveLoadout().cards = Array.isArray(v) ? v : []; }
+  });
+  Object.defineProperty(STATE, 'buffs', {
+    configurable: true,
+    enumerable: false,
+    get() { return getActiveLoadout().buffs; },
+    set(v) { getActiveLoadout().buffs = Array.isArray(v) ? v : []; }
+  });
+}
+
+function ensureLoadoutState() {
+  if (!Array.isArray(STATE.loadouts) || !STATE.loadouts.length) {
+    STATE.loadouts = [createDefaultLoadout('L1', '編成1')];
+    STATE.activeLoadoutId = 'L1';
+    STATE.pinnedLoadoutId = 'L1';
+  }
+  syncStateAliases();
+}
+
+function nextLoadoutId() {
+  const nums = STATE.loadouts.map(x => +String(x.id || '').replace(/^L/, '') || 0);
+  return 'L' + ((nums.length ? Math.max.apply(null, nums) : 0) + 1);
+}
+
+function cloneLoadout(loadout) {
+  return JSON.parse(JSON.stringify(loadout));
+}
+
+function applyLoadoutToInputs(loadout) {
+  if (!loadout) return;
+  setVal('pVo', loadout.pVo ?? 1200);
+  setVal('pDa', loadout.pDa ?? 1000);
+  setVal('pVi', loadout.pVi ?? 900);
+}
+
+function saveCurrentInputsToLoadout() {
+  const loadout = getActiveLoadout();
+  loadout.pVo = num(val('pVo'), 0);
+  loadout.pDa = num(val('pDa'), 0);
+  loadout.pVi = num(val('pVi'), 0);
+}
+
+function renderLoadoutSelectors() {
+  const activeSel = document.getElementById('activeLoadoutSelect');
+  const pinnedSel = document.getElementById('pinnedLoadoutSelect');
+  if (!activeSel || !pinnedSel) return;
+  const options = STATE.loadouts.map(l => `<option value="${l.id}">${escapeHtml(l.name || l.id)}</option>`).join('');
+  activeSel.innerHTML = options;
+  pinnedSel.innerHTML = options;
+  activeSel.value = STATE.activeLoadoutId;
+  pinnedSel.value = STATE.pinnedLoadoutId;
+}
+
+function onChangeActiveLoadout(id) {
+  saveCurrentInputsToLoadout();
+  STATE.activeLoadoutId = id;
+  syncStateAliases();
+  applyLoadoutToInputs(getActiveLoadout());
+  invalidatePreviewCache();
+  renderSupportRows();
+  renderOwnerOptions();
+  renderLoadoutSelectors();
+  bindLoadoutInputs();
+  renderAll();
+  updateDeckStatus();
+  renderLoadoutSelectors();
+  saveLocal();
+}
+
+function onChangePinnedLoadout(id) {
+  STATE.pinnedLoadoutId = id;
+  renderLoadoutSelectors();
+  saveLocal();
+  addOperationLog('固定比較対象を切替', getPinnedLoadout().name, 'undo-ready');
+}
+
+function createEmptyLoadout() {
+  pushHistory('空の編成を新規作成');
+  saveCurrentInputsToLoadout();
+  if (STATE.loadouts.length >= 5) {
+    alert('編成は最大5件までです。');
+    return;
+  }
+  const id = nextLoadoutId();
+  const loadout = createDefaultLoadout(id, `編成${STATE.loadouts.length + 1}`, defaultSupports([
+    { id: "S1", vo: 0, da: 0, vi: 0 },
+    { id: "S2", vo: 0, da: 0, vi: 0 },
+    { id: "S3", vo: 0, da: 0, vi: 0 },
+    { id: "S4", vo: 0, da: 0, vi: 0 }
+  ]));
+  loadout.cards = [];
+  loadout.buffs = [];
+  loadout.pVo = 0;
+  loadout.pDa = 0;
+  loadout.pVi = 0;
+  STATE.loadouts.push(loadout);
+  STATE.activeLoadoutId = loadout.id;
+  applyLoadoutToInputs(loadout);
+  clearCardForm();
+  clearBuffForm();
+  renderSupportRows();
+  renderOwnerOptions();
+  renderLoadoutSelectors();
+  renderAll();
+  updateDeckStatus();
+  saveLocal();
+}
+
+function createLoadoutFromCurrent() {
+  pushHistory('編成を複製して新規作成');
+  saveCurrentInputsToLoadout();
+  if (STATE.loadouts.length >= 5) {
+    alert('編成は最大5件までです。');
+    return;
+  }
+  const base = cloneLoadout(getActiveLoadout());
+  base.id = nextLoadoutId();
+  base.name = (base.name || '編成') + ' コピー';
+  STATE.loadouts.push(base);
+  STATE.activeLoadoutId = base.id;
+  syncStateAliases();
+  applyLoadoutToInputs(base);
+  renderLoadoutSelectors();
+  renderSupportRows();
+  renderOwnerOptions();
+  renderLoadoutSelectors();
+  bindLoadoutInputs();
+  renderAll();
+  updateDeckStatus();
+  saveLocal();
+  addOperationLog('編成を複製して新規作成', `${getActiveLoadout().name}`, 'undo-ready');
+}
+
+function renameCurrentLoadout() {
+  pushHistory('編成名を変更');
+  const loadout = getActiveLoadout();
+  const name = prompt('編成名を入力してください', loadout.name || '');
+  if (!name) return;
+  loadout.name = String(name).trim() || loadout.name;
+  renderLoadoutSelectors();
+  saveLocal();
+  addOperationLog('編成名を変更', current.name, 'undo-ready');
+}
+
+function pinCurrentLoadout() {
+  pushHistory('固定比較対象を変更');
+  STATE.pinnedLoadoutId = STATE.activeLoadoutId;
+  renderLoadoutSelectors();
+  saveLocal();
+  addOperationLog('固定比較対象を変更', `${current.name} を固定`, 'undo-ready');
+}
+
+function deleteCurrentLoadout() {
+  pushHistory('編成を削除');
+  if (STATE.loadouts.length <= 1) {
+    alert('最低1件は必要です。');
+    return;
+  }
+  const active = getActiveLoadout();
+  if (!confirm(`「${active.name}」を削除しますか？`)) return;
+  const deletingPinned = STATE.pinnedLoadoutId === active.id;
+  STATE.loadouts = STATE.loadouts.filter(x => x.id !== active.id);
+  STATE.activeLoadoutId = STATE.loadouts[0].id;
+  if (deletingPinned) STATE.pinnedLoadoutId = STATE.loadouts[0].id;
+  syncStateAliases();
+  applyLoadoutToInputs(getActiveLoadout());
+  renderLoadoutSelectors();
+  renderSupportRows();
+  renderOwnerOptions();
+  renderLoadoutSelectors();
+  bindLoadoutInputs();
+  renderAll();
+  updateDeckStatus();
+  saveLocal();
+  addOperationLog('編成を削除', '現在編成を1件削除しました', 'undo-ready');
+}
+
+
+const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
+const ATTRS = ["Vo", "Da", "Vi"];
+
+document.addEventListener("DOMContentLoaded", function(){
+  initMobileUI();
+  init();
+});
+
+function initMobileUI() {
+  const grid = document.querySelector(".grid");
+  const nav = document.getElementById("mobileNav");
+  if (!grid || !nav) return;
+
+  const applySection = (section) => {
+    ["base","edit","result"].forEach(name => {
+      grid.classList.toggle(`mobile-section-${name}`, name === section);
+    });
+    nav.querySelectorAll(".mobile-nav-btn").forEach(btn => {
+      btn.classList.toggle("is-active", btn.dataset.mobileSection === section);
+    });
+  };
+
+  nav.querySelectorAll(".mobile-nav-btn").forEach(btn => {
+    btn.addEventListener("click", () => applySection(btn.dataset.mobileSection));
+  });
+
+  const syncMode = () => {
+    if (window.innerWidth <= 900) {
+      if (!["base","edit","result"].some(name => grid.classList.contains(`mobile-section-${name}`))) {
+        applySection("edit");
+      }
+    } else {
+      ["base","edit","result"].forEach(name => grid.classList.remove(`mobile-section-${name}`));
+      nav.querySelectorAll(".mobile-nav-btn").forEach((btn, idx) => btn.classList.toggle("is-active", idx === 1));
+    }
+  };
+
+  window.addEventListener("resize", syncMode);
+  syncMode();
+}
+
+function init() {
+  onInitialDataLoaded(cloneJson(BUILT_IN_APP_DATA));
+}
+
+function onInitialDataLoaded(res) {
+  APP_DATA = res || APP_DATA;
+  ensureLoadoutState();
+  renderSupportRows();
+  renderOwnerOptions();
+  populateAuditions();
+  populateCampaignS28Auditions();
+  populateCampaignStartPoints();
+  bindBaseInputs();
+  bindHistoryFocus(["pVo","pDa","pVi","auditionId","difficulty","wValue","pop1","pop2","pop3","turnCount","iterations","rivalJudgeMultiplier","enableJudgeReaction","playerMental","judgeHpVo","judgeHpDa","judgeHpVi","campaignStartPoint","campaignRoute","campaignS28AuditionChoice"], "設定");
+  applyDefaultJudgeHp();
+  renderOperationLog();
+  updateUndoButton();
+
+  if (APP_DATA.savedState) {
+    restoreState(APP_DATA.savedState);
+  } else {
+    const local = localStorage.getItem("utahime_calc_state_local");
+    if (local) {
+      try { restoreState(JSON.parse(local)); } catch (e) {}
+    }
+  }
+
+  renderLoadoutSelectors();
+  bindLoadoutInputs();
+  renderAll();
+  updateDeckStatus();
+  toggleCardRateFields();
+  toggleBuffPercentFields();
+}
+
+
+function bindLoadoutInputs() {
+  const activeSel = document.getElementById('activeLoadoutSelect');
+  const pinnedSel = document.getElementById('pinnedLoadoutSelect');
+  if (activeSel) activeSel.onchange = e => onChangeActiveLoadout(e.target.value);
+  if (pinnedSel) pinnedSel.onchange = e => onChangePinnedLoadout(e.target.value);
+
+  ['pVo','pDa','pVi'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.oninput = () => {
+      saveCurrentInputsToLoadout();
+      invalidatePreviewCache();
+      saveLocalDebounced();
+    };
+    el.onchange = () => {
+      saveCurrentInputsToLoadout();
+      invalidatePreviewCache();
+      renderCards();
+      saveLocalDebounced();
+    };
+  });
+}
+
+function bindBaseInputs() {
+  [
+    "pVo","pDa","pVi","auditionId","difficulty","wValue","pop1","pop2","pop3",
+    "turnCount","iterations","rivalJudgeMultiplier","enableJudgeReaction","playerMental",
+    "judgeHpVo","judgeHpDa","judgeHpVi","campaignStartPoint","campaignRoute","campaignS28AuditionChoice"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.onchange = () => {
+      if (id === "auditionId" || id === "difficulty") applyDefaultJudgeHp();
+      if (id === "wValue" || id === "pVo" || id === "pDa" || id === "pVi") {
+        invalidatePreviewCache();
+        renderCards();
+      }
+      saveLocalDebounced();
+      updateDeckStatus();
+    };
+    el.oninput = () => {
+      if (id === "wValue" || id === "pVo" || id === "pDa" || id === "pVi") {
+        invalidatePreviewCache();
+      }
+      saveLocalDebounced();
+    };
+  });
+}
+
+function renderSupportRows() {
+  const body = document.getElementById("supportTableBody");
+  body.innerHTML = "";
+  STATE.supports.forEach((s, idx) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${s.id}</td>
+      <td class="support-name-cell"><input class="support-name-input" type="text" value="${escapeHtml(s.name || s.id)}" data-sidx="${idx}" data-key="name" data-kind="name" placeholder="名前"></td>
+      <td><input type="number" min="0" value="${num(s.vo)}" data-sidx="${idx}" data-key="vo" data-kind="stat"></td>
+      <td><input type="number" min="0" value="${num(s.da)}" data-sidx="${idx}" data-key="da" data-kind="stat"></td>
+      <td><input type="number" min="0" value="${num(s.vi)}" data-sidx="${idx}" data-key="vi" data-kind="stat"></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  body.querySelectorAll("input").forEach(el => {
+    el.addEventListener("focus", e => {
+      const kind = e.target.dataset.kind;
+      const key = e.target.dataset.key;
+      const idx = Number(e.target.dataset.sidx) + 1;
+      pushHistory(kind === 'name' ? `S名前変更前: S${idx}` : `Sステ変更前: ${key.toUpperCase()} ${idx}`);
+    }, true);
+    el.addEventListener("input", e => {
+      const idx = +e.target.dataset.sidx;
+      const key = e.target.dataset.key;
+      if (e.target.dataset.kind === 'name') {
+        STATE.supports[idx][key] = String(e.target.value || '').trim() || STATE.supports[idx].id;
+        renderOwnerOptions();
+        saveLocalDebounced();
+        return;
+      }
+      STATE.supports[idx][key] = +e.target.value || 0;
+      updateSupportSums();
+      invalidatePreviewCache();
+      saveLocalDebounced();
+    });
+    el.addEventListener("change", e => {
+      const idx = +e.target.dataset.sidx;
+      const support = STATE.supports[idx];
+      if (e.target.dataset.kind === 'name') {
+        support.name = String(e.target.value || '').trim() || support.id;
+        e.target.value = support.name;
+        renderOwnerOptions();
+        renderCards();
+        addOperationLog("Sアイドル名を変更", `${support.id} → ${support.name}`, 'undo-ready');
+        return;
+      }
+      renderOwnerOptions();
+      renderCards();
+      addOperationLog("Sアイドル値を変更", `${support.name || support.id} ${e.target.dataset.key.toUpperCase()}`, 'undo-ready');
+    });
+  });
+
+  const guestInput = document.getElementById('guestSupportName');
+  if (guestInput) {
+    guestInput.value = getActiveLoadout().guestSupport?.name || 'ゲスト';
+    if (!guestInput.dataset.bound) {
+      guestInput.dataset.bound = '1';
+      guestInput.addEventListener('focus', () => pushHistory('ゲスト枠名変更前'), true);
+      guestInput.addEventListener('input', e => {
+        getActiveLoadout().guestSupport = defaultGuestSupport({ name: e.target.value });
+        saveLocalDebounced();
+      });
+      guestInput.addEventListener('change', e => {
+        getActiveLoadout().guestSupport = defaultGuestSupport({ name: e.target.value });
+        e.target.value = getActiveLoadout().guestSupport.name;
+        addOperationLog('ゲスト枠名を変更', getActiveLoadout().guestSupport.name, 'undo-ready');
+      });
+    }
+  }
+
+  updateSupportSums();
+}
+
+function renderOwnerOptions() {
+  const select = document.getElementById("cardOwnerId");
+  if (!select) return;
+  const old = select.value;
+  select.innerHTML = STATE.supports.map(s => `<option value="${s.id}">${escapeHtml(s.name || s.id)}</option>`).join("");
+  if (old && STATE.supports.some(s => s.id === old)) select.value = old;
+  else if (STATE.supports[0]) select.value = STATE.supports[0].id;
+}
+
+function updateSupportSums() {
+  const sums = getSupportTotals();
+  setText("sumVo", sums.vo);
+  setText("sumDa", sums.da);
+  setText("sumVi", sums.vi);
+}
+
+function getSupportTotals() {
+  return STATE.supports.reduce((acc, s) => {
+    acc.vo += +s.vo || 0;
+    acc.da += +s.da || 0;
+    acc.vi += +s.vi || 0;
+    return acc;
+  }, { vo:0, da:0, vi:0 });
+}
+
+function populateAuditions() {
+  const sel = document.getElementById("auditionId");
+  const entries = Object.entries(APP_DATA.auditions || {});
+  sel.innerHTML = entries.map(([k,v]) => `<option value="${k}">${v.name}</option>`).join("");
+  if (entries.length && !sel.value) sel.value = entries[0][0];
+}
+
+function populateCampaignS28Auditions() {
+  const sel = document.getElementById("campaignS28AuditionChoice");
+  if (!sel) return;
+
+  const optionIds = ["yuu_wide", "ele_best"];
+  sel.innerHTML = optionIds.map(id => {
+    const label = APP_DATA.auditions?.[id]?.name || id;
+    return `<option value="${id}">${escapeHtml(label)}</option>`;
+  }).join("");
+
+  if (!sel.value || !optionIds.includes(sel.value)) {
+    sel.value = "yuu_wide";
+  }
+}
+
+function populateCampaignStartPoints() {
+  const points = [
+    { id:"S2-8", label:"S2-8（+1万分岐地点）" },
+    { id:"S3-1", label:"S3-1" },
+    { id:"S3-2", label:"S3-2" },
+    { id:"S3-3", label:"S3-3" },
+    { id:"S3-4", label:"S3-4" },
+    { id:"S3-5", label:"S3-5" },
+    { id:"S3-6", label:"S3-6" },
+    { id:"S3-7", label:"S3-7" },
+    { id:"S3-8", label:"S3-8" },
+    { id:"S4-1", label:"S4-1" },
+    { id:"S4-2", label:"S4-2" },
+    { id:"S4-3", label:"S4-3" },
+    { id:"S4-4", label:"S4-4" },
+    { id:"S4-5", label:"S4-5" },
+    { id:"S4-6", label:"S4-6" },
+    { id:"S4-7", label:"S4-7" },
+    { id:"S4-8", label:"S4-8" }
+  ];
+  const sel = document.getElementById("campaignStartPoint");
+  sel.innerHTML = points.map(p => `<option value="${p.id}">${p.label}</option>`).join("");
+  sel.value = "S3-1";
+}
+
+function applyDefaultJudgeHp() {
+  const id = document.getElementById("auditionId").value;
+  const diff = document.getElementById("difficulty").value;
+  const data = APP_DATA.auditions?.[id]?.[diff];
+  if (!data) return;
+  document.getElementById("judgeHpVo").value = data.judgeHp;
+  document.getElementById("judgeHpDa").value = data.judgeHp;
+  document.getElementById("judgeHpVi").value = data.judgeHp;
+  saveLocal();
+}
+
+function toggleCardOwnerField() {
+  const kind = document.getElementById("cardKind").value;
+  document.getElementById("cardOwnerWrap").style.display = kind === "S" ? "" : "none";
+}
+
+function toggleCardRateFields() {
+  const type = val("cardAttackType");
+  const isAll = type === "ALL";
+  document.getElementById("singleRateWrap").style.display = isAll ? "none" : "";
+  document.getElementById("allRateWrap").style.display = isAll ? "" : "none";
+}
+
+function toggleBuffPercentFields() {
+  const attr = val("buffAttr");
+  const isAll = attr === "ALL";
+  document.getElementById("singleBuffPercentWrap").style.display = isAll ? "none" : "";
+  document.getElementById("allBuffWrap").style.display = isAll ? "" : "none";
+}
+
+function addOrUpdateCard() {
+  pushHistory(STATE.editingCardId ? '札を更新' : '札を追加');
+  const attackType = val("cardAttackType");
+  const card = {
+    id: STATE.editingCardId || genId("card"),
+    name: val("cardName").trim() || "無名札",
+    kind: val("cardKind"),
+    attackType,
+    targetMode: val("cardTargetMode"),
+    rate: attackType === "ALL" ? 0 : num(val("cardRate"), 0),
+    rateVo: attackType === "ALL" ? num(val("cardRateVo"), 0) : 0,
+    rateDa: attackType === "ALL" ? num(val("cardRateDa"), 0) : 0,
+    rateVi: attackType === "ALL" ? num(val("cardRateVi"), 0) : 0,
+    judge: val("cardJudge"),
+    ownerId: val("cardKind") === "S" ? val("cardOwnerId") : "",
+    memo: val("cardMemo").trim(),
+    enabled: true
+  };
+
+  if (STATE.editingCardId) {
+    const i = STATE.cards.findIndex(c => c.id === STATE.editingCardId);
+    if (i >= 0) STATE.cards[i] = card;
+  } else {
+    STATE.cards.push(card);
+  }
+
+  invalidatePreviewCache();
+  clearCardForm();
+  renderCards();
+  updateDeckStatus();
+  saveLocal();
+  addOperationLog(STATE.editingCardId ? '札を更新' : '札を追加', card.name, 'undo-ready');
+}
+
+function clearCardForm() {
+  STATE.editingCardId = null;
+  setVal("cardName", "");
+  setVal("cardKind", "P");
+  setVal("cardAttackType", "Vo");
+  setVal("cardTargetMode", "single");
+  setVal("cardRate", 2.5);
+  setVal("cardRateVo", 2.0);
+  setVal("cardRateDa", 2.0);
+  setVal("cardRateVi", 2.0);
+  setVal("cardJudge", "N");
+  setVal("cardMemo", "");
+  if (STATE.supports[0]) setVal("cardOwnerId", STATE.supports[0].id);
+  toggleCardOwnerField();
+  toggleCardRateFields();
+}
+
+function editCard(id) {
+  const c = STATE.cards.find(x => x.id === id);
+  if (!c) return;
+  invalidatePreviewCache();
+  STATE.editingCardId = c.id;
+  setVal("cardName", c.name);
+  setVal("cardKind", c.kind);
+  setVal("cardAttackType", c.attackType);
+  setVal("cardTargetMode", c.targetMode || "single");
+  setVal("cardRate", c.rate ?? 0);
+  setVal("cardRateVo", c.rateVo ?? 0);
+  setVal("cardRateDa", c.rateDa ?? 0);
+  setVal("cardRateVi", c.rateVi ?? 0);
+  setVal("cardJudge", c.judge);
+  setVal("cardOwnerId", c.ownerId || (STATE.supports[0]?.id || ""));
+  setVal("cardMemo", c.memo || "");
+  toggleCardOwnerField();
+  toggleCardRateFields();
+}
+
+function deleteCard(id) {
+  pushHistory('札を削除');
+  STATE.cards = STATE.cards.filter(x => x.id !== id);
+  invalidatePreviewCache();
+  if (STATE.editingCardId === id) clearCardForm();
+  renderCards();
+  updateDeckStatus();
+  saveLocal();
+  addOperationLog('札を削除', '登録札を1件削除しました', 'undo-ready');
+}
+
+function toggleCardEnabled(id) {
+  pushHistory('札の有効状態を変更');
+  const c = STATE.cards.find(x => x.id === id);
+  if (!c) return;
+  c.enabled = !c.enabled;
+  invalidatePreviewCache();
+  renderCards();
+  updateDeckStatus();
+  saveLocal();
+  addOperationLog('札の有効状態を変更', c.name + ' / ' + (c.enabled ? 'ON' : 'OFF'), 'undo-ready');
+}
+
+function addOrUpdateBuff() {
+  pushHistory(STATE.editingBuffId ? 'バフを更新' : 'バフを追加');
+  const attr = val("buffAttr");
+  const buff = {
+    id: STATE.editingBuffId || genId("buff"),
+    name: val("buffName").trim() || "無名バフ",
+    attr,
+    percent: attr === "ALL" ? 0 : num(val("buffPercent"), 0),
+    percentVo: attr === "ALL" ? num(val("buffPercentVo"), 0) : 0,
+    percentDa: attr === "ALL" ? num(val("buffPercentDa"), 0) : 0,
+    percentVi: attr === "ALL" ? num(val("buffPercentVi"), 0) : 0,
+    procRate: clamp(num(val("buffProcRate"), 0), 0, 100) / 100,
+    uses: Math.max(1, Math.floor(num(val("buffUses"), 1))),
+    condition: val("buffCondition"),
+    memo: val("buffMemo").trim(),
+    enabled: true
+  };
+
+  if (STATE.editingBuffId) {
+    const i = STATE.buffs.findIndex(b => b.id === STATE.editingBuffId);
+    if (i >= 0) STATE.buffs[i] = buff;
+  } else {
+    STATE.buffs.push(buff);
+  }
+
+  invalidatePreviewCache();
+  clearBuffForm();
+  renderBuffs();
+  saveLocal();
+  addOperationLog(STATE.editingBuffId ? 'バフを更新' : 'バフを追加', buff.name, 'undo-ready');
+}
+
+function clearBuffForm() {
+  STATE.editingBuffId = null;
+  setVal("buffName", "");
+  setVal("buffAttr", "Vo");
+  setVal("buffPercent", 30);
+  setVal("buffPercentVo", 0);
+  setVal("buffPercentDa", 0);
+  setVal("buffPercentVi", 0);
+  setVal("buffProcRate", 100);
+  setVal("buffUses", 1);
+  setVal("buffCondition", "always");
+  setVal("buffMemo", "");
+  toggleBuffPercentFields();
+}
+
+function editBuff(id) {
+  const b = STATE.buffs.find(x => x.id === id);
+  if (!b) return;
+  STATE.editingBuffId = b.id;
+  setVal("buffName", b.name);
+  setVal("buffAttr", b.attr);
+  setVal("buffPercent", b.percent ?? 0);
+  setVal("buffPercentVo", b.percentVo ?? 0);
+  setVal("buffPercentDa", b.percentDa ?? 0);
+  setVal("buffPercentVi", b.percentVi ?? 0);
+  setVal("buffProcRate", Math.round((num(b.procRate, 0) * 100) * 100) / 100);
+  setVal("buffUses", b.uses);
+  setVal("buffCondition", b.condition);
+  setVal("buffMemo", b.memo || "");
+  toggleBuffPercentFields();
+}
+
+function deleteBuff(id) {
+  pushHistory('バフを削除');
+  STATE.buffs = STATE.buffs.filter(x => x.id !== id);
+  invalidatePreviewCache();
+  if (STATE.editingBuffId === id) clearBuffForm();
+  renderBuffs();
+  saveLocal();
+  addOperationLog('バフを削除', '登録バフを1件削除しました', 'undo-ready');
+}
+
+function toggleBuffEnabled(id) {
+  pushHistory('バフの有効状態を変更');
+  const b = STATE.buffs.find(x => x.id === id);
+  if (!b) return;
+  b.enabled = !b.enabled;
+  invalidatePreviewCache();
+  renderBuffs();
+  saveLocal();
+  addOperationLog('バフの有効状態を変更', b.name + ' / ' + (b.enabled ? 'ON' : 'OFF'), 'undo-ready');
+}
+
+function renderCards() {
+  const root = document.getElementById("cardList");
+  root.innerHTML = "";
+  if (!STATE.cards.length) {
+    root.innerHTML = `<div class="muted">まだ札がありません。</div>`;
+    return;
+  }
+
+  STATE.cards.forEach(card => {
+    const owner = card.kind === "S" ? (STATE.supports.find(s => s.id === card.ownerId) || null) : null;
+    const preview = buildCardPreview(card);
+
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="compact-card-top">
+        <div class="compact-card-main">
+          <div class="item-title">${escapeHtml(card.name)}</div>
+          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+            <span class="pill kind${card.kind}">${card.kind}札</span>
+            <span class="pill ${card.attackType.toLowerCase()}">${card.attackType}</span>
+            <span class="pill ${card.targetMode === 'all_judges' ? 'modeAll' : 'modeSingle'}">${card.targetMode === 'all_judges' ? '3人全体' : '単体'}</span>
+            <span class="pill" style="background:${card.enabled ? '#16a34a' : '#94a3b8'}">${card.enabled ? 'ON' : 'OFF'}</span>
+          </div>
+          <div class="compact-card-meta">
+            <div><span>倍率</span>${cardRateText(card)}</div>
+            <div><span>判定</span>${judgeText(card.judge)}</div>
+            <div><span>範囲</span>${card.targetMode === "all_judges" ? "3人全体" : "単体"}</div>
+            <div><span>所持者</span>${owner ? escapeHtml(owner.name || owner.id) : '-'}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="secondary" style="width:auto;" onclick="editCard('${card.id}')">編集</button>
+          <button class="ghost" style="width:auto;" onclick="toggleCardEnabled('${card.id}')">${card.enabled ? '無効化' : '有効化'}</button>
+          <button class="danger" style="width:auto;" onclick="deleteCard('${card.id}')">削除</button>
+        </div>
+      </div>
+      <details class="card-detail-toggle">
+        <summary>詳細を見る</summary>
+        <div class="card-detail-body">
+          <div class="card-detail-grid">
+            <div><span>iS</span>${owner ? `Vo ${owner.vo} / Da ${owner.da} / Vi ${owner.vi}` : '-'}</div>
+            <div><span>合計概算</span>${preview.Total}</div>
+            <div><span>→Vo概算</span>${preview.Vo}</div>
+            <div><span>→Da概算</span>${preview.Da}</div>
+            <div><span>→Vi概算</span>${preview.Vi}</div>
+            <div><span>メモ</span>${escapeHtml(card.memo || '-')}</div>
+          </div>
+        </div>
+      </details>
+    `;
+    root.appendChild(div);
+  });
+}
+
+
+function cardRateText(card) {
+  if (card.attackType === "ALL") {
+    return `Vo ${num(card.rateVo,0)} / Da ${num(card.rateDa,0)} / Vi ${num(card.rateVi,0)}`;
+  }
+  return String(num(card.rate, 0));
+}
+
+function buildCardPreview(card) {
+  const cfg = readConfig();
+  const stats = buildStats();
+  const cacheKey = JSON.stringify({
+    card: {
+      id: card.id,
+      name: card.name,
+      kind: card.kind,
+      attackType: card.attackType,
+      targetMode: card.targetMode,
+      rate: card.rate,
+      rateVo: card.rateVo,
+      rateDa: card.rateDa,
+      rateVi: card.rateVi,
+      judge: card.judge,
+      ownerId: card.ownerId
+    },
+    w: cfg.w,
+    p: stats.p,
+    sTotal: stats.sTotal,
+    owner: card.kind === "S" ? (stats.supports[card.ownerId] || null) : null
+  });
+
+  const cached = PREVIEW_CACHE.get(cacheKey);
+  if (cached) return cached;
+
+  const preview = {};
+  ATTRS.forEach(attr => {
+    preview[attr] = calcCardDamageToJudge(card, attr, stats, cfg.w, {
+      totalPercentByAttr: { Vo:0, Da:0, Vi:0 },
+      activatedIds: []
+    });
+  });
+  if (card.targetMode === "all_judges") {
+    preview.Total = fmtNum(preview.Vo + preview.Da + preview.Vi);
+  } else {
+    preview.Total = "-";
+  }
+  preview.Vo = fmtNum(preview.Vo);
+  preview.Da = fmtNum(preview.Da);
+  preview.Vi = fmtNum(preview.Vi);
+
+  PREVIEW_CACHE.set(cacheKey, preview);
+  return preview;
+}
+
+function calcBuffScore(buff) {
+  const proc = num(buff.procRate, 0);
+  const uses = Math.max(0, Math.floor(num(buff.uses, 0)));
+  if (buff.attr === "ALL") {
+    const total = num(buff.percentVo, 0) + num(buff.percentDa, 0) + num(buff.percentVi, 0);
+    return total * proc * uses;
+  }
+  return num(buff.percent, 0) * proc * uses;
+}
+
+function getSortedBuffs() {
+  return STATE.buffs.slice().sort((a, b) => {
+    const scoreDiff = calcBuffScore(b) - calcBuffScore(a);
+    if (scoreDiff !== 0) return scoreDiff;
+    const percentDiff = (b.attr === "ALL"
+      ? (num(b.percentVo,0) + num(b.percentDa,0) + num(b.percentVi,0))
+      : num(b.percent,0)) - (a.attr === "ALL"
+      ? (num(a.percentVo,0) + num(a.percentDa,0) + num(a.percentVi,0))
+      : num(a.percent,0));
+    if (percentDiff !== 0) return percentDiff;
+    return String(a.name || "").localeCompare(String(b.name || ""), 'ja');
+  });
+}
+
+function renderBuffs() {
+  const root = document.getElementById("buffList");
+  root.innerHTML = "";
+  if (!STATE.buffs.length) {
+    root.innerHTML = `<div class="muted">まだバフがありません。</div>`;
+    return;
+  }
+
+  getSortedBuffs().forEach(buff => {
+    const score = calcBuffScore(buff);
+    const div = document.createElement("div");
+    div.className = "item buff-item";
+    div.innerHTML = `
+      <div class="item-head">
+        <div>
+          <div class="item-title">${escapeHtml(buff.name)}</div>
+          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; align-items:center;">
+            <span class="pill ${buff.attr.toLowerCase() === 'all' ? 'all' : buff.attr.toLowerCase()}">${buff.attr}</span>
+            <span class="pill" style="background:${buff.enabled ? '#16a34a' : '#94a3b8'}">${buff.enabled ? 'ON' : 'OFF'}</span>
+            <span class="buff-score">EV ${fmtNum(score)}</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="secondary" style="width:auto;" onclick="editBuff('${buff.id}')">編集</button>
+          <button class="ghost" style="width:auto;" onclick="toggleBuffEnabled('${buff.id}')">${buff.enabled ? '無効化' : '有効化'}</button>
+          <button class="danger" style="width:auto;" onclick="deleteBuff('${buff.id}')">削除</button>
+        </div>
+      </div>
+      <div class="buff-kv">
+        <div><span>効果量</span>${buffPercentText(buff)}</div>
+        <div><span>発動率</span>${(buff.procRate * 100).toFixed(1)}%</div>
+        <div><span>発動回数</span>${buff.uses}</div>
+        <div><span>条件</span>${buffConditionText(buff.condition)}</div>
+        <div><span>メモ</span>${escapeHtml(buff.memo || '-')}</div>
+        <div><span>比較スコア</span>${fmtNum(score)}</div>
+      </div>
+    `;
+    root.appendChild(div);
+  });
+}
+
+function buffPercentText(buff) {
+  if (buff.attr === "ALL") {
+    return `Vo ${num(buff.percentVo,0)}% / Da ${num(buff.percentDa,0)}% / Vi ${num(buff.percentVi,0)}%`;
+  }
+  return `${num(buff.percent,0)}%`;
+}
+
+function renderAll() {
+  invalidatePreviewCache();
+  renderCards();
+  renderBuffs();
+  toggleCardOwnerField();
+  renderLoadoutSelectors();
+}
+
+function updateDeckStatus() {
+  const enabledCount = STATE.cards.filter(c => c.enabled).length;
+  let msg = `有効札 ${enabledCount} 枚。`;
+  msg += (enabledCount === 8) ? ` 初手3枚・山札8枚前提に合っています。` : ` 推奨は8枚です。`;
+  setText("deckStatus", msg);
+}
+
+function readConfig() {
+  saveCurrentInputsToLoadout();
+  return {
+    auditionId: val("auditionId"),
+    difficulty: val("difficulty"),
+    w: num(val("wValue"), 0),
+    popularity: [val("pop1"), val("pop2"), val("pop3")],
+    turnCount: Math.max(1, Math.min(2, +val("turnCount") || 2)),
+    iterations: +val("iterations") || 5000,
+    rivalJudgeMultiplier: num(val("rivalJudgeMultiplier"), 1.0),
+    enableJudgeReaction: val("enableJudgeReaction") === "1",
+    playerMental: num(val("playerMental"), 300),
+    judgeHp: {
+      Vo: num(val("judgeHpVo"), 0),
+      Da: num(val("judgeHpDa"), 0),
+      Vi: num(val("judgeHpVi"), 0)
+    },
+    campaignStartPoint: val("campaignStartPoint"),
+    campaignRoute: val("campaignRoute"),
+    campaignS28AuditionChoice: val("campaignS28AuditionChoice") || "yuu_wide"
+  };
+}
+
+function buildStats() {
+  return {
+    p: {
+      Vo: num(val("pVo"), 0),
+      Da: num(val("pDa"), 0),
+      Vi: num(val("pVi"), 0)
+    },
+    sTotal: normalizeAttrKeys(getSupportTotals()),
+    supports: STATE.supports.reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+}
+
+function normalizeAttrKeys(obj) {
+  return {
+    Vo: obj.vo ?? obj.Vo ?? 0,
+    Da: obj.da ?? obj.Da ?? 0,
+    Vi: obj.vi ?? obj.Vi ?? 0
+  };
+}
+
+function runSimulation() {
+  const cfg = readConfig();
+  const stats = buildStats();
+  const deck = STATE.cards.filter(c => c.enabled);
+  const buffs = STATE.buffs.filter(b => b.enabled);
+  const audition = APP_DATA.auditions?.[cfg.auditionId]?.[cfg.difficulty];
+
+  if (!audition) {
+    setText("simStatus", "オーディション設定が不正です。");
+    return;
+  }
+  if (deck.length === 0) {
+    setText("simStatus", "有効な札がありません。");
+    return;
+  }
+
+  addOperationLog("単発シミュレーション開始", `${cfg.turnCount}T / ${cfg.iterations}回`, "op-log-run");
+  setText("simStatus", "単発シミュレーション中...");
+  setTimeout(() => {
+    const result = monteCarloSimulation({ cfg, stats, deck, buffs, audition });
+    renderResult(result, cfg);
+    setText("simStatus", "単発シミュレーション完了");
+    addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
+    saveLocal();
+  }, 30);
+}
+
+function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
+  let killAllCount = 0;
+  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
+  let remainSum = { Vo:0, Da:0, Vi:0 };
+  let playerDamageSum = 0;
+  let rivalDamageSum = 0;
+  const logs = [];
+  const trials = cfg.iterations;
+
+  for (let i = 0; i < trials; i++) {
+    const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
+    if (r.killAll) killAllCount++;
+    ATTRS.forEach(a => {
+      if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
+      remainSum[a] += Math.max(0, r.finalHp[a]);
+    });
+    playerDamageSum += r.playerDamage;
+    rivalDamageSum += r.rivalDamage;
+    if (i < 5) logs.push(r.logText);
+  }
+
+  return {
+    trials,
+    killAllRate: killAllCount / trials,
+    judgeKillRates: {
+      Vo: judgeKillCounts.Vo / trials,
+      Da: judgeKillCounts.Da / trials,
+      Vi: judgeKillCounts.Vi / trials
+    },
+    avgRemain: {
+      Vo: remainSum.Vo / trials,
+      Da: remainSum.Da / trials,
+      Vi: remainSum.Vi / trials
+    },
+    avgPlayerDamage: playerDamageSum / trials,
+    avgRivalDamage: rivalDamageSum / trials,
+    sampleLogs: logs
+  };
+}
+
+function simulateOneRun({ cfg, stats, deck, buffs, audition, log }) {
+  const judgeHp = {
+    Vo: cfg.judgeHp.Vo,
+    Da: cfg.judgeHp.Da,
+    Vi: cfg.judgeHp.Vi
+  };
+  let playerMental = cfg.playerMental;
+  let playerDamage = 0;
+  let rivalDamage = 0;
+  const logLines = [];
+
+  const shuffledDeck = shuffle(deck.slice());
+  let hand = shuffledDeck.splice(0, Math.min(3, shuffledDeck.length));
+
+  const buffStates = buffs.map(b => ({
+    id: b.id,
+    activated: false,
+    attempted: false,
+    remainingUses: 0
+  }));
+
+  for (let turn = 1; turn <= cfg.turnCount; turn++) {
+    if (aliveJudgeAttrs(judgeHp).length === 0) break;
+    if (playerMental <= 0) break;
+
+    const action = chooseBestAction({
+      hand, judgeHp, stats, cfg, buffs, buffStates, turn
+    });
+
+    if (action) {
+      const damageResult = applyPlayerAction({
+        action, judgeHp, stats, cfg, buffs, buffStates, turn
+      });
+      playerDamage += damageResult.effectiveDamage;
+      if (log) {
+        logLines.push(
+          `T${turn} PLAYER: ${action.card.name} / ${action.card.targetMode === 'all_judges' ? '全体' : action.targetAttr} / eff=${damageResult.effectiveDamage} / raw=${damageResult.rawDamage} / buffs=${damageResult.activatedBuffNames.join(",") || "-"}`
+        );
+      }
+      hand = hand.filter(c => c.id !== action.card.id);
+    } else if (log) {
+      logLines.push(`T${turn} PLAYER: actionなし`);
+    }
+
+    if (aliveJudgeAttrs(judgeHp).length === 0) break;
+
+    const rivalTurn = applyRivalActions({ judgeHp, cfg, audition, turn });
+    rivalDamage += rivalTurn.totalDamage;
+    if (log) rivalTurn.logs.forEach(x => logLines.push(`T${turn} ${x}`));
+
+    if (cfg.enableJudgeReaction && aliveJudgeAttrs(judgeHp).length > 0) {
+      playerMental = applyJudgeReactionsSimplified({ playerMental, audition });
+      if (log) logLines.push(`T${turn} JUDGE REACTION: playerMental=${playerMental}`);
+    }
+
+    if (turn < cfg.turnCount && shuffledDeck.length > 0) {
+      hand.push(shuffledDeck.shift());
+    }
+  }
+
+  return {
+    killAll: ATTRS.every(a => judgeHp[a] <= 0),
+    finalHp: { ...judgeHp },
+    playerDamage,
+    rivalDamage,
+    logText: logLines.join("\n")
+  };
+}
+
+function chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn }) {
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!hand.length || !aliveTargets.length) return null;
+
+  let best = null;
+  let bestScore = -Infinity;
+
+  hand.forEach(card => {
+    const candidates = card.targetMode === "all_judges"
+      ? [{ card, targetAttr: null }]
+      : aliveTargets.map(targetAttr => ({ card, targetAttr }));
+
+    candidates.forEach(candidate => {
+      const tmpJudgeHp = { ...judgeHp };
+      const tmpBuffStates = deepClone(buffStates);
+
+      const result = applyPlayerAction({
+        action: candidate,
+        judgeHp: tmpJudgeHp,
+        stats,
+        cfg,
+        buffs,
+        buffStates: tmpBuffStates,
+        turn,
+        dryRun: true
+      });
+
+      const remainScore =
+        (Math.max(0, tmpJudgeHp.Vo) + Math.max(0, tmpJudgeHp.Da) + Math.max(0, tmpJudgeHp.Vi));
+
+      const killBonus =
+        (tmpJudgeHp.Vo <= 0 ? 1 : 0) +
+        (tmpJudgeHp.Da <= 0 ? 1 : 0) +
+        (tmpJudgeHp.Vi <= 0 ? 1 : 0);
+
+      const score = result.effectiveDamage + killBonus * 100000 - remainScore;
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    });
+  });
+
+  return best;
+}
+
+function applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun=false }) {
+  const card = action.card;
+
+  if (card.targetMode === "all_judges") {
+    return applyPlayerActionAllJudges({
+      card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun
+    });
+  }
+
+  return applyPlayerActionSingle({
+    card, targetAttr: action.targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun
+  });
+}
+
+function applyPlayerActionSingle({ card, targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({
+    card, targetAttr, turn, buffs, buffStates, dryRun
+  });
+
+  const rawDamage = calcCardDamageToJudge(card, targetAttr, stats, cfg.w, activeBuffInfo);
+  const effectiveDamage = Math.min(rawDamage, Math.max(0, judgeHp[targetAttr]));
+  judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - effectiveDamage);
+
+  if (!dryRun) {
+    consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  }
+
+  return {
+    rawDamage,
+    effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id);
+      return b ? b.name : id;
+    })
+  };
+}
+
+function applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({
+    card, targetAttr: null, turn, buffs, buffStates, dryRun
+  });
+
+  let rawDamage = 0;
+  let effectiveDamage = 0;
+
+  ATTRS.forEach(judgeAttr => {
+    if (judgeHp[judgeAttr] <= 0) return;
+    const raw = calcCardDamageToJudge(card, judgeAttr, stats, cfg.w, activeBuffInfo);
+    const eff = Math.min(raw, Math.max(0, judgeHp[judgeAttr]));
+    judgeHp[judgeAttr] = Math.max(0, judgeHp[judgeAttr] - eff);
+    rawDamage += raw;
+    effectiveDamage += eff;
+  });
+
+  if (!dryRun) {
+    consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  }
+
+  return {
+    rawDamage,
+    effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id);
+      return b ? b.name : id;
+    })
+  };
+}
+
+function evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun }) {
+  const totalPercentByAttr = { Vo:0, Da:0, Vi:0 };
+  const activatedIds = [];
+
+  buffs.forEach(buff => {
+    const st = buffStates.find(x => x.id === buff.id);
+    if (!st || !buff.enabled) return;
+
+    if (st.remainingUses > 0) {
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+      return;
+    }
+
+    if (st.attempted) return;
+    if (!isBuffConditionMet(buff, { card, targetAttr, turn })) return;
+    if (!dryRun) st.attempted = true;
+
+    if (Math.random() <= buff.procRate) {
+      if (!dryRun) {
+        st.activated = true;
+        st.remainingUses = Math.max(1, buff.uses);
+      }
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+    }
+  });
+
+  return { totalPercentByAttr, activatedIds };
+}
+
+function consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo }) {
+  activeBuffInfo.activatedIds.forEach(id => {
+    const st = buffStates.find(x => x.id === id);
+    if (!st) return;
+    if (st.remainingUses > 0) {
+      st.remainingUses--;
+      if (st.remainingUses < 0) st.remainingUses = 0;
+    }
+  });
+}
+
+function applyBuffPercent(targetMap, buff) {
+  if (buff.attr === "ALL") {
+    targetMap.Vo += num(buff.percentVo, 0);
+    targetMap.Da += num(buff.percentDa, 0);
+    targetMap.Vi += num(buff.percentVi, 0);
+  } else {
+    targetMap[buff.attr] += num(buff.percent, 0);
+  }
+}
+
+function isBuffConditionMet(buff, ctx) {
+  const c = buff.condition;
+  if (c === "always") return true;
+  if (c === "turn_gte_2") return ctx.turn >= 2;
+  if (c === "turn_gte_3") return ctx.turn >= 3;
+  if (c === "p_card") return ctx.card.kind === "P";
+  if (c === "s_card") return ctx.card.kind === "S";
+  if (c === "vo_card") return ctx.card.attackType === "Vo";
+  if (c === "da_card") return ctx.card.attackType === "Da";
+  if (c === "vi_card") return ctx.card.attackType === "Vi";
+  if (c === "all_card") return ctx.card.attackType === "ALL";
+  if (c === "exe_card") return ctx.card.attackType === "EXE";
+  return false;
+}
+
+function calcCardDamageToJudge(card, targetJudgeAttr, stats, w, buffInfo) {
+  if (card.attackType === "Vo" || card.attackType === "Da" || card.attackType === "Vi") {
+    return calcSingleAttrDamage({
+      card, usedAttr: card.attackType, targetJudgeAttr, stats, w, buffInfo, forceMatch: false
+    });
+  }
+
+  if (card.attackType === "ALL") {
+    return ATTRS.reduce((sum, attr) => {
+      return sum + calcSingleAttrDamage({
+        card, usedAttr: attr, targetJudgeAttr, stats, w, buffInfo, forceMatch: false
+      });
+    }, 0);
+  }
+
+  if (card.attackType === "EXE") {
+    return calcSingleAttrDamage({
+      card, usedAttr: targetJudgeAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch: true
+    });
+  }
+
+  return 0;
+}
+
+function getCardAppealRate(card, usedAttr) {
+  if (card.attackType === "ALL") {
+    if (usedAttr === "Vo") return num(card.rateVo, 0);
+    if (usedAttr === "Da") return num(card.rateDa, 0);
+    if (usedAttr === "Vi") return num(card.rateVi, 0);
+    return 0;
+  }
+  return num(card.rate, 0);
+}
+
+function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch }) {
+  const P = stats.p[usedAttr] || 0;
+  const S = stats.sTotal[usedAttr] || 0;
+  const ownerStats = card.kind === "S" ? (stats.supports[card.ownerId] || { Vo:0, Da:0, Vi:0 }) : null;
+  const iS = ownerStats ? (ownerStats[usedAttr] || 0) : 0;
+
+  let base = 0;
+  if (card.kind === "P") {
+    base = Math.floor(2 * P) + Math.floor(S * 0.2 * (1 + 0.1 * w));
+  } else {
+    base = Math.floor(0.5 * P) + Math.floor((S + 3 * iS) * 0.2 * (1 + 0.1 * w));
+  }
+
+  const buffPercent = buffInfo?.totalPercentByAttr?.[usedAttr] || 0;
+  const buffMul = 1 + buffPercent / 100;
+  const appealRate = getCardAppealRate(card, usedAttr);
+  const judgeMul = JUDGE_MULT[card.judge] || 1.0;
+  const matchMul = (forceMatch || usedAttr === targetJudgeAttr) ? 2 : 1;
+
+  let x = base;
+  x = Math.floor(x * buffMul);
+  x = Math.floor(x * appealRate);
+  x = Math.floor(x * judgeMul);
+  x = Math.floor(x * matchMul);
+  return x;
+}
+
+function applyRivalActions({ judgeHp, cfg, audition, turn }) {
+  let totalDamage = 0;
+  const logs = [];
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!aliveTargets.length) return { totalDamage, logs };
+
+  (audition.rivals || []).forEach(rival => {
+    const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
+    if (!targetAttr) return;
+
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
+    judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
+    totalDamage += eff;
+    logs.push(`${rival.name}: ${targetAttr} に ${eff}`);
+  });
+
+  return { totalDamage, logs };
+}
+
+function chooseRivalTarget(rival, judgeHp, popularity, turn) {
+  const alive = aliveJudgeAttrs(judgeHp);
+  if (!alive.length) return null;
+
+  if (rival.patternType === "spear") {
+    for (const rank of rival.pattern) {
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+
+  if (rival.patternType === "transition") {
+    const seq = String(rival.pattern).split("").map(x => +x);
+    for (let shift = 0; shift < seq.length; shift++) {
+      const idx = ((turn - 1) + shift) % seq.length;
+      const rank = seq[idx];
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+
+  return alive[0] || null;
+}
+
+function applyJudgeReactionsSimplified({ playerMental, audition }) {
+  return Math.max(0, playerMental - (audition.meDamage || 0));
+}
+
+function aliveJudgeAttrs(judgeHp) {
+  return ATTRS.filter(a => judgeHp[a] > 0);
+}
+
+function renderResult(result, cfg) {
+  setText("resultKillRate", pct(result.killAllRate));
+  setText("resultTrials", String(result.trials));
+  setText("resultTurns", `${cfg.turnCount}ターン終了時点`);
+  setText("resultVoRate", pct(result.judgeKillRates.Vo));
+  setText("resultDaRate", pct(result.judgeKillRates.Da));
+  setText("resultViRate", pct(result.judgeKillRates.Vi));
+  setText("resultVoRemain", `平均残HP: ${fmt(result.avgRemain.Vo)}`);
+  setText("resultDaRemain", `平均残HP: ${fmt(result.avgRemain.Da)}`);
+  setText("resultViRemain", `平均残HP: ${fmt(result.avgRemain.Vi)}`);
+  setText("resultPlayerDamage", fmt(result.avgPlayerDamage));
+  setText("resultRivalDamage", `平均ライバル与ダメ: ${fmt(result.avgRivalDamage)}`);
+
+  const logText = result.sampleLogs.length
+    ? result.sampleLogs.map((x, i) => `--- sample ${i+1} ---\n${x}`).join("\n\n")
+    : "ログなし";
+  setText("resultLog", logText);
+}
+
+/* =========================
+   Campaign Analysis
+========================= */
+
+function buildCampaignSchedule(startPoint, routeMode, s28AuditionChoice) {
+  const full = [];
+  const selectedS28AuditionId = s28AuditionChoice || "yuu_wide";
+
+  if (routeMode === "17") {
+    const s28Name = APP_DATA.auditions?.[selectedS28AuditionId]?.name || selectedS28AuditionId;
+    full.push({
+      point: "S2-8",
+      label: `S2-8（${s28Name}）`,
+      auditionId: selectedS28AuditionId,
+      w: 15,
+      s28Name
+    });
+  }
+
+  full.push({ point:"S3-1", label:"S3-1", auditionId:"spot_light", w:16 });
+  full.push({ point:"S3-2", label:"S3-2", auditionId:"odotteiitomo", w:17 });
+  full.push({ point:"S3-3", label:"S3-3", auditionId:"odotteiitomo", w:18 });
+  full.push({ point:"S3-4", label:"S3-4", auditionId:"odotteiitomo", w:19 });
+  full.push({ point:"S3-5", label:"S3-5", auditionId:"odotteiitomo", w:20 });
+  full.push({ point:"S3-6", label:"S3-6", auditionId:"odotteiitomo", w:21 });
+  full.push({ point:"S3-7", label:"S3-7", auditionId:"odotteiitomo", w:22 });
+  full.push({ point:"S3-8", label:"S3-8", auditionId:"odotteiitomo", w:23 });
+
+  full.push({ point:"S4-1", label:"S4-1", auditionId:"the_legend", w:24 });
+  full.push({ point:"S4-2", label:"S4-2", auditionId:"nanairo", w:25 });
+  full.push({ point:"S4-3", label:"S4-3", auditionId:"nanairo", w:26 });
+  full.push({ point:"S4-4", label:"S4-4", auditionId:"nanairo", w:27 });
+  full.push({ point:"S4-5", label:"S4-5", auditionId:"utahime", w:28 });
+  full.push({ point:"S4-6", label:"S4-6", auditionId:"utahime", w:29 });
+  full.push({ point:"S4-7", label:"S4-7", auditionId:"utahime", w:30 });
+  full.push({ point:"S4-8", label:"S4-8", auditionId:"utahime", w:31 });
+
+  const idx = full.findIndex(x => x.point === startPoint);
+  return idx >= 0 ? full.slice(idx) : full;
+}
+
+function runCampaignAnalysis() {
+  const cfg = readConfig();
+  const stats = buildStats();
+  const deck = STATE.cards.filter(c => c.enabled);
+  const buffs = STATE.buffs.filter(b => b.enabled);
+
+  if (!deck.length) {
+    setText("simStatus", "有効な札がありません。");
+    return;
+  }
+
+  const schedule = buildCampaignSchedule(cfg.campaignStartPoint, cfg.campaignRoute, cfg.campaignS28AuditionChoice);
+  if (!schedule.length) {
+    setText("simStatus", "周回スケジュールが空です。");
+    return;
+  }
+
+  addOperationLog("周回分析開始", `${cfg.campaignRoute}回ルート / ${cfg.iterations}回`, "op-log-run");
+  setText("simStatus", "周回分析中...");
+  setTimeout(() => {
+    const result = analyzeCampaign({ cfg, stats, deck, buffs, schedule });
+    renderCampaignResult(result, cfg);
+    setText("simStatus", "周回分析完了");
+    addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
+    saveLocal();
+  }, 30);
+}
+
+function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
+  const perAudition = schedule.map((step, idx) => {
+    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1);
+    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2);
+    const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
+
+    const res1 = monteCarloSimulation({ cfg: baseCfg1, stats, deck, buffs, audition });
+    const res2 = monteCarloSimulation({ cfg: baseCfg2, stats, deck, buffs, audition });
+
+    return {
+      index: idx + 1,
+      point: step.point,
+      label: step.label,
+      auditionId: step.auditionId,
+      auditionName: APP_DATA.auditions[step.auditionId]?.name || step.auditionId,
+      w: step.w,
+      oneTurnRate: res1.killAllRate,
+      twoTurnRate: res2.killAllRate
+    };
+  });
+
+  const trials = cfg.iterations;
+  let allSuccessCount = 0;
+  const logs = [];
+
+  for (let i = 0; i < trials; i++) {
+    let successAll = true;
+    const lines = [];
+
+    for (let s = 0; s < schedule.length; s++) {
+      const step = schedule[s];
+      const stepCfg = buildCfgForCampaignStep(cfg, step, 2);
+      const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
+      const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
+
+      if (r.killAll) {
+        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
+      } else {
+        successAll = false;
+        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 失敗`);
+        break;
+      }
+    }
+
+    if (successAll) allSuccessCount++;
+    if (i < 5) logs.push(lines.join("\n"));
+  }
+
+  return {
+    remainCount: schedule.length,
+    perAudition,
+    allSuccessRate: allSuccessCount / trials,
+    trials,
+    sampleLogs: logs
+  };
+}
+
+function buildCfgForCampaignStep(baseCfg, step, turnCount) {
+  const data = APP_DATA.auditions?.[step.auditionId]?.[baseCfg.difficulty];
+  const hp = data?.judgeHp || 0;
+  return {
+    ...baseCfg,
+    auditionId: step.auditionId,
+    w: step.w,
+    turnCount,
+    judgeHp: { Vo: hp, Da: hp, Vi: hp }
+  };
+}
+
+function renderCampaignResult(result, cfg) {
+  setText("campaignAllSuccessRate", pct(result.allSuccessRate));
+  setText("campaignRemainCount", String(result.remainCount));
+  const s28Name = APP_DATA.auditions?.[cfg.campaignS28AuditionChoice]?.name || cfg.campaignS28AuditionChoice;
+  setText("campaignRouteText", `${cfg.campaignRoute}回ルート / S2-8=${s28Name}`, true);
+  setText("campaignSummaryText", `${cfg.campaignStartPoint} から最後まで / ${result.trials}試行 / S2-8:${s28Name}`, true);
+
+  const body = document.getElementById("campaignResultBody");
+  body.innerHTML = "";
+  if (!result.perAudition.length) {
+    body.innerHTML = `<tr><td colspan="6" class="muted">データなし</td></tr>`;
+  } else {
+    result.perAudition.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r.index}</td>
+        <td>${escapeHtml(r.label)}</td>
+        <td>${escapeHtml(r.auditionName)}</td>
+        <td>${r.w}</td>
+        <td>${pct(r.oneTurnRate)}</td>
+        <td>${pct(r.twoTurnRate)}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  const logText = result.sampleLogs.length
+    ? result.sampleLogs.map((x, i) => `--- campaign sample ${i+1} ---\n${x}`).join("\n\n")
+    : "ログなし";
+  setText("campaignLog", logText);
+}
+
+
+function runLoadoutCompare() {
+  const active = getActiveLoadout();
+  const pinned = getPinnedLoadout();
+  if (!active || !pinned) {
+    setText('compareStatus', '比較対象がありません。', true);
+    return;
+  }
+  const cfg = readConfig();
+  const audition = APP_DATA.auditions?.[cfg.auditionId]?.[cfg.difficulty];
+  if (!audition) {
+    setText('compareStatus', 'オーディション設定が不正です。', true);
+    return;
+  }
+  addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  setText('compareStatus', '固定比較を実行中...', true);
+  setTimeout(() => {
+    const activeResult = runSimulationForLoadout(active, cfg, audition);
+    const pinnedResult = runSimulationForLoadout(pinned, cfg, audition);
+    renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
+    setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
+    addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  }, 30);
+}
+
+function runSimulationForLoadout(loadout, cfg, audition) {
+  const deck = (loadout.cards || []).filter(c => c.enabled);
+  const buffs = (loadout.buffs || []).filter(b => b.enabled);
+  const stats = {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0;
+      acc.da += +s.da || 0;
+      acc.vi += +s.vi || 0;
+      return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+  if (!deck.length) {
+    return { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+  }
+  return monteCarloSimulation({ cfg, stats, deck, buffs, audition });
+}
+
+function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
+  setText('compareActiveTitle', `現在: ${active.name}`, true);
+  setText('comparePinnedTitle', `固定: ${pinned.name}`, true);
+
+  setText('compareActiveKill', pct(activeResult.killAllRate || 0), true);
+  setText('comparePinnedKill', pct(pinnedResult.killAllRate || 0), true);
+  setText('compareActiveVo', pct(activeResult.judgeKillRates?.Vo || 0), true);
+  setText('comparePinnedVo', pct(pinnedResult.judgeKillRates?.Vo || 0), true);
+  setText('compareActiveDa', pct(activeResult.judgeKillRates?.Da || 0), true);
+  setText('comparePinnedDa', pct(pinnedResult.judgeKillRates?.Da || 0), true);
+  setText('compareActiveVi', pct(activeResult.judgeKillRates?.Vi || 0), true);
+  setText('comparePinnedVi', pct(pinnedResult.judgeKillRates?.Vi || 0), true);
+  setText('compareActiveDmg', fmt(activeResult.avgPlayerDamage || 0), true);
+  setText('comparePinnedDmg', fmt(pinnedResult.avgPlayerDamage || 0), true);
+
+  const diffKill = (activeResult.killAllRate || 0) - (pinnedResult.killAllRate || 0);
+  const diffVo = (activeResult.judgeKillRates?.Vo || 0) - (pinnedResult.judgeKillRates?.Vo || 0);
+  const diffDa = (activeResult.judgeKillRates?.Da || 0) - (pinnedResult.judgeKillRates?.Da || 0);
+  const diffVi = (activeResult.judgeKillRates?.Vi || 0) - (pinnedResult.judgeKillRates?.Vi || 0);
+  const diffDmg = (activeResult.avgPlayerDamage || 0) - (pinnedResult.avgPlayerDamage || 0);
+
+  setDiffText('compareDiffKill', diffKill, true, true);
+  setDiffText('compareDiffVo', diffVo, true, true);
+  setDiffText('compareDiffDa', diffDa, true, true);
+  setDiffText('compareDiffVi', diffVi, true, true);
+  setDiffText('compareDiffDmg', diffDmg, false, true);
+
+  const pctScale = Math.max(Math.abs(diffKill), Math.abs(diffVo), Math.abs(diffDa), Math.abs(diffVi), 0.01);
+  const dmgScale = Math.max(Math.abs(diffDmg), 1);
+
+  updateDiffBar('compareBarKill', diffKill, pctScale);
+  updateDiffBar('compareBarVo', diffVo, pctScale);
+  updateDiffBar('compareBarDa', diffDa, pctScale);
+  updateDiffBar('compareBarVi', diffVi, pctScale);
+  updateDiffBar('compareBarDmg', diffDmg, dmgScale);
+
+  updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg);
+  animateCompareBoxes();
+}
+
+function animateCompareBoxes() {
+  ['compareBoxActive','compareBoxPinned','compareBoxDiff'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('is-live');
+    void el.offsetWidth;
+    el.classList.add('is-live');
+    clearTimeout(el._liveTimer);
+    el._liveTimer = setTimeout(() => el.classList.remove('is-live'), 700);
+  });
+}
+
+function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
+  const el = document.getElementById('compareDiffSummary');
+  if (!el) return;
+  const score = diffKill * 100 + diffVo * 35 + diffDa * 35 + diffVi * 35 + (diffDmg / Math.max(Math.abs(diffDmg), 1)) * 5;
+  let cls = 'diff-zero';
+  let text = '互角に近いです';
+  if (score > 0.5) {
+    cls = 'diff-plus';
+    text = `現在編成が優勢（全返し率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+  } else if (score < -0.5) {
+    cls = 'diff-minus';
+    text = `固定編成が優勢（全返し率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+  }
+  el.className = `diff-summary ${cls}`;
+  setText('compareDiffSummary', text, true);
+}
+
+function updateDiffBar(id, value, maxAbs) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const scale = Math.max(maxAbs || 1, 1e-9);
+  const ratio = Math.min(Math.abs(value) / scale, 1);
+  const width = (ratio * 50).toFixed(2) + '%';
+  el.classList.remove('positive', 'negative');
+  if (value > 0) {
+    el.classList.add('positive');
+    el.style.left = '50%';
+    el.style.width = width;
+  } else if (value < 0) {
+    el.classList.add('negative');
+    el.style.left = `${50 - ratio * 50}%`;
+    el.style.width = width;
+  } else {
+    el.style.left = '50%';
+    el.style.width = '0%';
+  }
+}
+
+function setDiffText(id, value, asPercent, includeSign) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cls = value > 0 ? 'diff-plus' : value < 0 ? 'diff-minus' : 'diff-zero';
+  const sign = includeSign && value > 0 ? '+' : '';
+  const next = asPercent ? `${sign}${(value * 100).toFixed(2)}%` : `${sign}${Math.round(value).toLocaleString()}`;
+  const changed = el.textContent !== next || el.className !== cls;
+  el.className = cls;
+  el.textContent = next;
+  if (changed) pulseElement(el);
+}
+
+function saveLocal() {
+  clearTimeout(saveLocalTimer);
+  localStorage.setItem("utahime_calc_state_local", JSON.stringify(exportState()));
+}
+
+function saveStateToServer() {
+  const state = exportState();
+  try {
+    localStorage.setItem("utahime_calc_state_local", JSON.stringify(state));
+    setText("simStatus", "この端末に保存しました");
+    addOperationLog("ローカル保存", "現在の状態をこの端末に保存しました", "op-log-save");
+  } catch (e) {
+    console.error(e);
+    alert("保存に失敗しました");
+  }
+}
+
+function exportState() {
+  saveCurrentInputsToLoadout();
+  return {
+    version: 2,
+    loadouts: STATE.loadouts.map(l => ({ ...cloneLoadout(l), guestSupport: defaultGuestSupport(l.guestSupport) })),
+    activeLoadoutId: STATE.activeLoadoutId,
+    pinnedLoadoutId: STATE.pinnedLoadoutId,
+    sim: {
+      auditionId: val("auditionId"),
+      difficulty: val("difficulty"),
+      wValue: val("wValue"),
+      pop1: val("pop1"),
+      pop2: val("pop2"),
+      pop3: val("pop3"),
+      turnCount: val("turnCount"),
+      iterations: val("iterations"),
+      rivalJudgeMultiplier: val("rivalJudgeMultiplier"),
+      enableJudgeReaction: val("enableJudgeReaction"),
+      playerMental: val("playerMental"),
+      judgeHpVo: val("judgeHpVo"),
+      judgeHpDa: val("judgeHpDa"),
+      judgeHpVi: val("judgeHpVi"),
+      campaignStartPoint: val("campaignStartPoint"),
+      campaignRoute: val("campaignRoute"),
+      campaignS28AuditionChoice: val("campaignS28AuditionChoice")
+    }
+  };
+}
+
+function restoreState(data) {
+  try {
+    if (Array.isArray(data?.loadouts) && data.loadouts.length) {
+      STATE.loadouts = data.loadouts.map((l, idx) => ({
+        id: l.id || `L${idx+1}`,
+        name: l.name || `編成${idx+1}`,
+        pVo: num(l.pVo, 1200),
+        pDa: num(l.pDa, 1000),
+        pVi: num(l.pVi, 900),
+        supports: defaultSupports(l.supports),
+        guestSupport: defaultGuestSupport(l.guestSupport),
+        cards: Array.isArray(l.cards) ? l.cards : [],
+        buffs: Array.isArray(l.buffs) ? l.buffs : []
+      })).slice(0, 5);
+      STATE.activeLoadoutId = data.activeLoadoutId || STATE.loadouts[0].id;
+      STATE.pinnedLoadoutId = data.pinnedLoadoutId || STATE.activeLoadoutId;
+      ensureLoadoutState();
+      applyLoadoutToInputs(getActiveLoadout());
+      invalidatePreviewCache();
+      renderSupportRows();
+      renderOwnerOptions();
+    } else {
+      const legacySupports = Array.isArray(data?.base?.supports) && data.base.supports.length ? data.base.supports : defaultSupports();
+      STATE.loadouts = [createDefaultLoadout('L1', '編成1', legacySupports, data?.base?.guestSupport || data?.guestSupport)];
+      STATE.activeLoadoutId = 'L1';
+      STATE.pinnedLoadoutId = 'L1';
+      ensureLoadoutState();
+      const loadout = getActiveLoadout();
+      loadout.pVo = num(data?.base?.pVo, 1200);
+      loadout.pDa = num(data?.base?.pDa, 1000);
+      loadout.pVi = num(data?.base?.pVi, 900);
+      loadout.cards = Array.isArray(data?.cards) ? data.cards : [];
+      loadout.buffs = Array.isArray(data?.buffs) ? data.buffs : [];
+      loadout.guestSupport = defaultGuestSupport(data?.base?.guestSupport || data?.guestSupport);
+      applyLoadoutToInputs(loadout);
+      invalidatePreviewCache();
+      renderSupportRows();
+      renderOwnerOptions();
+    }
+    if (data?.sim) {
+      Object.entries(data.sim).forEach(([k,v]) => {
+        if (document.getElementById(k)) setVal(k, v);
+      });
+    }
+    renderLoadoutSelectors();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function loadSampleData() {
+  pushHistory('サンプルデータ読込');
+  const loadout = getActiveLoadout();
+  loadout.cards = [
+    { id: genId("card"), name:"Vo主砲", kind:"P", attackType:"Vo", targetMode:"single", rate:3.0, rateVo:0, rateDa:0, rateVi:0, judge:"P", ownerId:"", memo:"単色主砲", enabled:true },
+    { id: genId("card"), name:"Da主砲", kind:"P", attackType:"Da", targetMode:"single", rate:2.8, rateVo:0, rateDa:0, rateVi:0, judge:"P", ownerId:"", memo:"単色主砲", enabled:true },
+    { id: genId("card"), name:"全体Vo札", kind:"P", attackType:"Vo", targetMode:"all_judges", rate:1.8, rateVo:0, rateDa:0, rateVi:0, judge:"G", ownerId:"", memo:"3人全体", enabled:true },
+    { id: genId("card"), name:"ALL札", kind:"P", attackType:"ALL", targetMode:"single", rate:0, rateVo:2.2, rateDa:1.9, rateVi:2.6, judge:"N", ownerId:"", memo:"3色別倍率", enabled:true },
+    { id: genId("card"), name:"全体ALL札", kind:"S", attackType:"ALL", targetMode:"all_judges", rate:0, rateVo:1.6, rateDa:1.5, rateVi:1.8, judge:"N", ownerId:"S1", memo:"全体ALL", enabled:true },
+    { id: genId("card"), name:"S Da札", kind:"S", attackType:"Da", targetMode:"single", rate:2.8, rateVo:0, rateDa:0, rateVi:0, judge:"G", ownerId:"S2", memo:"S2所持", enabled:true },
+    { id: genId("card"), name:"EXE札", kind:"S", attackType:"EXE", targetMode:"single", rate:2.9, rateVo:0, rateDa:0, rateVi:0, judge:"P", ownerId:"S3", memo:"対象属性のみ一致", enabled:true },
+    { id: genId("card"), name:"全体EXE札", kind:"S", attackType:"EXE", targetMode:"all_judges", rate:1.7, rateVo:0, rateDa:0, rateVi:0, judge:"G", ownerId:"S4", memo:"全体EXE", enabled:true }
+  ];
+
+  loadout.buffs = [
+    { id: genId("buff"), name:"Vo30", attr:"Vo", percent:30, percentVo:0, percentDa:0, percentVi:0, procRate:1, uses:1, condition:"always", memo:"", enabled:true },
+    { id: genId("buff"), name:"2T以降ALL別％", attr:"ALL", percent:0, percentVo:20, percentDa:10, percentVi:35, procRate:0.7, uses:2, condition:"turn_gte_2", memo:"", enabled:true }
+  ];
+
+  loadout.supports = defaultSupports();
+  loadout.guestSupport = defaultGuestSupport({ name: "ゲスト" });
+  invalidatePreviewCache();
+  loadout.pVo = 1200;
+  loadout.pDa = 1000;
+  loadout.pVi = 900;
+  applyLoadoutToInputs(loadout);
+  renderSupportRows();
+  renderOwnerOptions();
+  setVal("auditionId", "utahime");
+  setVal("difficulty", "master");
+  setVal("campaignStartPoint", "S3-1");
+  setVal("campaignRoute", "16");
+  setVal("campaignS28AuditionChoice", "yuu_wide");
+  applyDefaultJudgeHp();
+  renderAll();
+  updateDeckStatus();
+  toggleCardRateFields();
+  toggleBuffPercentFields();
+  renderLoadoutSelectors();
+  saveLocal();
+  addOperationLog("サンプル読込", "現在編成にサンプルを反映しました", "op-log-save");
+}
+
+function resetAll() {
+  pushHistory('全リセット');
+  if (!confirm("全リセットします。よろしいですか？")) return;
+
+  localStorage.removeItem("utahime_calc_state_local");
+  STATE = {
+    activeLoadoutId: "L1",
+    pinnedLoadoutId: "L1",
+    loadouts: [createDefaultLoadout('L1', '編成1', defaultSupports([
+      { id: "S1", name:"S1", vo: 0, da: 0, vi: 0 },
+      { id: "S2", name:"S2", vo: 0, da: 0, vi: 0 },
+      { id: "S3", name:"S3", vo: 0, da: 0, vi: 0 },
+      { id: "S4", name:"S4", vo: 0, da: 0, vi: 0 }
+    ]))],
+    editingCardId: null,
+    editingBuffId: null
+  };
+  ensureLoadoutState();
+
+  applyLoadoutToInputs(getActiveLoadout());
+
+  clearCardForm();
+  clearBuffForm();
+  renderSupportRows();
+  renderOwnerOptions();
+  renderLoadoutSelectors();
+  applyDefaultJudgeHp();
+  populateCampaignS28Auditions();
+  populateCampaignStartPoints();
+  setVal("campaignStartPoint", "S3-1");
+  setVal("campaignRoute", "16");
+  setVal("campaignS28AuditionChoice", "yuu_wide");
+  renderAll();
+  updateDeckStatus();
+  toggleCardRateFields();
+  toggleBuffPercentFields();
+  setText("resultLog", "リセットしました。", true);
+  setText("campaignLog", "リセットしました。", true);
+  setText("compareStatus", "固定比較はまだ実行していません。", true);
+  addOperationLog("全リセット完了", "初期状態に戻しました", "op-log-clear");
+  updateUndoButton();
+}
+
+function judgeText(v) {
+  return ({P:"Perfect", G:"Good", N:"Normal", B:"Bad"}[v] || v);
+}
+
+function buffConditionText(v) {
+  return ({
+    always:"常時",
+    turn_gte_2:"2ターン目以降",
+    turn_gte_3:"3ターン目以降",
+    p_card:"P札使用時",
+    s_card:"S札使用時",
+    vo_card:"Vo札使用時",
+    da_card:"Da札使用時",
+    vi_card:"Vi札使用時",
+    all_card:"ALL札使用時",
+    exe_card:"EXE札使用時"
+  }[v] || v);
+}
+
+function genId(prefix) {
+  return prefix + "_" + Math.random().toString(36).slice(2, 10);
+}
+
+function pct(x) {
+  return `${(x * 100).toFixed(2)}%`;
+}
+
+function fmt(x) {
+  return Math.round(x).toLocaleString();
+}
+
+function fmtNum(x) {
+  return Math.round(x).toLocaleString();
+}
+
+function val(id) {
+  return document.getElementById(id).value;
+}
+
+function setVal(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v;
+}
+
+function setText(id, v) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const next = String(v);
+  const changed = el.textContent !== next;
+  el.textContent = next;
+  if (changed) pulseElement(el);
+}
+
+function pulseElement(el) {
+  if (!el) return;
+  el.classList.remove('flash-updated');
+  // force reflow
+  void el.offsetWidth;
+  el.classList.add('flash-updated');
+  clearTimeout(el._pulseTimer);
+  el._pulseTimer = setTimeout(() => el.classList.remove('flash-updated'), 520);
+  const box = el.closest('.metric, .compare-box, .status, .help');
+  if (box) {
+    box.classList.remove('flash-updated');
+    void box.offsetWidth;
+    box.classList.add('flash-updated');
+    clearTimeout(box._pulseTimer);
+    box._pulseTimer = setTimeout(() => box.classList.remove('flash-updated'), 560);
+  }
+}
+
+function num(v, def=0) {
+  const n = +v;
+  return isFinite(n) ? n : def;
+}
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function deepClone(x) {
+  return JSON.parse(JSON.stringify(x));
+}
+
+function triggerImportAppData() {
+  const input = document.getElementById("importFileInput");
+  if (input) input.click();
+}
+
+function exportAppData() {
+  try {
+    const data = exportStateForBackup_();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const now = new Date();
+    const ts = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+      "_",
+      String(now.getHours()).padStart(2, "0"),
+      String(now.getMinutes()).padStart(2, "0"),
+      String(now.getSeconds()).padStart(2, "0")
+    ].join("");
+
+    a.href = url;
+    a.download = `utahime_calc_backup_${ts}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    addOperationLog("エクスポート", "JSONファイルを書き出しました", "op-log-save");
+    setText("simStatus", "エクスポートしました");
+  } catch (err) {
+    console.error(err);
+    addOperationLog("エクスポート失敗", String(err?.message || err), "op-log-clear");
+    alert("エクスポートに失敗しました");
+  }
+}
+
+function importAppDataFromFile(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const text = e.target.result;
+      const parsed = JSON.parse(text);
+
+      if (!isValidImportData_(parsed)) {
+        alert("JSON形式は読めましたが、このアプリ用のデータではありません。");
+        return;
+      }
+
+      if (!confirm("現在のデータを上書きしてインポートします。よろしいですか？")) {
+        return;
+      }
+
+      pushHistory("インポート前");
+      applyImportedState_(parsed);
+
+      saveLocal();
+      saveStateToServer();
+
+      addOperationLog("インポート", "JSONファイルから状態を復元しました", "op-log-save");
+      setText("simStatus", "インポートしました");
+    } catch (err) {
+      console.error(err);
+      addOperationLog("インポート失敗", String(err?.message || err), "op-log-clear");
+      alert("インポートに失敗しました。JSONファイルを確認してください。");
+    } finally {
+      event.target.value = "";
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function exportStateForBackup_() {
+  return {
+    app: "utahime_calc",
+    formatVersion: 1,
+    exportedAt: new Date().toISOString(),
+    data: cloneJson(exportState())
+  };
+}
+
+function applyImportedState_(payload) {
+  restoreState(cloneJson(payload.data));
+  invalidatePreviewCache();
+  renderAll();
+  updateDeckStatus();
+  toggleCardRateFields();
+  toggleBuffPercentFields();
+  renderOperationLog();
+  updateUndoButton();
+}
+
+function isValidImportData_(payload) {
+  return !!(
+    payload &&
+    typeof payload === "object" &&
+    payload.app === "utahime_calc" &&
+    payload.data &&
+    typeof payload.data === "object"
+  );
+}
+
+</script>
+</body>
+</html></p>
+
+</body>
+</html>
