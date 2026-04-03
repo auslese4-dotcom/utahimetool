@@ -2997,8 +2997,7 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
     }
 
     if (successAll) allSuccessCount++;
-    if (i < 5) logs.push(lines.join("
-"));
+    if (i < 5) logs.push(lines.join("\n"));
   }
 
   return {
@@ -3062,8 +3061,7 @@ async function analyzeCampaignAsync({ cfg, stats, deck, buffs, schedule, onProgr
       }
 
       if (successAll) allSuccessCount++;
-      if (i < 5) logs.push(lines.join("
-"));
+      if (i < 5) logs.push(lines.join("\n"));
     }
 
     if (onProgress) {
