@@ -710,7 +710,8 @@
             <label>ターン数</label>
             <select id="turnCount">
               <option value="1">1ターン</option>
-              <option value="2" selected>2ターン</option>
+              <option value="2">2ターン</option>
+              <option value="3" selected>3ターン</option>
             </select>
           </div>
           <div class="field">
@@ -1055,7 +1056,7 @@
 
         <div style="margin-top:12px;" class="warn">
           ライバル火力は簡略モデルです。<br>
-          「基礎攻撃 × 一致補正 × ライバル係数」で処理しています。
+          「基礎攻撃 × 判定(P/G/N均等) × 一致補正 × ライバル係数」で処理しています。
         </div>
 
         <div style="margin-top:12px;">
@@ -1119,92 +1120,117 @@
 
 <script>
 const BUILT_IN_APP_DATA = {
+
   auditions: {
     yuu_wide: {
       name: "夕方ワイドアイドル一番！",
-      middle: { judgeHp: 12000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 850, patternType: "transition", pattern: "123" }
+      middle: { judgeHp: 12000, meDamage: 15, judgeReactionCount: 2, rivals: [
+        { name: "千雪", attr: "Vo", mental: 210, baseAttack: 874, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Da", mental: 210, baseAttack: 874, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Vo", mental: 210, baseAttack: 874, patternType: "transition", pattern: "312" }
       ] },
-      master: { judgeHp: 18000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 1150, patternType: "transition", pattern: "123" }
+      master: { judgeHp: 18000, meDamage: 20, judgeReactionCount: 2, rivals: [
+        { name: "千雪", attr: "Vo", mental: 210, baseAttack: 1399, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Da", mental: 210, baseAttack: 1399, patternType: "spear", pattern: [1,2,3] },
+        { name: "灯織", attr: "Vo", mental: 210, baseAttack: 1399, patternType: "transition", pattern: "312" }
       ] }
     },
     ele_best: {
       name: "エレぇベスト",
-      middle: { judgeHp: 12000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vi", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Vo", baseAttack: 850, patternType: "transition", pattern: "231" }
+      middle: { judgeHp: 35000, meDamage: 18, judgeReactionCount: 3, rivals: [
+        { name: "めぐる", attr: "Da", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Da", mental: 270, baseAttack: 1600, patternType: "spear", pattern: [1,2,3] },
+        { name: "三峰", attr: "Vi", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 18000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vi", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Vo", baseAttack: 1150, patternType: "transition", pattern: "231" }
+      master: { judgeHp: 52500, meDamage: 24, judgeReactionCount: 3, rivals: [
+        { name: "めぐる", attr: "Da", mental: 270, baseAttack: 3200, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", mental: 270, baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
+        { name: "咲耶", attr: "Da", mental: 270, baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
+        { name: "三峰", attr: "Vi", mental: 270, baseAttack: 3200, patternType: "transition", pattern: "321" }
       ] }
     },
     spot_light: {
       name: "SPOT LIGHT のせいにして…",
-      middle: { judgeHp: 40000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 1800, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 1700, patternType: "transition", pattern: "132" },
-        { name: "Rival C", attr: "Vi", baseAttack: 1600, patternType: "spear", pattern: [2,1,3] }
+      middle: { judgeHp: 40000, meDamage: 19, judgeReactionCount: 3, rivals: [
+        { name: "凛世", attr: "Da", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Vo", mental: 300, baseAttack: 2542, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vi", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [3,2,1] }
       ] },
-      master: { judgeHp: 60000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2500, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2400, patternType: "transition", pattern: "132" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2300, patternType: "spear", pattern: [2,1,3] }
+      master: { judgeHp: 60000, meDamage: 25, judgeReactionCount: 3, rivals: [
+        { name: "凛世", attr: "Da", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vi", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [2,1,3] }
       ] }
     },
     odotteiitomo: {
       name: "踊っていいとも？増刊号",
-      middle: { judgeHp: 52000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2100, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2000, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 1900, patternType: "spear", pattern: [3,2,1] }
+      middle: { judgeHp: 52000, meDamage: 26, judgeReactionCount: 3, rivals: [
+        { name: "灯織", attr: "Da", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "312" },
+        { name: "めぐる", attr: "Vo", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Vo", mental: 350, baseAttack: 3050, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 78000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3000, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2900, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2800, patternType: "spear", pattern: [3,2,1] }
+      master: { judgeHp: 78000, meDamage: 35, judgeReactionCount: 3, rivals: [
+        { name: "灯織", attr: "Da", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
+        { name: "めぐる", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "321" }
       ] }
     },
     the_legend: {
       name: "THE LEGEND",
-      middle: { judgeHp: 75000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2600, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2500, patternType: "transition", pattern: "231" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2400, patternType: "spear", pattern: [2,3,1] }
+      middle: { judgeHp: 75000, meDamage: 30, judgeReactionCount: 3, rivals: [
+        { name: "咲耶", attr: "Vi", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", mental: 470, baseAttack: 4250, patternType: "transition", pattern: "321" },
+        { name: "霧子", attr: "Vo", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [3,1,2] },
+        { name: "果穂", attr: "Vo", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [1,2,3] },
+        { name: "真乃", attr: "Da", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [1,2,3] }
       ] },
-      master: { judgeHp: 112500, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3600, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 3500, patternType: "transition", pattern: "231" },
-        { name: "Rival C", attr: "Vi", baseAttack: 3400, patternType: "spear", pattern: [2,3,1] }
+      master: { judgeHp: 112500, meDamage: 40, judgeReactionCount: 3, rivals: [
+        { name: "咲耶", attr: "Vi", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
+        { name: "結華", attr: "Da", mental: 470, baseAttack: 8500, patternType: "transition", pattern: "231" },
+        { name: "霧子", attr: "Vo", mental: 470, baseAttack: 8500, patternType: "transition", pattern: "231" },
+        { name: "果穂", attr: "Vo", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
+        { name: "真乃", attr: "Da", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] }
       ] }
     },
     nanairo: {
       name: "七彩メモリーズ",
-      middle: { judgeHp: 90000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2800, patternType: "transition", pattern: "312" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2700, patternType: "spear", pattern: [2,1,3] }
+      middle: { judgeHp: 90000, meDamage: 36, judgeReactionCount: 3, rivals: [
+        { name: "灯織", attr: "Vi", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "132" },
+        { name: "咲耶", attr: "Vo", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "312" },
+        { name: "結華", attr: "Vi", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "123" },
+        { name: "霧子", attr: "Vo", mental: 520, baseAttack: 7245, patternType: "spear", pattern: [1,3,2] },
+        { name: "樹里", attr: "Da", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 135000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 4200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 4100, patternType: "transition", pattern: "312" },
-        { name: "Rival C", attr: "Vi", baseAttack: 4000, patternType: "spear", pattern: [2,1,3] }
+      master: { judgeHp: 135000, meDamage: 48, judgeReactionCount: 3, rivals: [
+        { name: "灯織", attr: "Vi", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "123" },
+        { name: "咲耶", attr: "Vo", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "123" },
+        { name: "結華", attr: "Vi", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "213" },
+        { name: "霧子", attr: "Vo", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "213" },
+        { name: "樹里", attr: "Da", mental: 520, baseAttack: 11592, patternType: "spear", pattern: [1,2,3] }
       ] }
     },
     utahime: {
       name: "歌姫楽宴",
-      middle: { judgeHp: 144000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3400, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 3300, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 3200, patternType: "spear", pattern: [3,1,2] }
+      middle: { judgeHp: 144000, meDamage: 40, judgeReactionCount: 3, rivals: [
+        { name: "凛世", attr: "Vi", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Da", mental: 600, baseAttack: 10551, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vo", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Da", mental: 600, baseAttack: 10551, patternType: "transition", pattern: "312" }
       ] },
-      master: { judgeHp: 216000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 5200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 5100, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 5000, patternType: "spear", pattern: [3,1,2] }
+      master: { judgeHp: 216000, meDamage: 53, judgeReactionCount: 3, rivals: [
+        { name: "凛世", attr: "Vi", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [2,3,1] },
+        { name: "夏葉", attr: "Vo", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Da", mental: 600, baseAttack: 15828, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vo", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Da", mental: 600, baseAttack: 15828, patternType: "transition", pattern: "312" }
       ] }
     }
   },
@@ -2295,7 +2321,7 @@ function readConfig() {
     difficulty: val("difficulty"),
     w: num(val("wValue"), 0),
     popularity: [val("pop1"), val("pop2"), val("pop3")],
-    turnCount: Math.max(1, Math.min(2, +val("turnCount") || 2)),
+    turnCount: Math.max(1, Math.min(3, +val("turnCount") || 3)),
     iterations: +val("iterations") || 5000,
     rivalJudgeMultiplier: num(val("rivalJudgeMultiplier"), 1.0),
     enableJudgeReaction: val("enableJudgeReaction") === "1",
@@ -2722,6 +2748,14 @@ function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffI
   return x;
 }
 
+
+function sampleRivalJudgeMultiplier() {
+  const r = Math.random();
+  if (r < 1/3) return 1.5;
+  if (r < 2/3) return 1.1;
+  return 1.0;
+}
+
 function applyRivalActions({ judgeHp, cfg, audition, turn }) {
   let totalDamage = 0;
   const logs = [];
@@ -2732,7 +2766,7 @@ function applyRivalActions({ judgeHp, cfg, audition, turn }) {
     const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
     if (!targetAttr) return;
 
-    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const raw = Math.floor(rival.baseAttack * sampleRivalJudgeMultiplier() * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
     const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
     judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
     totalDamage += eff;
@@ -3427,6 +3461,7 @@ function deepClone(x) {
 const UTAHIME_WORKER_SCRIPT = `
 const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
 const ATTRS = ["Vo","Da","Vi"];
+function sampleRivalJudgeMultiplier() { const r = Math.random(); if (r < 1/3) return 1.5; if (r < 2/3) return 1.1; return 1.0; }
 
 self.onmessage = function(e) {
   const { jobId, type, payload } = e.data || {};
@@ -3824,7 +3859,7 @@ function applyRivalActions({ judgeHp, cfg, audition, turn }) {
   (audition.rivals || []).forEach(rival => {
     const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
     if (!targetAttr) return;
-    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const raw = Math.floor(rival.baseAttack * sampleRivalJudgeMultiplier() * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
     const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
     judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
     totalDamage += eff;
