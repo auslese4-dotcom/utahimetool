@@ -1,119 +1,10 @@
-<!DOCTYPE html>
-<html lang="ja">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex, nofollow" />
-  <title>歌姫計算ツール（限定公開）</title>
-  <style>
-    :root{
-      --bg1:#eef4ff;
-      --bg2:#f9fbff;
-      --card:#ffffff;
-      --line:#d9e3f2;
-      --text:#1d2433;
-      --muted:#667089;
-      --accent:#4063ff;
-      --accent2:#5b7bff;
-      --shadow:0 18px 46px rgba(35,56,118,.12);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
-      background:
-        radial-gradient(circle at top left, #ffffff 0%, rgba(255,255,255,.75) 18%, rgba(255,255,255,0) 40%),
-        linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:var(--text);
-      min-height:100vh;
-    }
-    .screen{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-    .auth-card{
-      width:min(100%, 460px);
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .auth-head{
-      padding:28px 26px 18px;
-      background:
-        linear-gradient(135deg, rgba(64,99,255,.10), rgba(64,99,255,.02)),
-        linear-gradient(180deg,#ffffff,#fbfdff);
-      border-bottom:1px solid #edf2fb;
-    }
-    .auth-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 12px;
-      border-radius:999px;
-      background:#eef3ff;
-      color:#3150d5;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.02em;
-      margin-bottom:14px;
-    }
-    .auth-title{margin:0 0 8px;font-size:28px;line-height:1.2;}
-    .auth-sub{margin:0;color:var(--muted);font-size:14px;line-height:1.7;}
-    .auth-body{padding:22px 26px 26px;}
-    .login-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-    .login-label{font-size:13px;color:var(--muted);font-weight:700;}
-    .input-wrap{position:relative;}
-    .login-input{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px 46px 14px 14px;
-      font-size:16px;
-      background:#fff;
-      color:var(--text);
-      outline:none;
-    }
-    .login-input:focus{border-color:#aac0ff;box-shadow:0 0 0 4px rgba(64,99,255,.12);}
-    .toggle{
-      position:absolute;right:10px;top:50%;transform:translateY(-50%);
-      border:0;background:transparent;color:#5870c8;font-size:13px;font-weight:800;
-      cursor:pointer;width:auto;padding:6px 8px;border-radius:10px;
-    }
-    .toggle:hover{background:#f3f6ff}
-    .login-btn{
-      width:100%;
-      border:0;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:800;cursor:pointer;
-      color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));
-      box-shadow:0 12px 28px rgba(64,99,255,.22);
-    }
-    .error{
-      display:none;margin-top:12px;padding:12px 14px;border-radius:14px;
-      background:#fff1f3;border:1px solid #ffd2da;color:#c12947;font-size:13px;font-weight:700;
-    }
-    .error.show{display:block}
-    .hint{
-      margin-top:14px;padding:12px 14px;border-radius:14px;border:1px dashed #d8e1f4;
-      background:#fbfcff;color:var(--muted);font-size:12px;line-height:1.7;
-    }
-    .content{display:none;min-height:100vh;}
-    .content.show{display:block}
-    @media (max-width: 640px){
-      .screen{padding:14px}
-      .auth-card{border-radius:20px}
-      .auth-head{padding:24px 18px 16px}
-      .auth-body{padding:18px 18px 20px}
-      .auth-title{font-size:24px}
-    }
-  </style>
-  
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
   <title>歌姫 全返し期待値計算機</title>
   <style>
     :root{
@@ -566,34 +457,106 @@
 
   </style>
 
+  <style>
+    :root{
+      --login-bg1:#eef4ff;
+      --login-bg2:#f9fbff;
+      --login-card:#ffffff;
+      --login-line:#d9e3f2;
+      --login-text:#1d2433;
+      --login-muted:#667089;
+      --login-accent:#4063ff;
+      --login-accent2:#5b7bff;
+      --login-shadow:0 18px 46px rgba(35,56,118,.12);
+    }
+    #loginScreen{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, rgba(255,255,255,.75) 18%, rgba(255,255,255,0) 40%),
+        linear-gradient(135deg,var(--login-bg1),var(--login-bg2));
+    }
+    .auth-card{
+      width:min(100%, 460px);background:var(--login-card);border:1px solid var(--login-line);
+      border-radius:24px;box-shadow:var(--login-shadow);overflow:hidden;
+    }
+    .auth-head{
+      padding:28px 26px 18px;
+      background:
+        linear-gradient(135deg, rgba(64,99,255,.10), rgba(64,99,255,.02)),
+        linear-gradient(180deg,#ffffff,#fbfdff);
+      border-bottom:1px solid #edf2fb;
+    }
+    .auth-badge{
+      display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;
+      background:#eef3ff;color:#3150d5;font-size:12px;font-weight:800;letter-spacing:.02em;margin-bottom:14px;
+    }
+    .auth-title{margin:0 0 8px;font-size:28px;line-height:1.2;}
+    .auth-sub{margin:0;color:var(--login-muted);font-size:14px;line-height:1.7;}
+    .auth-body{padding:22px 26px 26px;}
+    .login-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+    .login-label{font-size:13px;color:var(--login-muted);font-weight:700;}
+    .login-input-wrap{position:relative;}
+    .login-input{
+      width:100%;border:1px solid var(--login-line);border-radius:14px;padding:14px 46px 14px 14px;
+      font-size:16px;background:#fff;color:var(--login-text);outline:none;
+    }
+    .login-input:focus{border-color:#aac0ff;box-shadow:0 0 0 4px rgba(64,99,255,.12);}
+    .login-toggle{
+      position:absolute;right:10px;top:50%;transform:translateY(-50%);
+      border:0;background:transparent;color:#5870c8;font-size:13px;font-weight:800;cursor:pointer;
+      width:auto;padding:6px 8px;border-radius:10px;
+    }
+    .login-toggle:hover{background:#f3f6ff}
+    .login-btn{
+      width:100%;border:0;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:800;cursor:pointer;
+      color:#fff;background:linear-gradient(135deg,var(--login-accent),var(--login-accent2));
+      box-shadow:0 12px 28px rgba(64,99,255,.22);
+    }
+    .login-error{
+      display:none;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff1f3;
+      border:1px solid #ffd2da;color:#c12947;font-size:13px;font-weight:700;
+    }
+    .login-error.show{display:block}
+    .login-hint{
+      margin-top:14px;padding:12px 14px;border-radius:14px;border:1px dashed #d8e1f4;
+      background:#fbfcff;color:var(--login-muted);font-size:12px;line-height:1.7;
+    }
+    #appContent{display:none;min-height:100vh;}
+    #appContent.show{display:block;}
+    @media (max-width:640px){
+      #loginScreen{padding:14px}
+      .auth-card{border-radius:20px}
+      .auth-head{padding:24px 18px 16px}
+      .auth-body{padding:18px 18px 20px}
+      .auth-title{font-size:24px}
+    }
+  </style>
+
 </head>
+
 <body>
-  <div id="loginScreen" class="screen">
+  <div id="loginScreen">
     <div class="auth-card">
       <div class="auth-head">
         <div class="auth-badge">限定公開 / Password Protected</div>
         <h1 class="auth-title">歌姫計算ツール</h1>
-        <p class="auth-sub">
-          このページは限定公開です。<br>
-          パスワードを入力するとツール本体が表示されます。
-        </p>
+        <p class="auth-sub">このページは限定公開です。<br>パスワードを入力するとツール本体が表示されます。</p>
       </div>
       <div class="auth-body">
         <div class="login-field">
           <label class="login-label" for="passwordInput">パスワード</label>
-          <div class="input-wrap">
-            <input id="passwordInput" class="login-input" type="password" placeholder="パスワードを入力" autocomplete="current-password" />
-            <button id="togglePasswordBtn" class="toggle" type="button">表示</button>
+          <div class="login-input-wrap">
+            <input id="passwordInput" class="login-input" type="password" placeholder="パスワードを入力" autocomplete="current-password">
+            <button id="togglePasswordBtn" class="login-toggle" type="button">表示</button>
           </div>
         </div>
         <button id="loginBtn" class="login-btn" type="button">ログイン</button>
-        <div id="loginError" class="error">パスワードが違います。</div>
-        <div class="hint">ログインは1回だけです。検索除外（noindex）つきです。</div>
+        <div id="loginError" class="login-error">パスワードが違います。</div>
+        <div class="login-hint">Worker版です。重い計算中もUIが固まりにくくなります。</div>
       </div>
     </div>
   </div>
-
-  <div id="appContent" class="content">
+  <div id="appContent">
 
 <div class="wrap">
   <div class="topbar">
@@ -617,7 +580,7 @@
   </div>
 
   <div class="help" style="margin-bottom:10px;">
-    この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。シミュレーションは分割実行で固まりにくくしています。
+    この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。
     共有時はそのままHTMLを置くだけで使えます。
   </div>
 
@@ -1279,8 +1242,6 @@ function saveLocalDebounced() {
 function yieldToUI() {
   return new Promise(resolve => setTimeout(resolve, 0));
 }
-
-const MONTE_CARLO_CHUNK = 250;
 
 function nowTimeText() {
   const d = new Date();
@@ -2393,18 +2354,20 @@ async function runSimulation() {
   setText("simStatus", "単発シミュレーション中... 0%");
   await yieldToUI();
 
-  const result = await monteCarloSimulationAsync({
-    cfg, stats, deck, buffs, audition,
-    onProgress: (done, total) => {
-      const p = Math.min(100, Math.floor(done / total * 100));
-      setText("simStatus", `単発シミュレーション中... ${p}%`);
-    }
-  });
-
-  renderResult(result, cfg);
-  setText("simStatus", "単発シミュレーション完了");
-  addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
-  saveLocal();
+  try {
+    const result = await runWorkerTask("simulate", { cfg, stats, deck, buffs, audition }, (p) => {
+      const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
+      setText("simStatus", `単発シミュレーション中... ${rate}%`);
+    });
+    renderResult(result, cfg);
+    setText("simStatus", "単発シミュレーション完了");
+    addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
+    saveLocal();
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "単発シミュレーション失敗");
+    alert("シミュレーションに失敗しました");
+  }
 }
 
 function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
@@ -2426,53 +2389,6 @@ function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
     playerDamageSum += r.playerDamage;
     rivalDamageSum += r.rivalDamage;
     if (i < 5) logs.push(r.logText);
-  }
-
-  return {
-    trials,
-    killAllRate: killAllCount / trials,
-    judgeKillRates: {
-      Vo: judgeKillCounts.Vo / trials,
-      Da: judgeKillCounts.Da / trials,
-      Vi: judgeKillCounts.Vi / trials
-    },
-    avgRemain: {
-      Vo: remainSum.Vo / trials,
-      Da: remainSum.Da / trials,
-      Vi: remainSum.Vi / trials
-    },
-    avgPlayerDamage: playerDamageSum / trials,
-    avgRivalDamage: rivalDamageSum / trials,
-    sampleLogs: logs
-  };
-}
-
-async function monteCarloSimulationAsync({ cfg, stats, deck, buffs, audition, onProgress }) {
-  let killAllCount = 0;
-  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
-  let remainSum = { Vo:0, Da:0, Vi:0 };
-  let playerDamageSum = 0;
-  let rivalDamageSum = 0;
-  const logs = [];
-  const trials = cfg.iterations;
-
-  for (let start = 0; start < trials; start += MONTE_CARLO_CHUNK) {
-    const end = Math.min(trials, start + MONTE_CARLO_CHUNK);
-
-    for (let i = start; i < end; i++) {
-      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
-      if (r.killAll) killAllCount++;
-      ATTRS.forEach(a => {
-        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
-        remainSum[a] += Math.max(0, r.finalHp[a]);
-      });
-      playerDamageSum += r.playerDamage;
-      rivalDamageSum += r.rivalDamage;
-      if (i < 5) logs.push(r.logText);
-    }
-
-    if (onProgress) onProgress(end, trials);
-    await yieldToUI();
   }
 
   return {
@@ -2941,15 +2857,24 @@ async function runCampaignAnalysis() {
   setText("simStatus", "周回分析中... 0%");
   await yieldToUI();
 
-  const result = await analyzeCampaignAsync({
-    cfg, stats, deck, buffs, schedule,
-    onProgress: (label) => setText("simStatus", label)
-  });
-
-  renderCampaignResult(result, cfg);
-  setText("simStatus", "周回分析完了");
-  addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
-  saveLocal();
+  try {
+    const result = await runWorkerTask("campaign", { cfg, stats, deck, buffs, schedule, auditions: APP_DATA.auditions }, (p) => {
+      if (p.phase === "perAudition") {
+        setText("simStatus", `周回分析中... オデ別試算 ${p.done}/${p.total}`);
+      } else {
+        const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
+        setText("simStatus", `周回分析中... 全体成功率集計 ${rate}%`);
+      }
+    });
+    renderCampaignResult(result, cfg);
+    setText("simStatus", "周回分析完了");
+    addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
+    saveLocal();
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "周回分析失敗");
+    alert("周回分析に失敗しました");
+  }
 }
 
 function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
@@ -2998,77 +2923,6 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
 
     if (successAll) allSuccessCount++;
     if (i < 5) logs.push(lines.join("\n"));
-  }
-
-  return {
-    remainCount: schedule.length,
-    perAudition,
-    allSuccessRate: allSuccessCount / trials,
-    trials,
-    sampleLogs: logs
-  };
-}
-
-async function analyzeCampaignAsync({ cfg, stats, deck, buffs, schedule, onProgress }) {
-  const perAudition = [];
-  for (let idx = 0; idx < schedule.length; idx++) {
-    const step = schedule[idx];
-    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1);
-    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2);
-    const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
-
-    if (onProgress) onProgress(`周回分析中... オデ別試算 ${idx + 1}/${schedule.length}`);
-    const res1 = await monteCarloSimulationAsync({ cfg: baseCfg1, stats, deck, buffs, audition });
-    const res2 = await monteCarloSimulationAsync({ cfg: baseCfg2, stats, deck, buffs, audition });
-
-    perAudition.push({
-      index: idx + 1,
-      point: step.point,
-      label: step.label,
-      auditionId: step.auditionId,
-      auditionName: APP_DATA.auditions[step.auditionId]?.name || step.auditionId,
-      w: step.w,
-      oneTurnRate: res1.killAllRate,
-      twoTurnRate: res2.killAllRate
-    });
-    await yieldToUI();
-  }
-
-  const trials = cfg.iterations;
-  let allSuccessCount = 0;
-  const logs = [];
-
-  for (let start = 0; start < trials; start += MONTE_CARLO_CHUNK) {
-    const end = Math.min(trials, start + MONTE_CARLO_CHUNK);
-
-    for (let i = start; i < end; i++) {
-      let successAll = true;
-      const lines = [];
-
-      for (let s = 0; s < schedule.length; s++) {
-        const step = schedule[s];
-        const stepCfg = buildCfgForCampaignStep(cfg, step, 2);
-        const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
-        const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
-
-        if (r.killAll) {
-          if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
-        } else {
-          successAll = false;
-          if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 失敗`);
-          break;
-        }
-      }
-
-      if (successAll) allSuccessCount++;
-      if (i < 5) logs.push(lines.join("\n"));
-    }
-
-    if (onProgress) {
-      const p = Math.min(100, Math.floor(end / trials * 100));
-      onProgress(`周回分析中... 全体成功率集計 ${p}%`);
-    }
-    await yieldToUI();
   }
 
   return {
@@ -3142,18 +2996,24 @@ async function runLoadoutCompare() {
   setText('compareStatus', '固定比較を実行中... 0%', true);
   await yieldToUI();
 
-  const activeResult = await runSimulationForLoadoutAsync(active, cfg, audition, (done, total) => {
-    const p = Math.floor(done / total * 50);
-    setText('compareStatus', `固定比較を実行中... ${p}%`, true);
-  });
-  const pinnedResult = await runSimulationForLoadoutAsync(pinned, cfg, audition, (done, total) => {
-    const p = 50 + Math.floor(done / total * 50);
-    setText('compareStatus', `固定比較を実行中... ${p}%`, true);
-  });
-
-  renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
-  setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
-  addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  try {
+    const result = await runWorkerTask("compare", { active, pinned, cfg, audition }, (p) => {
+      if (p.phase === "active") {
+        const rate = p.total ? Math.floor((p.done / p.total) * 50) : 0;
+        setText('compareStatus', `固定比較を実行中... ${rate}%`, true);
+      } else {
+        const rate = p.total ? 50 + Math.floor((p.done / p.total) * 50) : 50;
+        setText('compareStatus', `固定比較を実行中... ${rate}%`, true);
+      }
+    });
+    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
+    setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
+    addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  } catch (err) {
+    console.error(err);
+    setText('compareStatus', '固定比較失敗', true);
+    alert("固定比較に失敗しました");
+  }
 }
 
 function runSimulationForLoadout(loadout, cfg, audition) {
@@ -3176,28 +3036,6 @@ function runSimulationForLoadout(loadout, cfg, audition) {
     return { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
   }
   return monteCarloSimulation({ cfg, stats, deck, buffs, audition });
-}
-
-async function runSimulationForLoadoutAsync(loadout, cfg, audition, onProgress) {
-  const deck = (loadout.cards || []).filter(c => c.enabled);
-  const buffs = (loadout.buffs || []).filter(b => b.enabled);
-  const stats = {
-    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
-    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
-      acc.vo += +s.vo || 0;
-      acc.da += +s.da || 0;
-      acc.vi += +s.vi || 0;
-      return acc;
-    }, { vo:0, da:0, vi:0 })),
-    supports: (loadout.supports || []).reduce((acc, s) => {
-      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
-      return acc;
-    }, {})
-  };
-  if (!deck.length) {
-    return { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
-  }
-  return await monteCarloSimulationAsync({ cfg, stats, deck, buffs, audition, onProgress });
 }
 
 function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
@@ -3585,6 +3423,488 @@ function deepClone(x) {
   return JSON.parse(JSON.stringify(x));
 }
 
+
+const UTAHIME_WORKER_SCRIPT = `
+const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
+const ATTRS = ["Vo","Da","Vi"];
+
+self.onmessage = function(e) {
+  const { jobId, type, payload } = e.data || {};
+  try {
+    if (type === "simulate") {
+      const result = monteCarloSimulation(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    if (type === "campaign") {
+      const result = analyzeCampaign(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    if (type === "compare") {
+      const result = compareLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    throw new Error("Unknown worker task: " + type);
+  } catch (err) {
+    postMessage({ jobId, kind: "error", message: String(err && err.message ? err.message : err) });
+  }
+};
+
+function monteCarloSimulation({ cfg, stats, deck, buffs, audition }, progressCb) {
+  let killAllCount = 0;
+  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
+  let remainSum = { Vo:0, Da:0, Vi:0 };
+  let playerDamageSum = 0;
+  let rivalDamageSum = 0;
+  const logs = [];
+  const trials = cfg.iterations;
+  const chunk = 250;
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
+      if (r.killAll) killAllCount++;
+      ATTRS.forEach(a => {
+        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
+        remainSum[a] += Math.max(0, r.finalHp[a]);
+      });
+      playerDamageSum += r.playerDamage;
+      rivalDamageSum += r.rivalDamage;
+      if (i < 5) logs.push(r.logText);
+    }
+    if (progressCb) progressCb({ done: end, total: trials });
+  }
+
+  return {
+    trials,
+    killAllRate: killAllCount / trials,
+    judgeKillRates: {
+      Vo: judgeKillCounts.Vo / trials,
+      Da: judgeKillCounts.Da / trials,
+      Vi: judgeKillCounts.Vi / trials
+    },
+    avgRemain: {
+      Vo: remainSum.Vo / trials,
+      Da: remainSum.Da / trials,
+      Vi: remainSum.Vi / trials
+    },
+    avgPlayerDamage: playerDamageSum / trials,
+    avgRivalDamage: rivalDamageSum / trials,
+    sampleLogs: logs
+  };
+}
+
+function compareLoadouts({ active, pinned, cfg, audition }, progressCb) {
+  const activeDeck = (active.cards || []).filter(c => c.enabled);
+  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
+  const activeStats = loadoutToStats(active);
+
+  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
+  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
+  const pinnedStats = loadoutToStats(pinned);
+
+  const activeResult = activeDeck.length
+    ? monteCarloSimulation({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, audition }, p => {
+        if (progressCb) progressCb({ phase: "active", done: p.done, total: p.total });
+      })
+    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+
+  const pinnedResult = pinnedDeck.length
+    ? monteCarloSimulation({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, audition }, p => {
+        if (progressCb) progressCb({ phase: "pinned", done: p.done, total: p.total });
+      })
+    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+
+  return { activeResult, pinnedResult };
+}
+
+function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progressCb) {
+  const perAudition = [];
+  for (let idx = 0; idx < schedule.length; idx++) {
+    const step = schedule[idx];
+    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+    const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+
+    const res1 = monteCarloSimulation({ cfg: baseCfg1, stats, deck, buffs, audition });
+    const res2 = monteCarloSimulation({ cfg: baseCfg2, stats, deck, buffs, audition });
+
+    perAudition.push({
+      index: idx + 1,
+      point: step.point,
+      label: step.label,
+      auditionId: step.auditionId,
+      auditionName: auditions?.[step.auditionId]?.name || step.auditionId,
+      w: step.w,
+      oneTurnRate: res1.killAllRate,
+      twoTurnRate: res2.killAllRate
+    });
+    if (progressCb) progressCb({ phase: "perAudition", done: idx + 1, total: schedule.length });
+  }
+
+  const trials = cfg.iterations;
+  const chunk = 250;
+  let allSuccessCount = 0;
+  const logs = [];
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      let successAll = true;
+      const lines = [];
+      for (let s = 0; s < schedule.length; s++) {
+        const step = schedule[s];
+        const stepCfg = buildCfgForCampaignStep(cfg, step, 2, auditions);
+        const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+        const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
+        if (r.killAll) {
+          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 成功");
+        } else {
+          successAll = false;
+          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 失敗");
+          break;
+        }
+      }
+      if (successAll) allSuccessCount++;
+      if (i < 5) logs.push(lines.join("\\n"));
+    }
+    if (progressCb) progressCb({ phase: "campaign", done: end, total: trials });
+  }
+
+  return {
+    remainCount: schedule.length,
+    perAudition,
+    allSuccessRate: allSuccessCount / trials,
+    trials,
+    sampleLogs: logs
+  };
+}
+
+function buildCfgForCampaignStep(baseCfg, step, turnCount, auditions) {
+  const data = auditions?.[step.auditionId]?.[baseCfg.difficulty];
+  const hp = data?.judgeHp || 0;
+  return {
+    ...baseCfg,
+    auditionId: step.auditionId,
+    w: step.w,
+    turnCount,
+    judgeHp: { Vo: hp, Da: hp, Vi: hp }
+  };
+}
+
+function loadoutToStats(loadout) {
+  return {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0;
+      acc.da += +s.da || 0;
+      acc.vi += +s.vi || 0;
+      return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+}
+
+function simulateOneRun({ cfg, stats, deck, buffs, audition, log }) {
+  const judgeHp = { Vo: cfg.judgeHp.Vo, Da: cfg.judgeHp.Da, Vi: cfg.judgeHp.Vi };
+  let playerMental = cfg.playerMental;
+  let playerDamage = 0;
+  let rivalDamage = 0;
+  const logLines = [];
+  const shuffledDeck = shuffle(deck.slice());
+  let hand = shuffledDeck.splice(0, Math.min(3, shuffledDeck.length));
+  const buffStates = buffs.map(b => ({ id: b.id, activated: false, attempted: false, remainingUses: 0 }));
+
+  for (let turn = 1; turn <= cfg.turnCount; turn++) {
+    if (aliveJudgeAttrs(judgeHp).length === 0 || playerMental <= 0) break;
+    const action = chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn });
+
+    if (action) {
+      const damageResult = applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn });
+      playerDamage += damageResult.effectiveDamage;
+      if (log) {
+        logLines.push("T" + turn + " PLAYER: " + action.card.name + " / " + (action.card.targetMode === "all_judges" ? "全体" : action.targetAttr) + " / eff=" + damageResult.effectiveDamage + " / raw=" + damageResult.rawDamage + " / buffs=" + (damageResult.activatedBuffNames.join(",") || "-"));
+      }
+      hand = hand.filter(c => c.id !== action.card.id);
+    } else if (log) {
+      logLines.push("T" + turn + " PLAYER: actionなし");
+    }
+
+    if (aliveJudgeAttrs(judgeHp).length === 0) break;
+    const rivalTurn = applyRivalActions({ judgeHp, cfg, audition, turn });
+    rivalDamage += rivalTurn.totalDamage;
+    if (log) rivalTurn.logs.forEach(x => logLines.push("T" + turn + " " + x));
+
+    if (cfg.enableJudgeReaction && aliveJudgeAttrs(judgeHp).length > 0) {
+      playerMental = applyJudgeReactionsSimplified({ playerMental, audition });
+      if (log) logLines.push("T" + turn + " JUDGE REACTION: playerMental=" + playerMental);
+    }
+    if (turn < cfg.turnCount && shuffledDeck.length > 0) hand.push(shuffledDeck.shift());
+  }
+
+  return { killAll: ATTRS.every(a => judgeHp[a] <= 0), finalHp: { ...judgeHp }, playerDamage, rivalDamage, logText: logLines.join("\\n") };
+}
+
+function chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn }) {
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!hand.length || !aliveTargets.length) return null;
+  let best = null;
+  let bestScore = -Infinity;
+
+  hand.forEach(card => {
+    const candidates = card.targetMode === "all_judges" ? [{ card, targetAttr: null }] : aliveTargets.map(targetAttr => ({ card, targetAttr }));
+    candidates.forEach(candidate => {
+      const tmpJudgeHp = { ...judgeHp };
+      const tmpBuffStates = deepClone(buffStates);
+      const result = applyPlayerAction({ action: candidate, judgeHp: tmpJudgeHp, stats, cfg, buffs, buffStates: tmpBuffStates, turn, dryRun: true });
+      const remainScore = Math.max(0, tmpJudgeHp.Vo) + Math.max(0, tmpJudgeHp.Da) + Math.max(0, tmpJudgeHp.Vi);
+      const killBonus = (tmpJudgeHp.Vo <= 0 ? 1 : 0) + (tmpJudgeHp.Da <= 0 ? 1 : 0) + (tmpJudgeHp.Vi <= 0 ? 1 : 0);
+      const score = result.effectiveDamage + killBonus * 100000 - remainScore;
+      if (score > bestScore) { bestScore = score; best = candidate; }
+    });
+  });
+  return best;
+}
+
+function applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun=false }) {
+  const card = action.card;
+  if (card.targetMode === "all_judges") {
+    return applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+  }
+  return applyPlayerActionSingle({ card, targetAttr: action.targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+}
+
+function applyPlayerActionSingle({ card, targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun });
+  const rawDamage = calcCardDamageToJudge(card, targetAttr, stats, cfg.w, activeBuffInfo);
+  const effectiveDamage = Math.min(rawDamage, Math.max(0, judgeHp[targetAttr]));
+  judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - effectiveDamage);
+  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  return {
+    rawDamage, effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id); return b ? b.name : id;
+    })
+  };
+}
+
+function applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr: null, turn, buffs, buffStates, dryRun });
+  let rawDamage = 0, effectiveDamage = 0;
+  ATTRS.forEach(judgeAttr => {
+    if (judgeHp[judgeAttr] <= 0) return;
+    const raw = calcCardDamageToJudge(card, judgeAttr, stats, cfg.w, activeBuffInfo);
+    const eff = Math.min(raw, Math.max(0, judgeHp[judgeAttr]));
+    judgeHp[judgeAttr] = Math.max(0, judgeHp[judgeAttr] - eff);
+    rawDamage += raw; effectiveDamage += eff;
+  });
+  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  return {
+    rawDamage, effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id); return b ? b.name : id;
+    })
+  };
+}
+
+function evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun }) {
+  const totalPercentByAttr = { Vo:0, Da:0, Vi:0 };
+  const activatedIds = [];
+  buffs.forEach(buff => {
+    const st = buffStates.find(x => x.id === buff.id);
+    if (!st || !buff.enabled) return;
+    if (st.remainingUses > 0) {
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+      return;
+    }
+    if (st.attempted) return;
+    if (!isBuffConditionMet(buff, { card, targetAttr, turn })) return;
+    if (!dryRun) st.attempted = true;
+    if (Math.random() <= buff.procRate) {
+      if (!dryRun) { st.activated = true; st.remainingUses = Math.max(1, buff.uses); }
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+    }
+  });
+  return { totalPercentByAttr, activatedIds };
+}
+
+function consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo }) {
+  activeBuffInfo.activatedIds.forEach(id => {
+    const st = buffStates.find(x => x.id === id);
+    if (!st) return;
+    if (st.remainingUses > 0) { st.remainingUses--; if (st.remainingUses < 0) st.remainingUses = 0; }
+  });
+}
+
+function applyBuffPercent(targetMap, buff) {
+  if (buff.attr === "ALL") {
+    targetMap.Vo += num(buff.percentVo, 0);
+    targetMap.Da += num(buff.percentDa, 0);
+    targetMap.Vi += num(buff.percentVi, 0);
+  } else {
+    targetMap[buff.attr] += num(buff.percent, 0);
+  }
+}
+
+function isBuffConditionMet(buff, ctx) {
+  const c = buff.condition;
+  if (c === "always") return true;
+  if (c === "turn_gte_2") return ctx.turn >= 2;
+  if (c === "turn_gte_3") return ctx.turn >= 3;
+  if (c === "p_card") return ctx.card.kind === "P";
+  if (c === "s_card") return ctx.card.kind === "S";
+  if (c === "vo_card") return ctx.card.attackType === "Vo";
+  if (c === "da_card") return ctx.card.attackType === "Da";
+  if (c === "vi_card") return ctx.card.attackType === "Vi";
+  if (c === "all_card") return ctx.card.attackType === "ALL";
+  if (c === "exe_card") return ctx.card.attackType === "EXE";
+  return false;
+}
+
+function calcCardDamageToJudge(card, targetJudgeAttr, stats, w, buffInfo) {
+  if (card.attackType === "Vo" || card.attackType === "Da" || card.attackType === "Vi") {
+    return calcSingleAttrDamage({ card, usedAttr: card.attackType, targetJudgeAttr, stats, w, buffInfo, forceMatch: false });
+  }
+  if (card.attackType === "ALL") {
+    return ATTRS.reduce((sum, attr) => sum + calcSingleAttrDamage({ card, usedAttr: attr, targetJudgeAttr, stats, w, buffInfo, forceMatch: false }), 0);
+  }
+  if (card.attackType === "EXE") {
+    return calcSingleAttrDamage({ card, usedAttr: targetJudgeAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch: true });
+  }
+  return 0;
+}
+
+function getCardAppealRate(card, usedAttr) {
+  if (card.attackType === "ALL") {
+    if (usedAttr === "Vo") return num(card.rateVo, 0);
+    if (usedAttr === "Da") return num(card.rateDa, 0);
+    if (usedAttr === "Vi") return num(card.rateVi, 0);
+    return 0;
+  }
+  return num(card.rate, 0);
+}
+
+function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch }) {
+  const P = stats.p[usedAttr] || 0;
+  const S = stats.sTotal[usedAttr] || 0;
+  const ownerStats = card.kind === "S" ? (stats.supports[card.ownerId] || { Vo:0, Da:0, Vi:0 }) : null;
+  const iS = ownerStats ? (ownerStats[usedAttr] || 0) : 0;
+  let base = 0;
+  if (card.kind === "P") {
+    base = Math.floor(2 * P) + Math.floor(S * 0.2 * (1 + 0.1 * w));
+  } else {
+    base = Math.floor(0.5 * P) + Math.floor((S + 3 * iS) * 0.2 * (1 + 0.1 * w));
+  }
+  const buffPercent = buffInfo?.totalPercentByAttr?.[usedAttr] || 0;
+  const buffMul = 1 + buffPercent / 100;
+  const appealRate = getCardAppealRate(card, usedAttr);
+  const judgeMul = JUDGE_MULT[card.judge] || 1.0;
+  const matchMul = (forceMatch || usedAttr === targetJudgeAttr) ? 2 : 1;
+  let x = base;
+  x = Math.floor(x * buffMul);
+  x = Math.floor(x * appealRate);
+  x = Math.floor(x * judgeMul);
+  x = Math.floor(x * matchMul);
+  return x;
+}
+
+function applyRivalActions({ judgeHp, cfg, audition, turn }) {
+  let totalDamage = 0;
+  const logs = [];
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!aliveTargets.length) return { totalDamage, logs };
+  (audition.rivals || []).forEach(rival => {
+    const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
+    if (!targetAttr) return;
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
+    judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
+    totalDamage += eff;
+    logs.push(rival.name + ": " + targetAttr + " に " + eff);
+  });
+  return { totalDamage, logs };
+}
+
+function chooseRivalTarget(rival, judgeHp, popularity, turn) {
+  const alive = aliveJudgeAttrs(judgeHp);
+  if (!alive.length) return null;
+  if (rival.patternType === "spear") {
+    for (const rank of rival.pattern) {
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+  if (rival.patternType === "transition") {
+    const seq = String(rival.pattern).split("").map(x => +x);
+    for (let shift = 0; shift < seq.length; shift++) {
+      const idx = ((turn - 1) + shift) % seq.length;
+      const rank = seq[idx];
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+  return alive[0] || null;
+}
+
+function applyJudgeReactionsSimplified({ playerMental, audition }) {
+  return Math.max(0, playerMental - (audition.meDamage || 0));
+}
+
+function aliveJudgeAttrs(judgeHp) { return ATTRS.filter(a => judgeHp[a] > 0); }
+function normalizeAttrKeys(obj) { return { Vo: obj.vo ?? obj.Vo ?? 0, Da: obj.da ?? obj.Da ?? 0, Vi: obj.vi ?? obj.Vi ?? 0 }; }
+function num(v, def=0) { const n = +v; return isFinite(n) ? n : def; }
+function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+function deepClone(x) { return JSON.parse(JSON.stringify(x)); }
+`;
+
+let UTAHIME_WORKER_URL = null;
+function getUtahimeWorkerUrl() {
+  if (!UTAHIME_WORKER_URL) {
+    UTAHIME_WORKER_URL = URL.createObjectURL(new Blob([UTAHIME_WORKER_SCRIPT], { type: "text/javascript" }));
+  }
+  return UTAHIME_WORKER_URL;
+}
+
+function runWorkerTask(type, payload, onProgress) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(getUtahimeWorkerUrl());
+    const jobId = "job_" + Math.random().toString(36).slice(2);
+    worker.onmessage = (e) => {
+      const msg = e.data || {};
+      if (msg.jobId !== jobId) return;
+      if (msg.kind === "progress") {
+        if (onProgress) onProgress(msg.progress || {});
+        return;
+      }
+      if (msg.kind === "done") {
+        worker.terminate();
+        resolve(msg.result);
+        return;
+      }
+      if (msg.kind === "error") {
+        worker.terminate();
+        reject(new Error(msg.message || "Worker error"));
+      }
+    };
+    worker.onerror = (err) => {
+      worker.terminate();
+      reject(err);
+    };
+    worker.postMessage({ jobId, type, payload });
+  });
+}
+
+
 function triggerImportAppData() {
   const input = document.getElementById("importFileInput");
   if (input) input.click();
@@ -3672,9 +3992,7 @@ function exportStateForBackup_() {
 
 function applyImportedState_(payload) {
   const imported = normalizeImportedPayload_(payload);
-  if (!imported) {
-    throw new Error("このJSONはインポート対象として認識できませんでした。");
-  }
+  if (!imported) throw new Error("このJSONはインポート対象として認識できませんでした。");
   restoreState(cloneJson(imported));
   invalidatePreviewCache();
   renderAll();
@@ -3687,24 +4005,12 @@ function applyImportedState_(payload) {
 
 function normalizeImportedPayload_(payload) {
   if (!payload || typeof payload !== "object") return null;
-
-  // 新形式: { app:"utahime_calc", data:{...} }
   if (payload.app === "utahime_calc" && payload.data && typeof payload.data === "object") {
     return payload.data;
   }
-
-  // 旧形式: そのまま state
-  if (
-    payload.version ||
-    payload.loadouts ||
-    payload.sim ||
-    payload.base ||
-    payload.cards ||
-    payload.buffs
-  ) {
+  if (payload.version || payload.loadouts || payload.sim || payload.base || payload.cards || payload.buffs) {
     return payload;
   }
-
   return null;
 }
 
@@ -3715,12 +4021,10 @@ function isValidImportData_(payload) {
 </script>
 
   </div>
-
   <script>
     (() => {
       const PASSWORD = "pya";
       const STORAGE_KEY = "utahime_auth_ok_v1";
-
       const loginScreen = document.getElementById("loginScreen");
       const appContent = document.getElementById("appContent");
       const passwordInput = document.getElementById("passwordInput");
@@ -3732,17 +4036,14 @@ function isValidImportData_(payload) {
         loginScreen.style.display = "none";
         appContent.classList.add("show");
       }
-
       function showError() {
         loginError.classList.add("show");
         passwordInput.focus();
         passwordInput.select();
       }
-
       function clearError() {
         loginError.classList.remove("show");
       }
-
       function tryLogin() {
         if ((passwordInput.value || "") === PASSWORD) {
           sessionStorage.setItem(STORAGE_KEY, "1");
@@ -3762,15 +4063,14 @@ function isValidImportData_(payload) {
         if (e.key === "Enter") tryLogin();
       });
       passwordInput.addEventListener("input", clearError);
-
       togglePasswordBtn.addEventListener("click", () => {
         const isPassword = passwordInput.type === "password";
         passwordInput.type = isPassword ? "text" : "password";
         togglePasswordBtn.textContent = isPassword ? "非表示" : "表示";
       });
-
       passwordInput.focus();
     })();
   </script>
 </body>
+
 </html>
