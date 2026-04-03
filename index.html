@@ -710,8 +710,7 @@
             <label>ターン数</label>
             <select id="turnCount">
               <option value="1">1ターン</option>
-              <option value="2">2ターン</option>
-              <option value="3" selected>3ターン</option>
+              <option value="2" selected>2ターン</option>
             </select>
           </div>
           <div class="field">
@@ -947,7 +946,7 @@
         <div class="row">
           <div class="field"><button onclick="runSimulation()">単発シミュレーション実行</button></div>
           <div class="field"><button class="secondary" onclick="runCampaignAnalysis()">周回分析実行</button></div>
-          <div class="field"><button class="ghost" onclick="runLoadoutCompare()">固定比較を実行</button></div>
+          <div class="field"><button class="ghost" onclick="runLoadoutCompare()">固定編成の周回比較</button></div>
         </div>
         <div id="simStatus" class="status">待機中</div>
       </div>
@@ -969,54 +968,54 @@
 
 
       <div class="subsec">
-        <h3>固定比較結果</h3>
+        <h3>固定編成の周回比較</h3>
         <div class="compare-grid">
           <div class="compare-box compare-active" id="compareBoxActive">
             <div class="compare-title-badge">ACTIVE</div>
             <h4 id="compareActiveTitle">現在編成</h4>
-            <div class="compare-row"><span>全返し率</span><strong id="compareActiveKill">-</strong></div>
-            <div class="compare-row"><span>Vo撃破率</span><strong id="compareActiveVo">-</strong></div>
-            <div class="compare-row"><span>Da撃破率</span><strong id="compareActiveDa">-</strong></div>
-            <div class="compare-row"><span>Vi撃破率</span><strong id="compareActiveVi">-</strong></div>
-            <div class="compare-row"><span>平均与ダメ</span><strong id="compareActiveDmg">-</strong></div>
+            <div class="compare-row"><span>全体1T成功率</span><strong id="compareActiveKill">-</strong></div>
+            <div class="compare-row"><span>全体2T成功率</span><strong id="compareActiveVo">-</strong></div>
+            <div class="compare-row"><span>平均オデ1T率</span><strong id="compareActiveDa">-</strong></div>
+            <div class="compare-row"><span>平均オデ2T率</span><strong id="compareActiveVi">-</strong></div>
+            <div class="compare-row"><span>残りオデ数</span><strong id="compareActiveDmg">-</strong></div>
           </div>
           <div class="compare-box compare-pinned" id="compareBoxPinned">
             <div class="compare-title-badge">PINNED</div>
             <h4 id="comparePinnedTitle">固定編成</h4>
-            <div class="compare-row"><span>全返し率</span><strong id="comparePinnedKill">-</strong></div>
-            <div class="compare-row"><span>Vo撃破率</span><strong id="comparePinnedVo">-</strong></div>
-            <div class="compare-row"><span>Da撃破率</span><strong id="comparePinnedDa">-</strong></div>
-            <div class="compare-row"><span>Vi撃破率</span><strong id="comparePinnedVi">-</strong></div>
-            <div class="compare-row"><span>平均与ダメ</span><strong id="comparePinnedDmg">-</strong></div>
+            <div class="compare-row"><span>全体1T成功率</span><strong id="comparePinnedKill">-</strong></div>
+            <div class="compare-row"><span>全体2T成功率</span><strong id="comparePinnedVo">-</strong></div>
+            <div class="compare-row"><span>平均オデ1T率</span><strong id="comparePinnedDa">-</strong></div>
+            <div class="compare-row"><span>平均オデ2T率</span><strong id="comparePinnedVi">-</strong></div>
+            <div class="compare-row"><span>残りオデ数</span><strong id="comparePinnedDmg">-</strong></div>
           </div>
           <div class="compare-box compare-diff" id="compareBoxDiff">
             <div class="compare-title-badge">DIFF</div>
             <h4>差分（現在 - 固定）</h4>
-            <div class="diff-summary diff-zero" id="compareDiffSummary">まだ比較していません</div>
+            <div class="diff-summary diff-zero" id="compareDiffSummary">まだ周回比較していません</div>
 
             <div class="compare-row diff-row" id="compareRowKill">
-              <div class="diff-row-head"><span>全返し率差</span><strong id="compareDiffKill">-</strong></div>
+              <div class="diff-row-head"><span>全体1T成功率差</span><strong id="compareDiffKill">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarKill"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowVo">
-              <div class="diff-row-head"><span>Vo撃破率差</span><strong id="compareDiffVo">-</strong></div>
+              <div class="diff-row-head"><span>全体2T成功率差</span><strong id="compareDiffVo">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarVo"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowDa">
-              <div class="diff-row-head"><span>Da撃破率差</span><strong id="compareDiffDa">-</strong></div>
+              <div class="diff-row-head"><span>平均オデ1T率差</span><strong id="compareDiffDa">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarDa"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowVi">
-              <div class="diff-row-head"><span>Vi撃破率差</span><strong id="compareDiffVi">-</strong></div>
+              <div class="diff-row-head"><span>平均オデ2T率差</span><strong id="compareDiffVi">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarVi"></span></div>
             </div>
             <div class="compare-row diff-row" id="compareRowDmg">
-              <div class="diff-row-head"><span>平均与ダメ差</span><strong id="compareDiffDmg">-</strong></div>
+              <div class="diff-row-head"><span>残りオデ数差</span><strong id="compareDiffDmg">-</strong></div>
               <div class="diff-bar"><span class="diff-bar-fill" id="compareBarDmg"></span></div>
             </div>
           </div>
         </div>
-        <div id="compareStatus" class="status">固定比較はまだ実行していません。</div>
+        <div id="compareStatus" class="status">固定編成の周回比較はまだ実行していません。</div>
       </div>
 
       <div class="subsec">
@@ -1056,7 +1055,7 @@
 
         <div style="margin-top:12px;" class="warn">
           ライバル火力は簡略モデルです。<br>
-          「基礎攻撃 × 判定(P/G/N均等) × 一致補正 × ライバル係数」で処理しています。
+          「基礎攻撃 × 一致補正 × ライバル係数」で処理しています。
         </div>
 
         <div style="margin-top:12px;">
@@ -1068,9 +1067,9 @@
         <h3>周回結果</h3>
         <div class="result-grid">
           <div class="metric">
-            <div class="k">全部全返し成功率</div>
+            <div class="k">全オデ1T成功率</div>
             <div class="v" id="campaignAllSuccessRate">-</div>
-            <div class="s" id="campaignSummaryText">-</div>
+            <div class="s" id="campaignSummaryText">2T: -</div>
           </div>
           <div class="metric">
             <div class="k">残りオデ数</div>
@@ -1120,117 +1119,92 @@
 
 <script>
 const BUILT_IN_APP_DATA = {
-
   auditions: {
     yuu_wide: {
       name: "夕方ワイドアイドル一番！",
-      middle: { judgeHp: 12000, meDamage: 15, judgeReactionCount: 2, rivals: [
-        { name: "千雪", attr: "Vo", mental: 210, baseAttack: 874, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Da", mental: 210, baseAttack: 874, patternType: "spear", pattern: [3,2,1] },
-        { name: "灯織", attr: "Vo", mental: 210, baseAttack: 874, patternType: "transition", pattern: "312" }
+      middle: { judgeHp: 12000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 850, patternType: "transition", pattern: "123" }
       ] },
-      master: { judgeHp: 18000, meDamage: 20, judgeReactionCount: 2, rivals: [
-        { name: "千雪", attr: "Vo", mental: 210, baseAttack: 1399, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Da", mental: 210, baseAttack: 1399, patternType: "spear", pattern: [1,2,3] },
-        { name: "灯織", attr: "Vo", mental: 210, baseAttack: 1399, patternType: "transition", pattern: "312" }
+      master: { judgeHp: 18000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 1150, patternType: "transition", pattern: "123" }
       ] }
     },
     ele_best: {
       name: "エレぇベスト",
-      middle: { judgeHp: 35000, meDamage: 18, judgeReactionCount: 3, rivals: [
-        { name: "めぐる", attr: "Da", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "123" },
-        { name: "摩美々", attr: "Vi", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "213" },
-        { name: "咲耶", attr: "Da", mental: 270, baseAttack: 1600, patternType: "spear", pattern: [1,2,3] },
-        { name: "三峰", attr: "Vi", mental: 270, baseAttack: 1600, patternType: "transition", pattern: "321" }
+      middle: { judgeHp: 12000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vi", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Vo", baseAttack: 850, patternType: "transition", pattern: "231" }
       ] },
-      master: { judgeHp: 52500, meDamage: 24, judgeReactionCount: 3, rivals: [
-        { name: "めぐる", attr: "Da", mental: 270, baseAttack: 3200, patternType: "transition", pattern: "123" },
-        { name: "摩美々", attr: "Vi", mental: 270, baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
-        { name: "咲耶", attr: "Da", mental: 270, baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
-        { name: "三峰", attr: "Vi", mental: 270, baseAttack: 3200, patternType: "transition", pattern: "321" }
+      master: { judgeHp: 18000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vi", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Vo", baseAttack: 1150, patternType: "transition", pattern: "231" }
       ] }
     },
     spot_light: {
       name: "SPOT LIGHT のせいにして…",
-      middle: { judgeHp: 40000, meDamage: 19, judgeReactionCount: 3, rivals: [
-        { name: "凛世", attr: "Da", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [3,1,2] },
-        { name: "夏葉", attr: "Vo", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [1,2,3] },
-        { name: "千雪", attr: "Vo", mental: 300, baseAttack: 2542, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Vi", mental: 300, baseAttack: 2542, patternType: "spear", pattern: [3,2,1] }
+      middle: { judgeHp: 40000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 1800, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 1700, patternType: "transition", pattern: "132" },
+        { name: "Rival C", attr: "Vi", baseAttack: 1600, patternType: "spear", pattern: [2,1,3] }
       ] },
-      master: { judgeHp: 60000, meDamage: 25, judgeReactionCount: 3, rivals: [
-        { name: "凛世", attr: "Da", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [3,1,2] },
-        { name: "夏葉", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
-        { name: "千雪", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Vi", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [2,1,3] }
+      master: { judgeHp: 60000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2500, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2400, patternType: "transition", pattern: "132" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2300, patternType: "spear", pattern: [2,1,3] }
       ] }
     },
     odotteiitomo: {
       name: "踊っていいとも？増刊号",
-      middle: { judgeHp: 52000, meDamage: 26, judgeReactionCount: 3, rivals: [
-        { name: "灯織", attr: "Da", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "312" },
-        { name: "めぐる", attr: "Vo", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "123" },
-        { name: "摩美々", attr: "Vi", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "213" },
-        { name: "咲耶", attr: "Vo", mental: 350, baseAttack: 3050, patternType: "spear", pattern: [2,3,1] },
-        { name: "結華", attr: "Da", mental: 350, baseAttack: 3050, patternType: "transition", pattern: "321" }
+      middle: { judgeHp: 52000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2100, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2000, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 1900, patternType: "spear", pattern: [3,2,1] }
       ] },
-      master: { judgeHp: 78000, meDamage: 35, judgeReactionCount: 3, rivals: [
-        { name: "灯織", attr: "Da", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
-        { name: "めぐる", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "123" },
-        { name: "摩美々", attr: "Vi", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "213" },
-        { name: "咲耶", attr: "Vo", mental: 300, baseAttack: 4576, patternType: "spear", pattern: [2,3,1] },
-        { name: "結華", attr: "Da", mental: 300, baseAttack: 4576, patternType: "transition", pattern: "321" }
+      master: { judgeHp: 78000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3000, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2900, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2800, patternType: "spear", pattern: [3,2,1] }
       ] }
     },
     the_legend: {
       name: "THE LEGEND",
-      middle: { judgeHp: 75000, meDamage: 30, judgeReactionCount: 3, rivals: [
-        { name: "咲耶", attr: "Vi", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [2,3,1] },
-        { name: "結華", attr: "Da", mental: 470, baseAttack: 4250, patternType: "transition", pattern: "321" },
-        { name: "霧子", attr: "Vo", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [3,1,2] },
-        { name: "果穂", attr: "Vo", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [1,2,3] },
-        { name: "真乃", attr: "Da", mental: 470, baseAttack: 4250, patternType: "spear", pattern: [1,2,3] }
+      middle: { judgeHp: 75000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2600, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2500, patternType: "transition", pattern: "231" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2400, patternType: "spear", pattern: [2,3,1] }
       ] },
-      master: { judgeHp: 112500, meDamage: 40, judgeReactionCount: 3, rivals: [
-        { name: "咲耶", attr: "Vi", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
-        { name: "結華", attr: "Da", mental: 470, baseAttack: 8500, patternType: "transition", pattern: "231" },
-        { name: "霧子", attr: "Vo", mental: 470, baseAttack: 8500, patternType: "transition", pattern: "231" },
-        { name: "果穂", attr: "Vo", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
-        { name: "真乃", attr: "Da", mental: 470, baseAttack: 8500, patternType: "spear", pattern: [1,2,3] }
+      master: { judgeHp: 112500, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3600, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 3500, patternType: "transition", pattern: "231" },
+        { name: "Rival C", attr: "Vi", baseAttack: 3400, patternType: "spear", pattern: [2,3,1] }
       ] }
     },
     nanairo: {
       name: "七彩メモリーズ",
-      middle: { judgeHp: 90000, meDamage: 36, judgeReactionCount: 3, rivals: [
-        { name: "灯織", attr: "Vi", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "132" },
-        { name: "咲耶", attr: "Vo", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "312" },
-        { name: "結華", attr: "Vi", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "123" },
-        { name: "霧子", attr: "Vo", mental: 520, baseAttack: 7245, patternType: "spear", pattern: [1,3,2] },
-        { name: "樹里", attr: "Da", mental: 520, baseAttack: 7245, patternType: "transition", pattern: "321" }
+      middle: { judgeHp: 90000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 2900, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 2800, patternType: "transition", pattern: "312" },
+        { name: "Rival C", attr: "Vi", baseAttack: 2700, patternType: "spear", pattern: [2,1,3] }
       ] },
-      master: { judgeHp: 135000, meDamage: 48, judgeReactionCount: 3, rivals: [
-        { name: "灯織", attr: "Vi", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "123" },
-        { name: "咲耶", attr: "Vo", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "123" },
-        { name: "結華", attr: "Vi", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "213" },
-        { name: "霧子", attr: "Vo", mental: 520, baseAttack: 11592, patternType: "transition", pattern: "213" },
-        { name: "樹里", attr: "Da", mental: 520, baseAttack: 11592, patternType: "spear", pattern: [1,2,3] }
+      master: { judgeHp: 135000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 4200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 4100, patternType: "transition", pattern: "312" },
+        { name: "Rival C", attr: "Vi", baseAttack: 4000, patternType: "spear", pattern: [2,1,3] }
       ] }
     },
     utahime: {
       name: "歌姫楽宴",
-      middle: { judgeHp: 144000, meDamage: 40, judgeReactionCount: 3, rivals: [
-        { name: "凛世", attr: "Vi", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [3,1,2] },
-        { name: "夏葉", attr: "Vo", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [1,2,3] },
-        { name: "千雪", attr: "Da", mental: 600, baseAttack: 10551, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Vo", mental: 600, baseAttack: 10551, patternType: "spear", pattern: [3,2,1] },
-        { name: "灯織", attr: "Da", mental: 600, baseAttack: 10551, patternType: "transition", pattern: "312" }
+      middle: { judgeHp: 144000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 3400, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 3300, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 3200, patternType: "spear", pattern: [3,1,2] }
       ] },
-      master: { judgeHp: 216000, meDamage: 53, judgeReactionCount: 3, rivals: [
-        { name: "凛世", attr: "Vi", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [2,3,1] },
-        { name: "夏葉", attr: "Vo", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [1,2,3] },
-        { name: "千雪", attr: "Da", mental: 600, baseAttack: 15828, patternType: "transition", pattern: "231" },
-        { name: "真乃", attr: "Vo", mental: 600, baseAttack: 15828, patternType: "spear", pattern: [3,2,1] },
-        { name: "灯織", attr: "Da", mental: 600, baseAttack: 15828, patternType: "transition", pattern: "312" }
+      master: { judgeHp: 216000, meDamage: 0, rivals: [
+        { name: "Rival A", attr: "Vo", baseAttack: 5200, patternType: "spear", pattern: [1,2,3] },
+        { name: "Rival B", attr: "Da", baseAttack: 5100, patternType: "transition", pattern: "123" },
+        { name: "Rival C", attr: "Vi", baseAttack: 5000, patternType: "spear", pattern: [3,1,2] }
       ] }
     }
   },
@@ -2321,7 +2295,7 @@ function readConfig() {
     difficulty: val("difficulty"),
     w: num(val("wValue"), 0),
     popularity: [val("pop1"), val("pop2"), val("pop3")],
-    turnCount: Math.max(1, Math.min(3, +val("turnCount") || 3)),
+    turnCount: Math.max(1, Math.min(2, +val("turnCount") || 2)),
     iterations: +val("iterations") || 5000,
     rivalJudgeMultiplier: num(val("rivalJudgeMultiplier"), 1.0),
     enableJudgeReaction: val("enableJudgeReaction") === "1",
@@ -2748,14 +2722,6 @@ function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffI
   return x;
 }
 
-
-function sampleRivalJudgeMultiplier() {
-  const r = Math.random();
-  if (r < 1/3) return 1.5;
-  if (r < 2/3) return 1.1;
-  return 1.0;
-}
-
 function applyRivalActions({ judgeHp, cfg, audition, turn }) {
   let totalDamage = 0;
   const logs = [];
@@ -2766,7 +2732,7 @@ function applyRivalActions({ judgeHp, cfg, audition, turn }) {
     const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
     if (!targetAttr) return;
 
-    const raw = Math.floor(rival.baseAttack * sampleRivalJudgeMultiplier() * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
     const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
     judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
     totalDamage += eff;
@@ -2933,36 +2899,47 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
   });
 
   const trials = cfg.iterations;
-  let allSuccessCount = 0;
+  let allSuccessCount1T = 0;
+  let allSuccessCount2T = 0;
   const logs = [];
 
   for (let i = 0; i < trials; i++) {
-    let successAll = true;
+    let successAll1T = true;
+    let successAll2T = true;
     const lines = [];
 
     for (let s = 0; s < schedule.length; s++) {
       const step = schedule[s];
-      const stepCfg = buildCfgForCampaignStep(cfg, step, 2);
       const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
-      const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
 
-      if (r.killAll) {
-        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
-      } else {
-        successAll = false;
+      const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1);
+      const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
+      if (!r1.killAll) successAll1T = false;
+
+      const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2);
+      const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
+      if (!r2.killAll) {
+        successAll2T = false;
         if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 失敗`);
         break;
+      } else if (i < 5) {
+        lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
       }
     }
 
-    if (successAll) allSuccessCount++;
-    if (i < 5) logs.push(lines.join("\n"));
+    if (successAll1T) allSuccessCount1T++;
+    if (successAll2T) allSuccessCount2T++;
+    if (i < 5) logs.push(lines.join("
+"));
   }
 
   return {
     remainCount: schedule.length,
     perAudition,
-    allSuccessRate: allSuccessCount / trials,
+    allSuccessRate1T: allSuccessCount1T / trials,
+    allSuccessRate2T: allSuccessCount2T / trials,
+    avgPerAudition1T: perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0,
+    avgPerAudition2T: perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0,
     trials,
     sampleLogs: logs
   };
@@ -2981,11 +2958,11 @@ function buildCfgForCampaignStep(baseCfg, step, turnCount) {
 }
 
 function renderCampaignResult(result, cfg) {
-  setText("campaignAllSuccessRate", pct(result.allSuccessRate));
+  setText("campaignAllSuccessRate", pct(result.allSuccessRate1T || 0));
   setText("campaignRemainCount", String(result.remainCount));
   const s28Name = APP_DATA.auditions?.[cfg.campaignS28AuditionChoice]?.name || cfg.campaignS28AuditionChoice;
   setText("campaignRouteText", `${cfg.campaignRoute}回ルート / S2-8=${s28Name}`, true);
-  setText("campaignSummaryText", `${cfg.campaignStartPoint} から最後まで / ${result.trials}試行 / S2-8:${s28Name}`, true);
+  setText("campaignSummaryText", `2T: ${pct(result.allSuccessRate2T || 0)} / ${cfg.campaignStartPoint} から最後まで / ${result.trials}試行`, true);
 
   const body = document.getElementById("campaignResultBody");
   body.innerHTML = "";
@@ -3007,7 +2984,10 @@ function renderCampaignResult(result, cfg) {
   }
 
   const logText = result.sampleLogs.length
-    ? result.sampleLogs.map((x, i) => `--- campaign sample ${i+1} ---\n${x}`).join("\n\n")
+    ? result.sampleLogs.map((x, i) => `--- campaign sample ${i+1} ---
+${x}`).join("
+
+")
     : "ログなし";
   setText("campaignLog", logText);
 }
@@ -3021,32 +3001,44 @@ async function runLoadoutCompare() {
     return;
   }
   const cfg = readConfig();
-  const audition = APP_DATA.auditions?.[cfg.auditionId]?.[cfg.difficulty];
-  if (!audition) {
-    setText('compareStatus', 'オーディション設定が不正です。', true);
+  const schedule = buildCampaignSchedule(cfg.campaignStartPoint, cfg.campaignRoute, cfg.campaignS28AuditionChoice);
+  if (!schedule.length) {
+    setText('compareStatus', '周回スケジュールが空です。', true);
     return;
   }
-  addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  setText('compareStatus', '固定比較を実行中... 0%', true);
+  addOperationLog('固定編成の周回比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  setText('compareStatus', '固定編成の周回比較を実行中... 0%', true);
   await yieldToUI();
 
   try {
-    const result = await runWorkerTask("compare", { active, pinned, cfg, audition }, (p) => {
-      if (p.phase === "active") {
-        const rate = p.total ? Math.floor((p.done / p.total) * 50) : 0;
-        setText('compareStatus', `固定比較を実行中... ${rate}%`, true);
+    const result = await runWorkerTask("campaignCompare", {
+      active,
+      pinned,
+      cfg,
+      schedule,
+      auditions: APP_DATA.auditions
+    }, (p) => {
+      if (p.phase === "activePerAudition") {
+        const rate = p.total ? Math.floor((p.done / p.total) * 25) : 0;
+        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
+      } else if (p.phase === "activeCampaign1T" || p.phase === "activeCampaign2T") {
+        const rate = p.total ? 25 + Math.floor((p.done / p.total) * 25) : 25;
+        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
+      } else if (p.phase === "pinnedPerAudition") {
+        const rate = p.total ? 50 + Math.floor((p.done / p.total) * 25) : 50;
+        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
       } else {
-        const rate = p.total ? 50 + Math.floor((p.done / p.total) * 50) : 50;
-        setText('compareStatus', `固定比較を実行中... ${rate}%`, true);
+        const rate = p.total ? 75 + Math.floor((p.done / p.total) * 25) : 75;
+        setText('compareStatus', `固定編成の周回比較を実行中... ${rate}%`, true);
       }
     });
-    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
-    setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
-    addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
+    renderCampaignLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
+    setText('compareStatus', `固定編成の周回比較完了: ${active.name} vs ${pinned.name}`, true);
+    addOperationLog('固定編成の周回比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
   } catch (err) {
     console.error(err);
-    setText('compareStatus', '固定比較失敗', true);
-    alert("固定比較に失敗しました");
+    setText('compareStatus', '固定編成の周回比較失敗', true);
+    alert("固定編成の周回比較に失敗しました");
   }
 }
 
@@ -3072,26 +3064,26 @@ function runSimulationForLoadout(loadout, cfg, audition) {
   return monteCarloSimulation({ cfg, stats, deck, buffs, audition });
 }
 
-function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
+function renderCampaignLoadoutCompare(active, activeResult, pinned, pinnedResult) {
   setText('compareActiveTitle', `現在: ${active.name}`, true);
   setText('comparePinnedTitle', `固定: ${pinned.name}`, true);
 
-  setText('compareActiveKill', pct(activeResult.killAllRate || 0), true);
-  setText('comparePinnedKill', pct(pinnedResult.killAllRate || 0), true);
-  setText('compareActiveVo', pct(activeResult.judgeKillRates?.Vo || 0), true);
-  setText('comparePinnedVo', pct(pinnedResult.judgeKillRates?.Vo || 0), true);
-  setText('compareActiveDa', pct(activeResult.judgeKillRates?.Da || 0), true);
-  setText('comparePinnedDa', pct(pinnedResult.judgeKillRates?.Da || 0), true);
-  setText('compareActiveVi', pct(activeResult.judgeKillRates?.Vi || 0), true);
-  setText('comparePinnedVi', pct(pinnedResult.judgeKillRates?.Vi || 0), true);
-  setText('compareActiveDmg', fmt(activeResult.avgPlayerDamage || 0), true);
-  setText('comparePinnedDmg', fmt(pinnedResult.avgPlayerDamage || 0), true);
+  setText('compareActiveKill', pct(activeResult.allSuccessRate1T || 0), true);
+  setText('comparePinnedKill', pct(pinnedResult.allSuccessRate1T || 0), true);
+  setText('compareActiveVo', pct(activeResult.allSuccessRate2T || 0), true);
+  setText('comparePinnedVo', pct(pinnedResult.allSuccessRate2T || 0), true);
+  setText('compareActiveDa', pct(activeResult.avgPerAudition1T || 0), true);
+  setText('comparePinnedDa', pct(pinnedResult.avgPerAudition1T || 0), true);
+  setText('compareActiveVi', pct(activeResult.avgPerAudition2T || 0), true);
+  setText('comparePinnedVi', pct(pinnedResult.avgPerAudition2T || 0), true);
+  setText('compareActiveDmg', String(activeResult.remainCount || 0), true);
+  setText('comparePinnedDmg', String(pinnedResult.remainCount || 0), true);
 
-  const diffKill = (activeResult.killAllRate || 0) - (pinnedResult.killAllRate || 0);
-  const diffVo = (activeResult.judgeKillRates?.Vo || 0) - (pinnedResult.judgeKillRates?.Vo || 0);
-  const diffDa = (activeResult.judgeKillRates?.Da || 0) - (pinnedResult.judgeKillRates?.Da || 0);
-  const diffVi = (activeResult.judgeKillRates?.Vi || 0) - (pinnedResult.judgeKillRates?.Vi || 0);
-  const diffDmg = (activeResult.avgPlayerDamage || 0) - (pinnedResult.avgPlayerDamage || 0);
+  const diffKill = (activeResult.allSuccessRate1T || 0) - (pinnedResult.allSuccessRate1T || 0);
+  const diffVo = (activeResult.allSuccessRate2T || 0) - (pinnedResult.allSuccessRate2T || 0);
+  const diffDa = (activeResult.avgPerAudition1T || 0) - (pinnedResult.avgPerAudition1T || 0);
+  const diffVi = (activeResult.avgPerAudition2T || 0) - (pinnedResult.avgPerAudition2T || 0);
+  const diffDmg = (activeResult.remainCount || 0) - (pinnedResult.remainCount || 0);
 
   setDiffText('compareDiffKill', diffKill, true, true);
   setDiffText('compareDiffVo', diffVo, true, true);
@@ -3108,8 +3100,12 @@ function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
   updateDiffBar('compareBarVi', diffVi, pctScale);
   updateDiffBar('compareBarDmg', diffDmg, dmgScale);
 
-  updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg);
+  updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi);
   animateCompareBoxes();
+}
+
+function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
+  return renderCampaignLoadoutCompare(active, activeResult, pinned, pinnedResult);
 }
 
 function animateCompareBoxes() {
@@ -3124,21 +3120,25 @@ function animateCompareBoxes() {
   });
 }
 
-function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
+function updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi) {
   const el = document.getElementById('compareDiffSummary');
   if (!el) return;
-  const score = diffKill * 100 + diffVo * 35 + diffDa * 35 + diffVi * 35 + (diffDmg / Math.max(Math.abs(diffDmg), 1)) * 5;
+  const score = diffKill * 130 + diffVo * 160 + diffDa * 40 + diffVi * 60;
   let cls = 'diff-zero';
-  let text = '互角に近いです';
+  let text = 'ほぼ互角です';
   if (score > 0.5) {
     cls = 'diff-plus';
-    text = `現在編成が優勢（全返し率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+    text = `現在編成が優勢（全体2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
   } else if (score < -0.5) {
     cls = 'diff-minus';
-    text = `固定編成が優勢（全返し率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+    text = `固定編成が優勢（全体2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
   }
   el.className = `diff-summary ${cls}`;
   setText('compareDiffSummary', text, true);
+}
+
+function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
+  return updateCampaignDiffSummary(diffKill, diffVo, diffDa, diffVi);
 }
 
 function updateDiffBar(id, value, maxAbs) {
@@ -3351,7 +3351,7 @@ function resetAll() {
   toggleBuffPercentFields();
   setText("resultLog", "リセットしました。", true);
   setText("campaignLog", "リセットしました。", true);
-  setText("compareStatus", "固定比較はまだ実行していません。", true);
+  setText("compareStatus", "固定編成の周回比較はまだ実行していません。", true);
   addOperationLog("全リセット完了", "初期状態に戻しました", "op-log-clear");
   updateUndoButton();
 }
@@ -3461,7 +3461,6 @@ function deepClone(x) {
 const UTAHIME_WORKER_SCRIPT = `
 const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
 const ATTRS = ["Vo","Da","Vi"];
-function sampleRivalJudgeMultiplier() { const r = Math.random(); if (r < 1/3) return 1.5; if (r < 2/3) return 1.1; return 1.0; }
 
 self.onmessage = function(e) {
   const { jobId, type, payload } = e.data || {};
@@ -3476,8 +3475,8 @@ self.onmessage = function(e) {
       postMessage({ jobId, kind: "done", result });
       return;
     }
-    if (type === "compare") {
-      const result = compareLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+    if (type === "campaignCompare") {
+      const result = compareCampaignLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
       postMessage({ jobId, kind: "done", result });
       return;
     }
@@ -3532,7 +3531,7 @@ function monteCarloSimulation({ cfg, stats, deck, buffs, audition }, progressCb)
   };
 }
 
-function compareLoadouts({ active, pinned, cfg, audition }, progressCb) {
+function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, progressCb) {
   const activeDeck = (active.cards || []).filter(c => c.enabled);
   const activeBuffs = (active.buffs || []).filter(b => b.enabled);
   const activeStats = loadoutToStats(active);
@@ -3542,16 +3541,24 @@ function compareLoadouts({ active, pinned, cfg, audition }, progressCb) {
   const pinnedStats = loadoutToStats(pinned);
 
   const activeResult = activeDeck.length
-    ? monteCarloSimulation({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, audition }, p => {
-        if (progressCb) progressCb({ phase: "active", done: p.done, total: p.total });
+    ? analyzeCampaign({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({
+          phase: p.phase === "perAudition" ? "activePerAudition" : (p.phase === "campaign1T" ? "activeCampaign1T" : "activeCampaign2T"),
+          done: p.done,
+          total: p.total
+        });
       })
-    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+    : { remainCount:schedule.length, perAudition:[], allSuccessRate1T:0, allSuccessRate2T:0, avgPerAudition1T:0, avgPerAudition2T:0, trials:0, sampleLogs:[] };
 
   const pinnedResult = pinnedDeck.length
-    ? monteCarloSimulation({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, audition }, p => {
-        if (progressCb) progressCb({ phase: "pinned", done: p.done, total: p.total });
+    ? analyzeCampaign({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({
+          phase: p.phase === "perAudition" ? "pinnedPerAudition" : (p.phase === "campaign1T" ? "pinnedCampaign1T" : "pinnedCampaign2T"),
+          done: p.done,
+          total: p.total
+        });
       })
-    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+    : { remainCount:schedule.length, perAudition:[], allSuccessRate1T:0, allSuccessRate2T:0, avgPerAudition1T:0, avgPerAudition2T:0, trials:0, sampleLogs:[] };
 
   return { activeResult, pinnedResult };
 }
@@ -3582,37 +3589,49 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progr
 
   const trials = cfg.iterations;
   const chunk = 250;
-  let allSuccessCount = 0;
+  let allSuccessCount1T = 0;
+  let allSuccessCount2T = 0;
   const logs = [];
 
   for (let start = 0; start < trials; start += chunk) {
     const end = Math.min(trials, start + chunk);
     for (let i = start; i < end; i++) {
-      let successAll = true;
+      let successAll1T = true;
+      let successAll2T = true;
       const lines = [];
       for (let s = 0; s < schedule.length; s++) {
         const step = schedule[s];
-        const stepCfg = buildCfgForCampaignStep(cfg, step, 2, auditions);
         const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
-        const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
-        if (r.killAll) {
-          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 成功");
-        } else {
-          successAll = false;
+
+        const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+        const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
+        if (!r1.killAll) successAll1T = false;
+
+        const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+        const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
+        if (!r2.killAll) {
+          successAll2T = false;
           if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 失敗");
           break;
+        } else if (i < 5) {
+          lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 成功");
         }
       }
-      if (successAll) allSuccessCount++;
-      if (i < 5) logs.push(lines.join("\\n"));
+      if (successAll1T) allSuccessCount1T++;
+      if (successAll2T) allSuccessCount2T++;
+      if (i < 5) logs.push(lines.join("\n"));
     }
-    if (progressCb) progressCb({ phase: "campaign", done: end, total: trials });
+    if (progressCb) progressCb({ phase: "campaign1T", done: end, total: trials });
   }
+
 
   return {
     remainCount: schedule.length,
     perAudition,
-    allSuccessRate: allSuccessCount / trials,
+    allSuccessRate1T: allSuccessCount1T / trials,
+    allSuccessRate2T: allSuccessCount2T / trials,
+    avgPerAudition1T: perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0,
+    avgPerAudition2T: perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0,
     trials,
     sampleLogs: logs
   };
@@ -3859,7 +3878,7 @@ function applyRivalActions({ judgeHp, cfg, audition, turn }) {
   (audition.rivals || []).forEach(rival => {
     const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
     if (!targetAttr) return;
-    const raw = Math.floor(rival.baseAttack * sampleRivalJudgeMultiplier() * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
     const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
     judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
     totalDamage += eff;
