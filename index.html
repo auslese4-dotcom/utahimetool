@@ -4,7 +4,6 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
   <title>歌姫 全返し期待値計算機</title>
   <style>
     :root{
@@ -456,108 +455,8 @@
     }
 
   </style>
-
-  <style>
-    :root{
-      --login-bg1:#eef4ff;
-      --login-bg2:#f9fbff;
-      --login-card:#ffffff;
-      --login-line:#d9e3f2;
-      --login-text:#1d2433;
-      --login-muted:#667089;
-      --login-accent:#4063ff;
-      --login-accent2:#5b7bff;
-      --login-shadow:0 18px 46px rgba(35,56,118,.12);
-    }
-    #loginScreen{
-      min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-      background:
-        radial-gradient(circle at top left, #ffffff 0%, rgba(255,255,255,.75) 18%, rgba(255,255,255,0) 40%),
-        linear-gradient(135deg,var(--login-bg1),var(--login-bg2));
-    }
-    .auth-card{
-      width:min(100%, 460px);background:var(--login-card);border:1px solid var(--login-line);
-      border-radius:24px;box-shadow:var(--login-shadow);overflow:hidden;
-    }
-    .auth-head{
-      padding:28px 26px 18px;
-      background:
-        linear-gradient(135deg, rgba(64,99,255,.10), rgba(64,99,255,.02)),
-        linear-gradient(180deg,#ffffff,#fbfdff);
-      border-bottom:1px solid #edf2fb;
-    }
-    .auth-badge{
-      display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;
-      background:#eef3ff;color:#3150d5;font-size:12px;font-weight:800;letter-spacing:.02em;margin-bottom:14px;
-    }
-    .auth-title{margin:0 0 8px;font-size:28px;line-height:1.2;}
-    .auth-sub{margin:0;color:var(--login-muted);font-size:14px;line-height:1.7;}
-    .auth-body{padding:22px 26px 26px;}
-    .login-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-    .login-label{font-size:13px;color:var(--login-muted);font-weight:700;}
-    .login-input-wrap{position:relative;}
-    .login-input{
-      width:100%;border:1px solid var(--login-line);border-radius:14px;padding:14px 46px 14px 14px;
-      font-size:16px;background:#fff;color:var(--login-text);outline:none;
-    }
-    .login-input:focus{border-color:#aac0ff;box-shadow:0 0 0 4px rgba(64,99,255,.12);}
-    .login-toggle{
-      position:absolute;right:10px;top:50%;transform:translateY(-50%);
-      border:0;background:transparent;color:#5870c8;font-size:13px;font-weight:800;cursor:pointer;
-      width:auto;padding:6px 8px;border-radius:10px;
-    }
-    .login-toggle:hover{background:#f3f6ff}
-    .login-btn{
-      width:100%;border:0;border-radius:14px;padding:14px 16px;font-size:15px;font-weight:800;cursor:pointer;
-      color:#fff;background:linear-gradient(135deg,var(--login-accent),var(--login-accent2));
-      box-shadow:0 12px 28px rgba(64,99,255,.22);
-    }
-    .login-error{
-      display:none;margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff1f3;
-      border:1px solid #ffd2da;color:#c12947;font-size:13px;font-weight:700;
-    }
-    .login-error.show{display:block}
-    .login-hint{
-      margin-top:14px;padding:12px 14px;border-radius:14px;border:1px dashed #d8e1f4;
-      background:#fbfcff;color:var(--login-muted);font-size:12px;line-height:1.7;
-    }
-    #appContent{display:none;min-height:100vh;}
-    #appContent.show{display:block;}
-    @media (max-width:640px){
-      #loginScreen{padding:14px}
-      .auth-card{border-radius:20px}
-      .auth-head{padding:24px 18px 16px}
-      .auth-body{padding:18px 18px 20px}
-      .auth-title{font-size:24px}
-    }
-  </style>
-
 </head>
-
 <body>
-  <div id="loginScreen">
-    <div class="auth-card">
-      <div class="auth-head">
-        <div class="auth-badge">限定公開 / Password Protected</div>
-        <h1 class="auth-title">歌姫計算ツール</h1>
-        <p class="auth-sub">このページは限定公開です。<br>パスワードを入力するとツール本体が表示されます。</p>
-      </div>
-      <div class="auth-body">
-        <div class="login-field">
-          <label class="login-label" for="passwordInput">パスワード</label>
-          <div class="login-input-wrap">
-            <input id="passwordInput" class="login-input" type="password" placeholder="パスワードを入力" autocomplete="current-password">
-            <button id="togglePasswordBtn" class="login-toggle" type="button">表示</button>
-          </div>
-        </div>
-        <button id="loginBtn" class="login-btn" type="button">ログイン</button>
-        <div id="loginError" class="login-error">パスワードが違います。</div>
-        <div class="login-hint">Worker版です。重い計算中もUIが固まりにくくなります。</div>
-      </div>
-    </div>
-  </div>
-  <div id="appContent">
-
 <div class="wrap">
   <div class="topbar">
     <div>
@@ -968,7 +867,7 @@
 
 
       <div class="subsec">
-        <h3>固定編成の周回比較</h3>
+        <h3>固定比較結果（周回比較）</h3>
         <div class="compare-grid">
           <div class="compare-box compare-active" id="compareBoxActive">
             <div class="compare-title-badge">ACTIVE</div>
@@ -1015,7 +914,7 @@
             </div>
           </div>
         </div>
-        <div id="compareStatus" class="status">周回比較はまだ実行していません。</div>
+        <div id="compareStatus" class="status">固定比較はまだ実行していません。</div>
       </div>
 
       <div class="subsec">
@@ -1068,13 +967,23 @@
         <div class="result-grid">
           <div class="metric">
             <div class="k">全オデ1T成功率</div>
-            <div class="v" id="campaignAllSuccessRate">-</div>
+            <div class="v" id="campaignAllSuccessRateOne">-</div>
             <div class="s" id="campaignSummaryText">-</div>
           </div>
           <div class="metric">
             <div class="k">全オデ2T成功率</div>
-            <div class="v" id="campaignRemainCount">-</div>
+            <div class="v" id="campaignAllSuccessRateTwo">-</div>
             <div class="s" id="campaignRouteText">-</div>
+          </div>
+          <div class="metric">
+            <div class="k">残りオデ数</div>
+            <div class="v" id="campaignRemainCount">-</div>
+            <div class="s">開始地点から最後まで</div>
+          </div>
+          <div class="metric">
+            <div class="k">平均オデ成功率</div>
+            <div class="v" id="campaignAvgSuccessRate">-</div>
+            <div class="s" id="campaignAvgSuccessSub">1T: - / 2T: -</div>
           </div>
         </div>
 
@@ -1122,89 +1031,113 @@ const BUILT_IN_APP_DATA = {
   auditions: {
     yuu_wide: {
       name: "夕方ワイドアイドル一番！",
-      middle: { judgeHp: 12000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 850, patternType: "transition", pattern: "123" }
+      middle: { judgeHp: 12000, meDamage: 15, rivals: [
+        { name: "千雪", attr: "Vo", baseAttack: 874, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Da", baseAttack: 874, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Vo", baseAttack: 874, patternType: "transition", pattern: "312" }
       ] },
-      master: { judgeHp: 18000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 1150, patternType: "transition", pattern: "123" }
+      master: { judgeHp: 18000, meDamage: 20, rivals: [
+        { name: "千雪", attr: "Vo", baseAttack: 1399, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Da", baseAttack: 1399, patternType: "spear", pattern: [1,2,3] },
+        { name: "灯織", attr: "Vo", baseAttack: 1399, patternType: "transition", pattern: "312" }
       ] }
     },
     ele_best: {
       name: "エレぇベスト",
-      middle: { judgeHp: 12000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vi", baseAttack: 900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Vo", baseAttack: 850, patternType: "transition", pattern: "231" }
+      middle: { judgeHp: 35000, meDamage: 18, rivals: [
+        { name: "めぐる", attr: "Da", baseAttack: 1600, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", baseAttack: 1600, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Da", baseAttack: 1600, patternType: "spear", pattern: [1,2,3] },
+        { name: "三峰", attr: "Vi", baseAttack: 1600, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 18000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vi", baseAttack: 1200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Vo", baseAttack: 1150, patternType: "transition", pattern: "231" }
+      master: { judgeHp: 52500, meDamage: 24, rivals: [
+        { name: "めぐる", attr: "Da", baseAttack: 3200, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
+        { name: "咲耶", attr: "Da", baseAttack: 3200, patternType: "spear", pattern: [1,2,3] },
+        { name: "三峰", attr: "Vi", baseAttack: 3200, patternType: "transition", pattern: "321" }
       ] }
     },
     spot_light: {
       name: "SPOT LIGHT のせいにして…",
-      middle: { judgeHp: 40000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 1800, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 1700, patternType: "transition", pattern: "132" },
-        { name: "Rival C", attr: "Vi", baseAttack: 1600, patternType: "spear", pattern: [2,1,3] }
+      middle: { judgeHp: 40000, meDamage: 19, rivals: [
+        { name: "凛世", attr: "Da", baseAttack: 2542, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", baseAttack: 2542, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Vo", baseAttack: 2542, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vi", baseAttack: 2542, patternType: "spear", pattern: [3,2,1] }
       ] },
-      master: { judgeHp: 60000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2500, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2400, patternType: "transition", pattern: "132" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2300, patternType: "spear", pattern: [2,1,3] }
+      master: { judgeHp: 60000, meDamage: 25, rivals: [
+        { name: "凛世", attr: "Da", baseAttack: 4576, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Vo", baseAttack: 4576, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vi", baseAttack: 4576, patternType: "spear", pattern: [2,1,3] }
       ] }
     },
     odotteiitomo: {
       name: "踊っていいとも？増刊号",
-      middle: { judgeHp: 52000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2100, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2000, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 1900, patternType: "spear", pattern: [3,2,1] }
+      middle: { judgeHp: 52000, meDamage: 26, rivals: [
+        { name: "灯織", attr: "Da", baseAttack: 3050, patternType: "transition", pattern: "312" },
+        { name: "めぐる", attr: "Vo", baseAttack: 3050, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", baseAttack: 3050, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Vo", baseAttack: 3050, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", baseAttack: 3050, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 78000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3000, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2900, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2800, patternType: "spear", pattern: [3,2,1] }
+      master: { judgeHp: 78000, meDamage: 35, rivals: [
+        { name: "灯織", attr: "Da", baseAttack: 4576, patternType: "spear", pattern: [1,2,3] },
+        { name: "めぐる", attr: "Vo", baseAttack: 4576, patternType: "transition", pattern: "123" },
+        { name: "摩美々", attr: "Vi", baseAttack: 4576, patternType: "transition", pattern: "213" },
+        { name: "咲耶", attr: "Vo", baseAttack: 4576, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", baseAttack: 4576, patternType: "transition", pattern: "321" }
       ] }
     },
     the_legend: {
       name: "THE LEGEND",
-      middle: { judgeHp: 75000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2600, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2500, patternType: "transition", pattern: "231" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2400, patternType: "spear", pattern: [2,3,1] }
+      middle: { judgeHp: 75000, meDamage: 30, rivals: [
+        { name: "咲耶", attr: "Vi", baseAttack: 4250, patternType: "spear", pattern: [2,3,1] },
+        { name: "結華", attr: "Da", baseAttack: 4250, patternType: "transition", pattern: "321" },
+        { name: "霧子", attr: "Vo", baseAttack: 4250, patternType: "spear", pattern: [3,1,2] },
+        { name: "果穂", attr: "Vo", baseAttack: 4250, patternType: "spear", pattern: [1,2,3] },
+        { name: "真乃", attr: "Da", baseAttack: 4250, patternType: "spear", pattern: [1,2,3] }
       ] },
-      master: { judgeHp: 112500, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3600, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 3500, patternType: "transition", pattern: "231" },
-        { name: "Rival C", attr: "Vi", baseAttack: 3400, patternType: "spear", pattern: [2,3,1] }
+      master: { judgeHp: 112500, meDamage: 40, rivals: [
+        { name: "咲耶", attr: "Vi", baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
+        { name: "結華", attr: "Da", baseAttack: 8500, patternType: "transition", pattern: "231" },
+        { name: "霧子", attr: "Vo", baseAttack: 8500, patternType: "transition", pattern: "231" },
+        { name: "果穂", attr: "Vo", baseAttack: 8500, patternType: "spear", pattern: [1,2,3] },
+        { name: "真乃", attr: "Da", baseAttack: 8500, patternType: "spear", pattern: [1,2,3] }
       ] }
     },
     nanairo: {
       name: "七彩メモリーズ",
-      middle: { judgeHp: 90000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 2900, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 2800, patternType: "transition", pattern: "312" },
-        { name: "Rival C", attr: "Vi", baseAttack: 2700, patternType: "spear", pattern: [2,1,3] }
+      middle: { judgeHp: 90000, meDamage: 36, rivals: [
+        { name: "灯織", attr: "Vi", baseAttack: 7245, patternType: "transition", pattern: "132" },
+        { name: "咲耶", attr: "Vo", baseAttack: 7245, patternType: "transition", pattern: "312" },
+        { name: "結華", attr: "Vi", baseAttack: 7245, patternType: "transition", pattern: "123" },
+        { name: "霧子", attr: "Vo", baseAttack: 7245, patternType: "spear", pattern: [1,3,2] },
+        { name: "樹里", attr: "Da", baseAttack: 7245, patternType: "transition", pattern: "321" }
       ] },
-      master: { judgeHp: 135000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 4200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 4100, patternType: "transition", pattern: "312" },
-        { name: "Rival C", attr: "Vi", baseAttack: 4000, patternType: "spear", pattern: [2,1,3] }
+      master: { judgeHp: 135000, meDamage: 48, rivals: [
+        { name: "灯織", attr: "Vi", baseAttack: 11592, patternType: "transition", pattern: "123" },
+        { name: "咲耶", attr: "Vo", baseAttack: 11592, patternType: "transition", pattern: "123" },
+        { name: "結華", attr: "Vi", baseAttack: 11592, patternType: "transition", pattern: "213" },
+        { name: "霧子", attr: "Vo", baseAttack: 11592, patternType: "transition", pattern: "213" },
+        { name: "樹里", attr: "Da", baseAttack: 11592, patternType: "spear", pattern: [1,2,3] }
       ] }
     },
     utahime: {
       name: "歌姫楽宴",
-      middle: { judgeHp: 144000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 3400, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 3300, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 3200, patternType: "spear", pattern: [3,1,2] }
+      middle: { judgeHp: 144000, meDamage: 40, rivals: [
+        { name: "凛世", attr: "Vi", baseAttack: 10551, patternType: "spear", pattern: [3,1,2] },
+        { name: "夏葉", attr: "Vo", baseAttack: 10551, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Da", baseAttack: 10551, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vo", baseAttack: 10551, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Da", baseAttack: 10551, patternType: "transition", pattern: "312" }
       ] },
-      master: { judgeHp: 216000, meDamage: 0, rivals: [
-        { name: "Rival A", attr: "Vo", baseAttack: 5200, patternType: "spear", pattern: [1,2,3] },
-        { name: "Rival B", attr: "Da", baseAttack: 5100, patternType: "transition", pattern: "123" },
-        { name: "Rival C", attr: "Vi", baseAttack: 5000, patternType: "spear", pattern: [3,1,2] }
+      master: { judgeHp: 216000, meDamage: 53, rivals: [
+        { name: "凛世", attr: "Vi", baseAttack: 15828, patternType: "spear", pattern: [2,3,1] },
+        { name: "夏葉", attr: "Vo", baseAttack: 15828, patternType: "spear", pattern: [1,2,3] },
+        { name: "千雪", attr: "Da", baseAttack: 15828, patternType: "transition", pattern: "231" },
+        { name: "真乃", attr: "Vo", baseAttack: 15828, patternType: "spear", pattern: [3,2,1] },
+        { name: "灯織", attr: "Da", baseAttack: 15828, patternType: "transition", pattern: "312" }
       ] }
     }
   },
@@ -1237,10 +1170,6 @@ function saveLocalDebounced() {
   saveLocalTimer = setTimeout(() => {
     saveLocal();
   }, 350);
-}
-
-function yieldToUI() {
-  return new Promise(resolve => setTimeout(resolve, 0));
 }
 
 function nowTimeText() {
@@ -2334,7 +2263,7 @@ function normalizeAttrKeys(obj) {
   };
 }
 
-async function runSimulation() {
+function runSimulation() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2351,23 +2280,14 @@ async function runSimulation() {
   }
 
   addOperationLog("単発シミュレーション開始", `${cfg.turnCount}T / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "単発シミュレーション中... 0%");
-  await yieldToUI();
-
-  try {
-    const result = await runWorkerTask("simulate", { cfg, stats, deck, buffs, audition }, (p) => {
-      const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
-      setText("simStatus", `単発シミュレーション中... ${rate}%`);
-    });
+  setText("simStatus", "単発シミュレーション中...");
+  setTimeout(() => {
+    const result = monteCarloSimulation({ cfg, stats, deck, buffs, audition });
     renderResult(result, cfg);
     setText("simStatus", "単発シミュレーション完了");
     addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
     saveLocal();
-  } catch (err) {
-    console.error(err);
-    setText("simStatus", "単発シミュレーション失敗");
-    alert("シミュレーションに失敗しました");
-  }
+  }, 30);
 }
 
 function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
@@ -2836,7 +2756,7 @@ function buildCampaignSchedule(startPoint, routeMode, s28AuditionChoice) {
   return idx >= 0 ? full.slice(idx) : full;
 }
 
-async function runCampaignAnalysis() {
+function runCampaignAnalysis() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2854,27 +2774,14 @@ async function runCampaignAnalysis() {
   }
 
   addOperationLog("周回分析開始", `${cfg.campaignRoute}回ルート / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "周回分析中... 0%");
-  await yieldToUI();
-
-  try {
-    const result = await runWorkerTask("campaign", { cfg, stats, deck, buffs, schedule, auditions: APP_DATA.auditions }, (p) => {
-      if (p.phase === "perAudition") {
-        setText("simStatus", `周回分析中... オデ別試算 ${p.done}/${p.total}`);
-      } else {
-        const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
-        setText("simStatus", `周回分析中... 全体成功率集計 ${rate}%`);
-      }
-    });
+  setText("simStatus", "周回分析中...");
+  setTimeout(() => {
+    const result = analyzeCampaign({ cfg, stats, deck, buffs, schedule });
     renderCampaignResult(result, cfg);
     setText("simStatus", "周回分析完了");
-    addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
+    addOperationLog("周回分析完了", `1T ${pct(result.allSuccessRateOneTurn)} / 2T ${pct(result.allSuccessRateTwoTurn)}`, "op-log-run");
     saveLocal();
-  } catch (err) {
-    console.error(err);
-    setText("simStatus", "周回分析失敗");
-    alert("周回分析に失敗しました");
-  }
+  }, 30);
 }
 
 function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
@@ -2914,34 +2821,34 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
 
       const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1);
       const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
-      if (!r1.killAll) successAll1 = false;
+      if (!r1.killAll) {
+        successAll1 = false;
+      }
+      if (i < 3) lines.push(`[1T] ${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: ${r1.killAll ? "成功" : "失敗"}`);
 
       const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2);
       const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
       if (!r2.killAll) {
         successAll2 = false;
-        if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 2T失敗`);
-      } else if (i < 5) {
-        lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 2T成功`);
       }
+      if (i < 3) lines.push(`[2T] ${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: ${r2.killAll ? "成功" : "失敗"}`);
     }
 
     if (successAll1) allSuccessCount1++;
     if (successAll2) allSuccessCount2++;
-    if (i < 5) logs.push(lines.join("
-"));
+    if (i < 3) logs.push(lines.join("\n"));
   }
 
-  const avgOneTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
-  const avgTwoTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
+  const avgOne = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
+  const avgTwo = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
 
   return {
     remainCount: schedule.length,
     perAudition,
-    allSuccessRate1: allSuccessCount1 / trials,
-    allSuccessRate2: allSuccessCount2 / trials,
-    avgOneTurnRate,
-    avgTwoTurnRate,
+    allSuccessRateOneTurn: allSuccessCount1 / trials,
+    allSuccessRateTwoTurn: allSuccessCount2 / trials,
+    averagePerAuditionOneTurnRate: avgOne,
+    averagePerAuditionTwoTurnRate: avgTwo,
     trials,
     sampleLogs: logs
   };
@@ -2960,11 +2867,15 @@ function buildCfgForCampaignStep(baseCfg, step, turnCount) {
 }
 
 function renderCampaignResult(result, cfg) {
-  setText("campaignAllSuccessRate", pct(result.allSuccessRate1 || 0));
-  setText("campaignRemainCount", pct(result.allSuccessRate2 || 0));
+  setText("campaignAllSuccessRateOne", pct(result.allSuccessRateOneTurn || 0));
+  setText("campaignAllSuccessRateTwo", pct(result.allSuccessRateTwoTurn || 0));
+  setText("campaignRemainCount", String(result.remainCount));
+  setText("campaignAvgSuccessRate", pct(result.averagePerAuditionTwoTurnRate || 0));
+  setText("campaignAvgSuccessSub", `1T: ${pct(result.averagePerAuditionOneTurnRate || 0)} / 2T: ${pct(result.averagePerAuditionTwoTurnRate || 0)}`);
+
   const s28Name = APP_DATA.auditions?.[cfg.campaignS28AuditionChoice]?.name || cfg.campaignS28AuditionChoice;
-  setText("campaignRouteText", `${cfg.campaignRoute}回ルート / 残り${result.remainCount}オデ / S2-8=${s28Name}`, true);
-  setText("campaignSummaryText", `${cfg.campaignStartPoint} から最後まで / ${result.trials}試行 / 平均オデ1T ${pct(result.avgOneTurnRate || 0)} / 平均オデ2T ${pct(result.avgTwoTurnRate || 0)}`, true);
+  setText("campaignRouteText", `${cfg.campaignRoute}回ルート / S2-8=${s28Name}`);
+  setText("campaignSummaryText", `${cfg.campaignStartPoint} から最後まで / ${result.trials}試行 / S2-8:${s28Name}`);
 
   const body = document.getElementById("campaignResultBody");
   body.innerHTML = "";
@@ -2986,56 +2897,63 @@ function renderCampaignResult(result, cfg) {
   }
 
   const logText = result.sampleLogs.length
-    ? result.sampleLogs.map((x, i) => `--- campaign sample ${i+1} ---
-${x}`).join("
-
-")
+    ? result.sampleLogs.map((x, i) => `--- campaign sample ${i+1} ---\n${x}`).join("\n\n")
     : "ログなし";
   setText("campaignLog", logText);
 }
 
 
-async function runLoadoutCompare() {
+function runLoadoutCompare() {
   const active = getActiveLoadout();
   const pinned = getPinnedLoadout();
   if (!active || !pinned) {
-    setText('compareStatus', '比較対象がありません。', true);
+    setText('compareStatus', '比較対象がありません。');
     return;
   }
   const cfg = readConfig();
   const schedule = buildCampaignSchedule(cfg.campaignStartPoint, cfg.campaignRoute, cfg.campaignS28AuditionChoice);
   if (!schedule.length) {
-    setText('compareStatus', '周回スケジュールが空です。', true);
+    setText('compareStatus', '周回スケジュールが空です。');
     return;
   }
-  addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  setText('compareStatus', '周回比較を実行中... 0%', true);
-  await yieldToUI();
 
-  try {
-    const result = await runWorkerTask("compareCampaign", { active, pinned, cfg, schedule, auditions: APP_DATA.auditions }, (p) => {
-      if (p.phase === "active1") {
-        const rate = p.total ? Math.floor((p.done / p.total) * 25) : 0;
-        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
-      } else if (p.phase === "active2") {
-        const rate = p.total ? 25 + Math.floor((p.done / p.total) * 25) : 25;
-        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
-      } else if (p.phase === "pinned1") {
-        const rate = p.total ? 50 + Math.floor((p.done / p.total) * 25) : 50;
-        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
-      } else {
-        const rate = p.total ? 75 + Math.floor((p.done / p.total) * 25) : 75;
-        setText('compareStatus', `周回比較を実行中... ${rate}%`, true);
-      }
-    });
-    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
-    setText('compareStatus', `周回比較完了: ${active.name} vs ${pinned.name}`, true);
+  addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
+  setText('compareStatus', '固定比較（周回）を実行中...');
+  setTimeout(() => {
+    const activeResult = runCampaignForLoadout(active, cfg, schedule);
+    const pinnedResult = runCampaignForLoadout(pinned, cfg, schedule);
+    renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
+    setText('compareStatus', `固定比較（周回）完了: ${active.name} vs ${pinned.name}`);
     addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  } catch (err) {
-    console.error(err);
-    setText('compareStatus', '周回比較失敗', true);
-    alert("周回比較に失敗しました");
+  }, 30);
+}
+
+function runCampaignForLoadout(loadout, cfg, schedule) {
+  const deck = (loadout.cards || []).filter(c => c.enabled);
+  const buffs = (loadout.buffs || []).filter(b => b.enabled);
+  const stats = {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0;
+      acc.da += +s.da || 0;
+      acc.vi += +s.vi || 0;
+      return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+  if (!deck.length) {
+    return {
+      remainCount: schedule.length,
+      allSuccessRateOneTurn: 0,
+      allSuccessRateTwoTurn: 0,
+      averagePerAuditionOneTurnRate: 0,
+      averagePerAuditionTwoTurnRate: 0
+    };
   }
+  return analyzeCampaign({ cfg, stats, deck, buffs, schedule });
 }
 
 function runSimulationForLoadout(loadout, cfg, audition) {
@@ -3061,24 +2979,24 @@ function runSimulationForLoadout(loadout, cfg, audition) {
 }
 
 function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
-  setText('compareActiveTitle', `現在: ${active.name}`, true);
-  setText('comparePinnedTitle', `固定: ${pinned.name}`, true);
+  setText('compareActiveTitle', `現在: ${active.name}`);
+  setText('comparePinnedTitle', `固定: ${pinned.name}`);
 
-  setText('compareActiveKill', pct(activeResult.allSuccessRate1 || 0), true);
-  setText('comparePinnedKill', pct(pinnedResult.allSuccessRate1 || 0), true);
-  setText('compareActiveVo', pct(activeResult.allSuccessRate2 || 0), true);
-  setText('comparePinnedVo', pct(pinnedResult.allSuccessRate2 || 0), true);
-  setText('compareActiveDa', pct(activeResult.avgOneTurnRate || 0), true);
-  setText('comparePinnedDa', pct(pinnedResult.avgOneTurnRate || 0), true);
-  setText('compareActiveVi', pct(activeResult.avgTwoTurnRate || 0), true);
-  setText('comparePinnedVi', pct(pinnedResult.avgTwoTurnRate || 0), true);
-  setText('compareActiveDmg', String(activeResult.remainCount || 0), true);
-  setText('comparePinnedDmg', String(pinnedResult.remainCount || 0), true);
+  setText('compareActiveKill', pct(activeResult.allSuccessRateOneTurn || 0));
+  setText('comparePinnedKill', pct(pinnedResult.allSuccessRateOneTurn || 0));
+  setText('compareActiveVo', pct(activeResult.allSuccessRateTwoTurn || 0));
+  setText('comparePinnedVo', pct(pinnedResult.allSuccessRateTwoTurn || 0));
+  setText('compareActiveDa', pct(activeResult.averagePerAuditionOneTurnRate || 0));
+  setText('comparePinnedDa', pct(pinnedResult.averagePerAuditionOneTurnRate || 0));
+  setText('compareActiveVi', pct(activeResult.averagePerAuditionTwoTurnRate || 0));
+  setText('comparePinnedVi', pct(pinnedResult.averagePerAuditionTwoTurnRate || 0));
+  setText('compareActiveDmg', String(activeResult.remainCount || 0));
+  setText('comparePinnedDmg', String(pinnedResult.remainCount || 0));
 
-  const diffKill = (activeResult.allSuccessRate1 || 0) - (pinnedResult.allSuccessRate1 || 0);
-  const diffVo = (activeResult.allSuccessRate2 || 0) - (pinnedResult.allSuccessRate2 || 0);
-  const diffDa = (activeResult.avgOneTurnRate || 0) - (pinnedResult.avgOneTurnRate || 0);
-  const diffVi = (activeResult.avgTwoTurnRate || 0) - (pinnedResult.avgTwoTurnRate || 0);
+  const diffKill = (activeResult.allSuccessRateOneTurn || 0) - (pinnedResult.allSuccessRateOneTurn || 0);
+  const diffVo = (activeResult.allSuccessRateTwoTurn || 0) - (pinnedResult.allSuccessRateTwoTurn || 0);
+  const diffDa = (activeResult.averagePerAuditionOneTurnRate || 0) - (pinnedResult.averagePerAuditionOneTurnRate || 0);
+  const diffVi = (activeResult.averagePerAuditionTwoTurnRate || 0) - (pinnedResult.averagePerAuditionTwoTurnRate || 0);
   const diffDmg = (activeResult.remainCount || 0) - (pinnedResult.remainCount || 0);
 
   setDiffText('compareDiffKill', diffKill, true, true);
@@ -3115,18 +3033,18 @@ function animateCompareBoxes() {
 function updateDiffSummary(diffKill, diffVo, diffDa, diffVi, diffDmg) {
   const el = document.getElementById('compareDiffSummary');
   if (!el) return;
-  const score = diffKill * 100 + diffVo * 80 + diffDa * 35 + diffVi * 35 + (diffDmg / Math.max(Math.abs(diffDmg), 1)) * 3;
+  const score = diffKill * 120 + diffVo * 100 + diffDa * 40 + diffVi * 40 + (diffDmg / Math.max(Math.abs(diffDmg), 1)) * 3;
   let cls = 'diff-zero';
-  let text = '周回比較はほぼ互角です';
+  let text = '周回比較ではほぼ互角です';
   if (score > 0.5) {
     cls = 'diff-plus';
-    text = `現在編成が優勢（周回1T成功率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+    text = `現在編成が優勢（1T ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}% / 2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
   } else if (score < -0.5) {
     cls = 'diff-minus';
-    text = `固定編成が優勢（周回1T成功率 ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}%）`;
+    text = `固定編成が優勢（1T ${diffKill >= 0 ? '+' : ''}${(diffKill * 100).toFixed(2)}% / 2T ${diffVo >= 0 ? '+' : ''}${(diffVo * 100).toFixed(2)}%）`;
   }
   el.className = `diff-summary ${cls}`;
-  setText('compareDiffSummary', text, true);
+  setText('compareDiffSummary', text);
 }
 
 function updateDiffBar(id, value, maxAbs) {
@@ -3445,530 +3363,6 @@ function deepClone(x) {
   return JSON.parse(JSON.stringify(x));
 }
 
-
-const UTAHIME_WORKER_SCRIPT = `
-const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
-const ATTRS = ["Vo","Da","Vi"];
-
-self.onmessage = function(e) {
-  const { jobId, type, payload } = e.data || {};
-  try {
-    if (type === "simulate") {
-      const result = monteCarloSimulation(payload, progress => postMessage({ jobId, kind: "progress", progress }));
-      postMessage({ jobId, kind: "done", result });
-      return;
-    }
-    if (type === "campaign") {
-      const result = analyzeCampaign(payload, progress => postMessage({ jobId, kind: "progress", progress }));
-      postMessage({ jobId, kind: "done", result });
-      return;
-    }
-    if (type === "compare") {
-      const result = compareLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
-      postMessage({ jobId, kind: "done", result });
-      return;
-    }
-    if (type === "compareCampaign") {
-      const result = compareCampaignLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
-      postMessage({ jobId, kind: "done", result });
-      return;
-    }
-    throw new Error("Unknown worker task: " + type);
-  } catch (err) {
-    postMessage({ jobId, kind: "error", message: String(err && err.message ? err.message : err) });
-  }
-};
-
-function monteCarloSimulation({ cfg, stats, deck, buffs, audition }, progressCb) {
-  let killAllCount = 0;
-  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
-  let remainSum = { Vo:0, Da:0, Vi:0 };
-  let playerDamageSum = 0;
-  let rivalDamageSum = 0;
-  const logs = [];
-  const trials = cfg.iterations;
-  const chunk = 250;
-
-  for (let start = 0; start < trials; start += chunk) {
-    const end = Math.min(trials, start + chunk);
-    for (let i = start; i < end; i++) {
-      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
-      if (r.killAll) killAllCount++;
-      ATTRS.forEach(a => {
-        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
-        remainSum[a] += Math.max(0, r.finalHp[a]);
-      });
-      playerDamageSum += r.playerDamage;
-      rivalDamageSum += r.rivalDamage;
-      if (i < 5) logs.push(r.logText);
-    }
-    if (progressCb) progressCb({ done: end, total: trials });
-  }
-
-  return {
-    trials,
-    killAllRate: killAllCount / trials,
-    judgeKillRates: {
-      Vo: judgeKillCounts.Vo / trials,
-      Da: judgeKillCounts.Da / trials,
-      Vi: judgeKillCounts.Vi / trials
-    },
-    avgRemain: {
-      Vo: remainSum.Vo / trials,
-      Da: remainSum.Da / trials,
-      Vi: remainSum.Vi / trials
-    },
-    avgPlayerDamage: playerDamageSum / trials,
-    avgRivalDamage: rivalDamageSum / trials,
-    sampleLogs: logs
-  };
-}
-
-function compareLoadouts({ active, pinned, cfg, audition }, progressCb) {
-  const activeDeck = (active.cards || []).filter(c => c.enabled);
-  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
-  const activeStats = loadoutToStats(active);
-
-  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
-  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
-  const pinnedStats = loadoutToStats(pinned);
-
-  const activeResult = activeDeck.length
-    ? monteCarloSimulation({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, audition }, p => {
-        if (progressCb) progressCb({ phase: "active", done: p.done, total: p.total });
-      })
-    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
-
-  const pinnedResult = pinnedDeck.length
-    ? monteCarloSimulation({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, audition }, p => {
-        if (progressCb) progressCb({ phase: "pinned", done: p.done, total: p.total });
-      })
-    : { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
-
-  return { activeResult, pinnedResult };
-}
-
-function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, progressCb) {
-  const activeDeck = (active.cards || []).filter(c => c.enabled);
-  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
-  const activeStats = loadoutToStats(active);
-
-  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
-  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
-  const pinnedStats = loadoutToStats(pinned);
-
-  const activeResult = activeDeck.length
-    ? analyzeCampaign({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, schedule, auditions }, p => {
-        if (progressCb) progressCb({ phase: p.phase === "campaign1" ? "active1" : "active2", done: p.done, total: p.total });
-      })
-    : { remainCount:schedule.length, allSuccessRate1:0, allSuccessRate2:0, avgOneTurnRate:0, avgTwoTurnRate:0 };
-
-  const pinnedResult = pinnedDeck.length
-    ? analyzeCampaign({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, schedule, auditions }, p => {
-        if (progressCb) progressCb({ phase: p.phase === "campaign1" ? "pinned1" : "pinned2", done: p.done, total: p.total });
-      })
-    : { remainCount:schedule.length, allSuccessRate1:0, allSuccessRate2:0, avgOneTurnRate:0, avgTwoTurnRate:0 };
-
-  return { activeResult, pinnedResult };
-}
-
-function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progressCb) {
-  const perAudition = [];
-  for (let idx = 0; idx < schedule.length; idx++) {
-    const step = schedule[idx];
-    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
-    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
-    const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
-
-    const res1 = monteCarloSimulation({ cfg: baseCfg1, stats, deck, buffs, audition });
-    const res2 = monteCarloSimulation({ cfg: baseCfg2, stats, deck, buffs, audition });
-
-    perAudition.push({
-      index: idx + 1,
-      point: step.point,
-      label: step.label,
-      auditionId: step.auditionId,
-      auditionName: auditions?.[step.auditionId]?.name || step.auditionId,
-      w: step.w,
-      oneTurnRate: res1.killAllRate,
-      twoTurnRate: res2.killAllRate
-    });
-  }
-
-  const trials = cfg.iterations;
-  const chunk = 250;
-  let allSuccessCount1 = 0;
-  let allSuccessCount2 = 0;
-  const logs = [];
-
-  for (let start = 0; start < trials; start += chunk) {
-    const end = Math.min(trials, start + chunk);
-    for (let i = start; i < end; i++) {
-      let successAll1 = true;
-      let successAll2 = true;
-      const lines = [];
-      for (let s = 0; s < schedule.length; s++) {
-        const step = schedule[s];
-        const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
-
-        const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
-        const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
-        if (!r1.killAll) successAll1 = false;
-
-        const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
-        const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
-        if (!r2.killAll) {
-          successAll2 = false;
-          if (i < 5) lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 2T失敗");
-        } else if (i < 5) {
-          lines.push(step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": 2T成功");
-        }
-      }
-      if (successAll1) allSuccessCount1++;
-      if (successAll2) allSuccessCount2++;
-      if (i < 5) logs.push(lines.join("
-"));
-    }
-    if (progressCb) progressCb({ phase: "campaign1", done: end, total: trials });
-  }
-
-  const avgOneTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
-  const avgTwoTurnRate = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
-
-  return {
-    remainCount: schedule.length,
-    perAudition,
-    allSuccessRate1: allSuccessCount1 / trials,
-    allSuccessRate2: allSuccessCount2 / trials,
-    avgOneTurnRate,
-    avgTwoTurnRate,
-    trials,
-    sampleLogs: logs
-  };
-}
-
-function buildCfgForCampaignStep(baseCfg, step, turnCount, auditions) {
-  const data = auditions?.[step.auditionId]?.[baseCfg.difficulty];
-  const hp = data?.judgeHp || 0;
-  return {
-    ...baseCfg,
-    auditionId: step.auditionId,
-    w: step.w,
-    turnCount,
-    judgeHp: { Vo: hp, Da: hp, Vi: hp }
-  };
-}
-
-function loadoutToStats(loadout) {
-  return {
-    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
-    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
-      acc.vo += +s.vo || 0;
-      acc.da += +s.da || 0;
-      acc.vi += +s.vi || 0;
-      return acc;
-    }, { vo:0, da:0, vi:0 })),
-    supports: (loadout.supports || []).reduce((acc, s) => {
-      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
-      return acc;
-    }, {})
-  };
-}
-
-function simulateOneRun({ cfg, stats, deck, buffs, audition, log }) {
-  const judgeHp = { Vo: cfg.judgeHp.Vo, Da: cfg.judgeHp.Da, Vi: cfg.judgeHp.Vi };
-  let playerMental = cfg.playerMental;
-  let playerDamage = 0;
-  let rivalDamage = 0;
-  const logLines = [];
-  const shuffledDeck = shuffle(deck.slice());
-  let hand = shuffledDeck.splice(0, Math.min(3, shuffledDeck.length));
-  const buffStates = buffs.map(b => ({ id: b.id, activated: false, attempted: false, remainingUses: 0 }));
-
-  for (let turn = 1; turn <= cfg.turnCount; turn++) {
-    if (aliveJudgeAttrs(judgeHp).length === 0 || playerMental <= 0) break;
-    const action = chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn });
-
-    if (action) {
-      const damageResult = applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn });
-      playerDamage += damageResult.effectiveDamage;
-      if (log) {
-        logLines.push("T" + turn + " PLAYER: " + action.card.name + " / " + (action.card.targetMode === "all_judges" ? "全体" : action.targetAttr) + " / eff=" + damageResult.effectiveDamage + " / raw=" + damageResult.rawDamage + " / buffs=" + (damageResult.activatedBuffNames.join(",") || "-"));
-      }
-      hand = hand.filter(c => c.id !== action.card.id);
-    } else if (log) {
-      logLines.push("T" + turn + " PLAYER: actionなし");
-    }
-
-    if (aliveJudgeAttrs(judgeHp).length === 0) break;
-    const rivalTurn = applyRivalActions({ judgeHp, cfg, audition, turn });
-    rivalDamage += rivalTurn.totalDamage;
-    if (log) rivalTurn.logs.forEach(x => logLines.push("T" + turn + " " + x));
-
-    if (cfg.enableJudgeReaction && aliveJudgeAttrs(judgeHp).length > 0) {
-      playerMental = applyJudgeReactionsSimplified({ playerMental, audition });
-      if (log) logLines.push("T" + turn + " JUDGE REACTION: playerMental=" + playerMental);
-    }
-    if (turn < cfg.turnCount && shuffledDeck.length > 0) hand.push(shuffledDeck.shift());
-  }
-
-  return { killAll: ATTRS.every(a => judgeHp[a] <= 0), finalHp: { ...judgeHp }, playerDamage, rivalDamage, logText: logLines.join("\\n") };
-}
-
-function chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn }) {
-  const aliveTargets = aliveJudgeAttrs(judgeHp);
-  if (!hand.length || !aliveTargets.length) return null;
-  let best = null;
-  let bestScore = -Infinity;
-
-  hand.forEach(card => {
-    const candidates = card.targetMode === "all_judges" ? [{ card, targetAttr: null }] : aliveTargets.map(targetAttr => ({ card, targetAttr }));
-    candidates.forEach(candidate => {
-      const tmpJudgeHp = { ...judgeHp };
-      const tmpBuffStates = deepClone(buffStates);
-      const result = applyPlayerAction({ action: candidate, judgeHp: tmpJudgeHp, stats, cfg, buffs, buffStates: tmpBuffStates, turn, dryRun: true });
-      const remainScore = Math.max(0, tmpJudgeHp.Vo) + Math.max(0, tmpJudgeHp.Da) + Math.max(0, tmpJudgeHp.Vi);
-      const killBonus = (tmpJudgeHp.Vo <= 0 ? 1 : 0) + (tmpJudgeHp.Da <= 0 ? 1 : 0) + (tmpJudgeHp.Vi <= 0 ? 1 : 0);
-      const score = result.effectiveDamage + killBonus * 100000 - remainScore;
-      if (score > bestScore) { bestScore = score; best = candidate; }
-    });
-  });
-  return best;
-}
-
-function applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun=false }) {
-  const card = action.card;
-  if (card.targetMode === "all_judges") {
-    return applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
-  }
-  return applyPlayerActionSingle({ card, targetAttr: action.targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
-}
-
-function applyPlayerActionSingle({ card, targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
-  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun });
-  const rawDamage = calcCardDamageToJudge(card, targetAttr, stats, cfg.w, activeBuffInfo);
-  const effectiveDamage = Math.min(rawDamage, Math.max(0, judgeHp[targetAttr]));
-  judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - effectiveDamage);
-  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
-  return {
-    rawDamage, effectiveDamage,
-    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
-      const b = buffs.find(x => x.id === id); return b ? b.name : id;
-    })
-  };
-}
-
-function applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
-  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr: null, turn, buffs, buffStates, dryRun });
-  let rawDamage = 0, effectiveDamage = 0;
-  ATTRS.forEach(judgeAttr => {
-    if (judgeHp[judgeAttr] <= 0) return;
-    const raw = calcCardDamageToJudge(card, judgeAttr, stats, cfg.w, activeBuffInfo);
-    const eff = Math.min(raw, Math.max(0, judgeHp[judgeAttr]));
-    judgeHp[judgeAttr] = Math.max(0, judgeHp[judgeAttr] - eff);
-    rawDamage += raw; effectiveDamage += eff;
-  });
-  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
-  return {
-    rawDamage, effectiveDamage,
-    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
-      const b = buffs.find(x => x.id === id); return b ? b.name : id;
-    })
-  };
-}
-
-function evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun }) {
-  const totalPercentByAttr = { Vo:0, Da:0, Vi:0 };
-  const activatedIds = [];
-  buffs.forEach(buff => {
-    const st = buffStates.find(x => x.id === buff.id);
-    if (!st || !buff.enabled) return;
-    if (st.remainingUses > 0) {
-      applyBuffPercent(totalPercentByAttr, buff);
-      activatedIds.push(buff.id);
-      return;
-    }
-    if (st.attempted) return;
-    if (!isBuffConditionMet(buff, { card, targetAttr, turn })) return;
-    if (!dryRun) st.attempted = true;
-    if (Math.random() <= buff.procRate) {
-      if (!dryRun) { st.activated = true; st.remainingUses = Math.max(1, buff.uses); }
-      applyBuffPercent(totalPercentByAttr, buff);
-      activatedIds.push(buff.id);
-    }
-  });
-  return { totalPercentByAttr, activatedIds };
-}
-
-function consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo }) {
-  activeBuffInfo.activatedIds.forEach(id => {
-    const st = buffStates.find(x => x.id === id);
-    if (!st) return;
-    if (st.remainingUses > 0) { st.remainingUses--; if (st.remainingUses < 0) st.remainingUses = 0; }
-  });
-}
-
-function applyBuffPercent(targetMap, buff) {
-  if (buff.attr === "ALL") {
-    targetMap.Vo += num(buff.percentVo, 0);
-    targetMap.Da += num(buff.percentDa, 0);
-    targetMap.Vi += num(buff.percentVi, 0);
-  } else {
-    targetMap[buff.attr] += num(buff.percent, 0);
-  }
-}
-
-function isBuffConditionMet(buff, ctx) {
-  const c = buff.condition;
-  if (c === "always") return true;
-  if (c === "turn_gte_2") return ctx.turn >= 2;
-  if (c === "turn_gte_3") return ctx.turn >= 3;
-  if (c === "p_card") return ctx.card.kind === "P";
-  if (c === "s_card") return ctx.card.kind === "S";
-  if (c === "vo_card") return ctx.card.attackType === "Vo";
-  if (c === "da_card") return ctx.card.attackType === "Da";
-  if (c === "vi_card") return ctx.card.attackType === "Vi";
-  if (c === "all_card") return ctx.card.attackType === "ALL";
-  if (c === "exe_card") return ctx.card.attackType === "EXE";
-  return false;
-}
-
-function calcCardDamageToJudge(card, targetJudgeAttr, stats, w, buffInfo) {
-  if (card.attackType === "Vo" || card.attackType === "Da" || card.attackType === "Vi") {
-    return calcSingleAttrDamage({ card, usedAttr: card.attackType, targetJudgeAttr, stats, w, buffInfo, forceMatch: false });
-  }
-  if (card.attackType === "ALL") {
-    return ATTRS.reduce((sum, attr) => sum + calcSingleAttrDamage({ card, usedAttr: attr, targetJudgeAttr, stats, w, buffInfo, forceMatch: false }), 0);
-  }
-  if (card.attackType === "EXE") {
-    return calcSingleAttrDamage({ card, usedAttr: targetJudgeAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch: true });
-  }
-  return 0;
-}
-
-function getCardAppealRate(card, usedAttr) {
-  if (card.attackType === "ALL") {
-    if (usedAttr === "Vo") return num(card.rateVo, 0);
-    if (usedAttr === "Da") return num(card.rateDa, 0);
-    if (usedAttr === "Vi") return num(card.rateVi, 0);
-    return 0;
-  }
-  return num(card.rate, 0);
-}
-
-function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch }) {
-  const P = stats.p[usedAttr] || 0;
-  const S = stats.sTotal[usedAttr] || 0;
-  const ownerStats = card.kind === "S" ? (stats.supports[card.ownerId] || { Vo:0, Da:0, Vi:0 }) : null;
-  const iS = ownerStats ? (ownerStats[usedAttr] || 0) : 0;
-  let base = 0;
-  if (card.kind === "P") {
-    base = Math.floor(2 * P) + Math.floor(S * 0.2 * (1 + 0.1 * w));
-  } else {
-    base = Math.floor(0.5 * P) + Math.floor((S + 3 * iS) * 0.2 * (1 + 0.1 * w));
-  }
-  const buffPercent = buffInfo?.totalPercentByAttr?.[usedAttr] || 0;
-  const buffMul = 1 + buffPercent / 100;
-  const appealRate = getCardAppealRate(card, usedAttr);
-  const judgeMul = JUDGE_MULT[card.judge] || 1.0;
-  const matchMul = (forceMatch || usedAttr === targetJudgeAttr) ? 2 : 1;
-  let x = base;
-  x = Math.floor(x * buffMul);
-  x = Math.floor(x * appealRate);
-  x = Math.floor(x * judgeMul);
-  x = Math.floor(x * matchMul);
-  return x;
-}
-
-function applyRivalActions({ judgeHp, cfg, audition, turn }) {
-  let totalDamage = 0;
-  const logs = [];
-  const aliveTargets = aliveJudgeAttrs(judgeHp);
-  if (!aliveTargets.length) return { totalDamage, logs };
-  (audition.rivals || []).forEach(rival => {
-    const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
-    if (!targetAttr) return;
-    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
-    const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
-    judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
-    totalDamage += eff;
-    logs.push(rival.name + ": " + targetAttr + " に " + eff);
-  });
-  return { totalDamage, logs };
-}
-
-function chooseRivalTarget(rival, judgeHp, popularity, turn) {
-  const alive = aliveJudgeAttrs(judgeHp);
-  if (!alive.length) return null;
-  if (rival.patternType === "spear") {
-    for (const rank of rival.pattern) {
-      const attr = popularity[rank - 1];
-      if (judgeHp[attr] > 0) return attr;
-    }
-    return alive[0] || null;
-  }
-  if (rival.patternType === "transition") {
-    const seq = String(rival.pattern).split("").map(x => +x);
-    for (let shift = 0; shift < seq.length; shift++) {
-      const idx = ((turn - 1) + shift) % seq.length;
-      const rank = seq[idx];
-      const attr = popularity[rank - 1];
-      if (judgeHp[attr] > 0) return attr;
-    }
-    return alive[0] || null;
-  }
-  return alive[0] || null;
-}
-
-function applyJudgeReactionsSimplified({ playerMental, audition }) {
-  return Math.max(0, playerMental - (audition.meDamage || 0));
-}
-
-function aliveJudgeAttrs(judgeHp) { return ATTRS.filter(a => judgeHp[a] > 0); }
-function normalizeAttrKeys(obj) { return { Vo: obj.vo ?? obj.Vo ?? 0, Da: obj.da ?? obj.Da ?? 0, Vi: obj.vi ?? obj.Vi ?? 0 }; }
-function num(v, def=0) { const n = +v; return isFinite(n) ? n : def; }
-function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
-function deepClone(x) { return JSON.parse(JSON.stringify(x)); }
-`;
-
-let UTAHIME_WORKER_URL = null;
-function getUtahimeWorkerUrl() {
-  if (!UTAHIME_WORKER_URL) {
-    UTAHIME_WORKER_URL = URL.createObjectURL(new Blob([UTAHIME_WORKER_SCRIPT], { type: "text/javascript" }));
-  }
-  return UTAHIME_WORKER_URL;
-}
-
-function runWorkerTask(type, payload, onProgress) {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(getUtahimeWorkerUrl());
-    const jobId = "job_" + Math.random().toString(36).slice(2);
-    worker.onmessage = (e) => {
-      const msg = e.data || {};
-      if (msg.jobId !== jobId) return;
-      if (msg.kind === "progress") {
-        if (onProgress) onProgress(msg.progress || {});
-        return;
-      }
-      if (msg.kind === "done") {
-        worker.terminate();
-        resolve(msg.result);
-        return;
-      }
-      if (msg.kind === "error") {
-        worker.terminate();
-        reject(new Error(msg.message || "Worker error"));
-      }
-    };
-    worker.onerror = (err) => {
-      worker.terminate();
-      reject(err);
-    };
-    worker.postMessage({ jobId, type, payload });
-  });
-}
-
-
 function triggerImportAppData() {
   const input = document.getElementById("importFileInput");
   if (input) input.click();
@@ -4055,8 +3449,7 @@ function exportStateForBackup_() {
 }
 
 function applyImportedState_(payload) {
-  const imported = normalizeImportedPayload_(payload);
-  if (!imported) throw new Error("このJSONはインポート対象として認識できませんでした。");
+  const imported = payload && payload.app === "utahime_calc" ? payload.data : payload;
   restoreState(cloneJson(imported));
   invalidatePreviewCache();
   renderAll();
@@ -4067,74 +3460,17 @@ function applyImportedState_(payload) {
   updateUndoButton();
 }
 
-function normalizeImportedPayload_(payload) {
-  if (!payload || typeof payload !== "object") return null;
-  if (payload.app === "utahime_calc" && payload.data && typeof payload.data === "object") {
-    return payload.data;
-  }
-  if (payload.version || payload.loadouts || payload.sim || payload.base || payload.cards || payload.buffs) {
-    return payload;
-  }
-  return null;
-}
-
 function isValidImportData_(payload) {
-  return !!normalizeImportedPayload_(payload);
+  return !!(
+    payload &&
+    typeof payload === "object" &&
+    (
+      (payload.app === "utahime_calc" && payload.data && typeof payload.data === "object") ||
+      payload.loadouts || payload.base || payload.cards || payload.buffs
+    )
+  );
 }
 
 </script>
-
-  </div>
-  <script>
-    (() => {
-      const PASSWORD = "pya";
-      const STORAGE_KEY = "utahime_auth_ok_v1";
-      const loginScreen = document.getElementById("loginScreen");
-      const appContent = document.getElementById("appContent");
-      const passwordInput = document.getElementById("passwordInput");
-      const loginBtn = document.getElementById("loginBtn");
-      const loginError = document.getElementById("loginError");
-      const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-
-      function showApp() {
-        loginScreen.style.display = "none";
-        appContent.classList.add("show");
-      }
-      function showError() {
-        loginError.classList.add("show");
-        passwordInput.focus();
-        passwordInput.select();
-      }
-      function clearError() {
-        loginError.classList.remove("show");
-      }
-      function tryLogin() {
-        if ((passwordInput.value || "") === PASSWORD) {
-          sessionStorage.setItem(STORAGE_KEY, "1");
-          showApp();
-        } else {
-          showError();
-        }
-      }
-
-      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
-        showApp();
-        return;
-      }
-
-      loginBtn.addEventListener("click", tryLogin);
-      passwordInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") tryLogin();
-      });
-      passwordInput.addEventListener("input", clearError);
-      togglePasswordBtn.addEventListener("click", () => {
-        const isPassword = passwordInput.type === "password";
-        passwordInput.type = isPassword ? "text" : "password";
-        togglePasswordBtn.textContent = isPassword ? "非表示" : "表示";
-      });
-      passwordInput.focus();
-    })();
-  </script>
 </body>
-
 </html>
