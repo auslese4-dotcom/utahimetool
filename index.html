@@ -1172,6 +1172,10 @@ function saveLocalDebounced() {
   }, 350);
 }
 
+function yieldToUI() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
 function nowTimeText() {
   const d = new Date();
   return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
@@ -2263,7 +2267,7 @@ function normalizeAttrKeys(obj) {
   };
 }
 
-function runSimulation() {
+async function runSimulation() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2280,14 +2284,23 @@ function runSimulation() {
   }
 
   addOperationLog("単発シミュレーション開始", `${cfg.turnCount}T / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "単発シミュレーション中...");
-  setTimeout(() => {
-    const result = monteCarloSimulation({ cfg, stats, deck, buffs, audition });
+  setText("simStatus", "単発シミュレーション中... 0%");
+  await yieldToUI();
+
+  try {
+    const result = await runWorkerTask("simulate", { cfg, stats, deck, buffs, audition }, (p) => {
+      const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
+      setText("simStatus", `単発シミュレーション中... ${rate}%`);
+    });
     renderResult(result, cfg);
     setText("simStatus", "単発シミュレーション完了");
     addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
     saveLocal();
-  }, 30);
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "単発シミュレーション失敗");
+    alert("シミュレーションに失敗しました");
+  }
 }
 
 function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
@@ -2756,7 +2769,7 @@ function buildCampaignSchedule(startPoint, routeMode, s28AuditionChoice) {
   return idx >= 0 ? full.slice(idx) : full;
 }
 
-function runCampaignAnalysis() {
+async function runCampaignAnalysis() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2774,14 +2787,27 @@ function runCampaignAnalysis() {
   }
 
   addOperationLog("周回分析開始", `${cfg.campaignRoute}回ルート / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "周回分析中...");
-  setTimeout(() => {
-    const result = analyzeCampaign({ cfg, stats, deck, buffs, schedule });
+  setText("simStatus", "周回分析中... 0%");
+  await yieldToUI();
+
+  try {
+    const result = await runWorkerTask("campaign", { cfg, stats, deck, buffs, schedule, auditions: APP_DATA.auditions }, (p) => {
+      if (p.phase === "perAudition") {
+        setText("simStatus", `周回分析中... オデ別試算 ${p.done}/${p.total}`);
+      } else {
+        const rate = p.total ? Math.floor((p.done / p.total) * 100) : 0;
+        setText("simStatus", `周回分析中... 全体集計 ${rate}%`);
+      }
+    });
     renderCampaignResult(result, cfg);
     setText("simStatus", "周回分析完了");
     addOperationLog("周回分析完了", `1T ${pct(result.allSuccessRateOneTurn)} / 2T ${pct(result.allSuccessRateTwoTurn)}`, "op-log-run");
     saveLocal();
-  }, 30);
+  } catch (err) {
+    console.error(err);
+    setText("simStatus", "周回分析失敗");
+    alert("周回分析に失敗しました");
+  }
 }
 
 function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
@@ -2903,7 +2929,7 @@ function renderCampaignResult(result, cfg) {
 }
 
 
-function runLoadoutCompare() {
+async function runLoadoutCompare() {
   const active = getActiveLoadout();
   const pinned = getPinnedLoadout();
   if (!active || !pinned) {
@@ -2918,14 +2944,31 @@ function runLoadoutCompare() {
   }
 
   addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  setText('compareStatus', '固定比較（周回）を実行中...');
-  setTimeout(() => {
-    const activeResult = runCampaignForLoadout(active, cfg, schedule);
-    const pinnedResult = runCampaignForLoadout(pinned, cfg, schedule);
-    renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
+  setText('compareStatus', '固定比較（周回）を実行中... 0%');
+  await yieldToUI();
+
+  try {
+    const result = await runWorkerTask("compareCampaign", { active, pinned, cfg, schedule, auditions: APP_DATA.auditions }, (p) => {
+      if (p.phase === "activePer") {
+        setText('compareStatus', `固定比較（周回）中... 現在編成 オデ別 ${p.done}/${p.total}`);
+      } else if (p.phase === "activeSim") {
+        const rate = p.total ? Math.floor((p.done / p.total) * 25) : 25;
+        setText('compareStatus', `固定比較（周回）中... 現在編成 集計 ${rate}%`);
+      } else if (p.phase === "pinnedPer") {
+        setText('compareStatus', `固定比較（周回）中... 固定編成 オデ別 ${p.done}/${p.total}`);
+      } else {
+        const rate = p.total ? 50 + Math.floor((p.done / p.total) * 50) : 50;
+        setText('compareStatus', `固定比較（周回）中... 固定編成 集計 ${rate}%`);
+      }
+    });
+    renderLoadoutCompare(active, result.activeResult, pinned, result.pinnedResult);
     setText('compareStatus', `固定比較（周回）完了: ${active.name} vs ${pinned.name}`);
     addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  }, 30);
+  } catch (err) {
+    console.error(err);
+    setText('compareStatus', '固定比較失敗');
+    alert("固定比較に失敗しました");
+  }
 }
 
 function runCampaignForLoadout(loadout, cfg, schedule) {
@@ -3362,6 +3405,542 @@ function shuffle(arr) {
 function deepClone(x) {
   return JSON.parse(JSON.stringify(x));
 }
+
+
+const UTAHIME_WORKER_SCRIPT = `
+const JUDGE_MULT = { P: 1.5, G: 1.1, N: 1.0, B: 0.5 };
+const ATTRS = ["Vo","Da","Vi"];
+
+self.onmessage = function(e) {
+  const { jobId, type, payload } = e.data || {};
+  try {
+    if (type === "simulate") {
+      const result = monteCarloSimulation(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    if (type === "campaign") {
+      const result = analyzeCampaign(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    if (type === "compareCampaign") {
+      const result = compareCampaignLoadouts(payload, progress => postMessage({ jobId, kind: "progress", progress }));
+      postMessage({ jobId, kind: "done", result });
+      return;
+    }
+    throw new Error("Unknown worker task: " + type);
+  } catch (err) {
+    postMessage({ jobId, kind: "error", message: String(err && err.message ? err.message : err) });
+  }
+};
+
+function compareCampaignLoadouts({ active, pinned, cfg, schedule, auditions }, progressCb) {
+  const activeDeck = (active.cards || []).filter(c => c.enabled);
+  const activeBuffs = (active.buffs || []).filter(b => b.enabled);
+  const activeStats = loadoutToStats(active);
+  const pinnedDeck = (pinned.cards || []).filter(c => c.enabled);
+  const pinnedBuffs = (pinned.buffs || []).filter(b => b.enabled);
+  const pinnedStats = loadoutToStats(pinned);
+
+  const activeResult = activeDeck.length
+    ? analyzeCampaign({ cfg, stats: activeStats, deck: activeDeck, buffs: activeBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({ phase: p.phase === "perAudition" ? "activePer" : "activeSim", done: p.done, total: p.total });
+      })
+    : { remainCount: schedule.length, allSuccessRateOneTurn: 0, allSuccessRateTwoTurn: 0, averagePerAuditionOneTurnRate: 0, averagePerAuditionTwoTurnRate: 0 };
+
+  const pinnedResult = pinnedDeck.length
+    ? analyzeCampaign({ cfg, stats: pinnedStats, deck: pinnedDeck, buffs: pinnedBuffs, schedule, auditions }, p => {
+        if (progressCb) progressCb({ phase: p.phase === "perAudition" ? "pinnedPer" : "pinnedSim", done: p.done, total: p.total });
+      })
+    : { remainCount: schedule.length, allSuccessRateOneTurn: 0, allSuccessRateTwoTurn: 0, averagePerAuditionOneTurnRate: 0, averagePerAuditionTwoTurnRate: 0 };
+
+  return { activeResult, pinnedResult };
+}
+
+function analyzeCampaign({ cfg, stats, deck, buffs, schedule, auditions }, progressCb) {
+  const perAudition = [];
+  for (let idx = 0; idx < schedule.length; idx++) {
+    const step = schedule[idx];
+    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+    const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+
+    const res1 = monteCarloSimulation({ cfg: baseCfg1, stats, deck, buffs, audition });
+    const res2 = monteCarloSimulation({ cfg: baseCfg2, stats, deck, buffs, audition });
+
+    perAudition.push({
+      index: idx + 1,
+      point: step.point,
+      label: step.label,
+      auditionId: step.auditionId,
+      auditionName: auditions?.[step.auditionId]?.name || step.auditionId,
+      w: step.w,
+      oneTurnRate: res1.killAllRate,
+      twoTurnRate: res2.killAllRate
+    });
+    if (progressCb) progressCb({ phase: "perAudition", done: idx + 1, total: schedule.length });
+  }
+
+  const trials = cfg.iterations;
+  const chunk = 250;
+  let allSuccessCount1 = 0;
+  let allSuccessCount2 = 0;
+  const logs = [];
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      let successAll1 = true;
+      let successAll2 = true;
+      const lines = [];
+
+      for (let s = 0; s < schedule.length; s++) {
+        const step = schedule[s];
+        const audition = auditions?.[step.auditionId]?.[cfg.difficulty];
+
+        const stepCfg1 = buildCfgForCampaignStep(cfg, step, 1, auditions);
+        const r1 = simulateOneRun({ cfg: stepCfg1, stats, deck, buffs, audition, log: false });
+        if (!r1.killAll) successAll1 = false;
+        if (i < 3) lines.push("[1T] " + step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": " + (r1.killAll ? "成功" : "失敗"));
+
+        const stepCfg2 = buildCfgForCampaignStep(cfg, step, 2, auditions);
+        const r2 = simulateOneRun({ cfg: stepCfg2, stats, deck, buffs, audition, log: false });
+        if (!r2.killAll) successAll2 = false;
+        if (i < 3) lines.push("[2T] " + step.label + " " + (auditions?.[step.auditionId]?.name || step.auditionId) + ": " + (r2.killAll ? "成功" : "失敗"));
+      }
+
+      if (successAll1) allSuccessCount1++;
+      if (successAll2) allSuccessCount2++;
+      if (i < 3) logs.push(lines.join("\\n"));
+    }
+    if (progressCb) progressCb({ phase: "campaign", done: end, total: trials });
+  }
+
+  const avgOne = perAudition.length ? perAudition.reduce((s, x) => s + x.oneTurnRate, 0) / perAudition.length : 0;
+  const avgTwo = perAudition.length ? perAudition.reduce((s, x) => s + x.twoTurnRate, 0) / perAudition.length : 0;
+
+  return {
+    remainCount: schedule.length,
+    perAudition,
+    allSuccessRateOneTurn: allSuccessCount1 / trials,
+    allSuccessRateTwoTurn: allSuccessCount2 / trials,
+    averagePerAuditionOneTurnRate: avgOne,
+    averagePerAuditionTwoTurnRate: avgTwo,
+    trials,
+    sampleLogs: logs
+  };
+}
+
+function buildCfgForCampaignStep(baseCfg, step, turnCount, auditions) {
+  const data = auditions?.[step.auditionId]?.[baseCfg.difficulty];
+  const hp = data?.judgeHp || 0;
+  return {
+    ...baseCfg,
+    auditionId: step.auditionId,
+    w: step.w,
+    turnCount,
+    judgeHp: { Vo: hp, Da: hp, Vi: hp }
+  };
+}
+
+function loadoutToStats(loadout) {
+  return {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0;
+      acc.da += +s.da || 0;
+      acc.vi += +s.vi || 0;
+      return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+}
+
+function monteCarloSimulation({ cfg, stats, deck, buffs, audition }, progressCb) {
+  let killAllCount = 0;
+  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
+  let remainSum = { Vo:0, Da:0, Vi:0 };
+  let playerDamageSum = 0;
+  let rivalDamageSum = 0;
+  const logs = [];
+  const trials = cfg.iterations;
+  const chunk = 250;
+
+  for (let start = 0; start < trials; start += chunk) {
+    const end = Math.min(trials, start + chunk);
+    for (let i = start; i < end; i++) {
+      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
+      if (r.killAll) killAllCount++;
+      ATTRS.forEach(a => {
+        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
+        remainSum[a] += Math.max(0, r.finalHp[a]);
+      });
+      playerDamageSum += r.playerDamage;
+      rivalDamageSum += r.rivalDamage;
+      if (i < 5) logs.push(r.logText);
+    }
+    if (progressCb) progressCb({ done: end, total: trials });
+  }
+
+  return {
+    trials,
+    killAllRate: killAllCount / trials,
+    judgeKillRates: {
+      Vo: judgeKillCounts.Vo / trials,
+      Da: judgeKillCounts.Da / trials,
+      Vi: judgeKillCounts.Vi / trials
+    },
+    avgRemain: {
+      Vo: remainSum.Vo / trials,
+      Da: remainSum.Da / trials,
+      Vi: remainSum.Vi / trials
+    },
+    avgPlayerDamage: playerDamageSum / trials,
+    avgRivalDamage: rivalDamageSum / trials,
+    sampleLogs: logs
+  };
+}
+
+function simulateOneRun({ cfg, stats, deck, buffs, audition, log }) {
+  const judgeHp = { Vo: cfg.judgeHp.Vo, Da: cfg.judgeHp.Da, Vi: cfg.judgeHp.Vi };
+  let playerMental = cfg.playerMental;
+  let playerDamage = 0;
+  let rivalDamage = 0;
+  const logLines = [];
+  const shuffledDeck = shuffle(deck.slice());
+  let hand = shuffledDeck.splice(0, Math.min(3, shuffledDeck.length));
+  const buffStates = buffs.map(b => ({ id: b.id, activated: false, attempted: false, remainingUses: 0 }));
+
+  for (let turn = 1; turn <= cfg.turnCount; turn++) {
+    if (aliveJudgeAttrs(judgeHp).length === 0 || playerMental <= 0) break;
+    const action = chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn });
+
+    if (action) {
+      const damageResult = applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn });
+      playerDamage += damageResult.effectiveDamage;
+      if (log) {
+        logLines.push("T" + turn + " PLAYER: " + action.card.name + " / " + (action.card.targetMode === 'all_judges' ? '全体' : action.targetAttr) + " / eff=" + damageResult.effectiveDamage + " / raw=" + damageResult.rawDamage + " / buffs=" + (damageResult.activatedBuffNames.join(",") || "-"));
+      }
+      hand = hand.filter(c => c.id !== action.card.id);
+    } else if (log) {
+      logLines.push("T" + turn + " PLAYER: actionなし");
+    }
+
+    if (aliveJudgeAttrs(judgeHp).length === 0) break;
+
+    const rivalTurn = applyRivalActions({ judgeHp, cfg, audition, turn });
+    rivalDamage += rivalTurn.totalDamage;
+    if (log) rivalTurn.logs.forEach(x => logLines.push("T" + turn + " " + x));
+
+    if (cfg.enableJudgeReaction && aliveJudgeAttrs(judgeHp).length > 0) {
+      playerMental = applyJudgeReactionsSimplified({ playerMental, audition });
+      if (log) logLines.push("T" + turn + " JUDGE REACTION: playerMental=" + playerMental);
+    }
+
+    if (turn < cfg.turnCount && shuffledDeck.length > 0) {
+      hand.push(shuffledDeck.shift());
+    }
+  }
+
+  return {
+    killAll: ATTRS.every(a => judgeHp[a] <= 0),
+    finalHp: { ...judgeHp },
+    playerDamage,
+    rivalDamage,
+    logText: logLines.join("\\n")
+  };
+}
+
+function chooseBestAction({ hand, judgeHp, stats, cfg, buffs, buffStates, turn }) {
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!hand.length || !aliveTargets.length) return null;
+
+  let best = null;
+  let bestScore = -Infinity;
+  for (let h = 0; h < hand.length; h++) {
+    const card = hand[h];
+    const candidates = card.targetMode === "all_judges" ? [{ card, targetAttr: null }] : aliveTargets.map(targetAttr => ({ card, targetAttr }));
+
+    for (let c = 0; c < candidates.length; c++) {
+      const candidate = candidates[c];
+      const tmpJudgeHp = { ...judgeHp };
+      const tmpBuffStates = deepClone(buffStates);
+      const result = applyPlayerAction({ action: candidate, judgeHp: tmpJudgeHp, stats, cfg, buffs, buffStates: tmpBuffStates, turn, dryRun: true });
+      const remainScore = Math.max(0, tmpJudgeHp.Vo) + Math.max(0, tmpJudgeHp.Da) + Math.max(0, tmpJudgeHp.Vi);
+      const killBonus = (tmpJudgeHp.Vo <= 0 ? 1 : 0) + (tmpJudgeHp.Da <= 0 ? 1 : 0) + (tmpJudgeHp.Vi <= 0 ? 1 : 0);
+      const score = result.effectiveDamage + killBonus * 100000 - remainScore;
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    }
+  }
+  return best;
+}
+
+function applyPlayerAction({ action, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun=false }) {
+  const card = action.card;
+  if (card.targetMode === "all_judges") {
+    return applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+  }
+  return applyPlayerActionSingle({ card, targetAttr: action.targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun });
+}
+
+function applyPlayerActionSingle({ card, targetAttr, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun });
+  const rawDamage = calcCardDamageToJudge(card, targetAttr, stats, cfg.w, activeBuffInfo);
+  const effectiveDamage = Math.min(rawDamage, Math.max(0, judgeHp[targetAttr]));
+  judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - effectiveDamage);
+  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  return {
+    rawDamage,
+    effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id); return b ? b.name : id;
+    })
+  };
+}
+
+function applyPlayerActionAllJudges({ card, judgeHp, stats, cfg, buffs, buffStates, turn, dryRun }) {
+  const activeBuffInfo = evaluateBuffsForAction({ card, targetAttr: null, turn, buffs, buffStates, dryRun });
+  let rawDamage = 0, effectiveDamage = 0;
+  for (let i = 0; i < ATTRS.length; i++) {
+    const judgeAttr = ATTRS[i];
+    if (judgeHp[judgeAttr] <= 0) continue;
+    const raw = calcCardDamageToJudge(card, judgeAttr, stats, cfg.w, activeBuffInfo);
+    const eff = Math.min(raw, Math.max(0, judgeHp[judgeAttr]));
+    judgeHp[judgeAttr] = Math.max(0, judgeHp[judgeAttr] - eff);
+    rawDamage += raw;
+    effectiveDamage += eff;
+  }
+  if (!dryRun) consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo });
+  return {
+    rawDamage,
+    effectiveDamage,
+    activatedBuffNames: activeBuffInfo.activatedIds.map(id => {
+      const b = buffs.find(x => x.id === id); return b ? b.name : id;
+    })
+  };
+}
+
+function evaluateBuffsForAction({ card, targetAttr, turn, buffs, buffStates, dryRun }) {
+  const totalPercentByAttr = { Vo:0, Da:0, Vi:0 };
+  const activatedIds = [];
+  for (let i = 0; i < buffs.length; i++) {
+    const buff = buffs[i];
+    const st = buffStates.find(x => x.id === buff.id);
+    if (!st || !buff.enabled) continue;
+
+    if (st.remainingUses > 0) {
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+      continue;
+    }
+
+    if (st.attempted) continue;
+    if (!isBuffConditionMet(buff, { card, targetAttr, turn })) continue;
+    if (!dryRun) st.attempted = true;
+
+    if (Math.random() <= buff.procRate) {
+      if (!dryRun) {
+        st.activated = true;
+        st.remainingUses = Math.max(1, buff.uses);
+      }
+      applyBuffPercent(totalPercentByAttr, buff);
+      activatedIds.push(buff.id);
+    }
+  }
+  return { totalPercentByAttr, activatedIds };
+}
+
+function consumeBuffUsesForAction({ buffs, buffStates, activeBuffInfo }) {
+  for (let i = 0; i < activeBuffInfo.activatedIds.length; i++) {
+    const id = activeBuffInfo.activatedIds[i];
+    const st = buffStates.find(x => x.id === id);
+    if (!st) continue;
+    if (st.remainingUses > 0) {
+      st.remainingUses--;
+      if (st.remainingUses < 0) st.remainingUses = 0;
+    }
+  }
+}
+
+function applyBuffPercent(targetMap, buff) {
+  if (buff.attr === "ALL") {
+    targetMap.Vo += num(buff.percentVo, 0);
+    targetMap.Da += num(buff.percentDa, 0);
+    targetMap.Vi += num(buff.percentVi, 0);
+  } else {
+    targetMap[buff.attr] += num(buff.percent, 0);
+  }
+}
+
+function isBuffConditionMet(buff, ctx) {
+  const c = buff.condition;
+  if (c === "always") return true;
+  if (c === "turn_gte_2") return ctx.turn >= 2;
+  if (c === "turn_gte_3") return ctx.turn >= 3;
+  if (c === "p_card") return ctx.card.kind === "P";
+  if (c === "s_card") return ctx.card.kind === "S";
+  if (c === "vo_card") return ctx.card.attackType === "Vo";
+  if (c === "da_card") return ctx.card.attackType === "Da";
+  if (c === "vi_card") return ctx.card.attackType === "Vi";
+  if (c === "all_card") return ctx.card.attackType === "ALL";
+  if (c === "exe_card") return ctx.card.attackType === "EXE";
+  return false;
+}
+
+function calcCardDamageToJudge(card, targetJudgeAttr, stats, w, buffInfo) {
+  if (card.attackType === "Vo" || card.attackType === "Da" || card.attackType === "Vi") {
+    return calcSingleAttrDamage({ card, usedAttr: card.attackType, targetJudgeAttr, stats, w, buffInfo, forceMatch: false });
+  }
+  if (card.attackType === "ALL") {
+    let sum = 0;
+    for (let i = 0; i < ATTRS.length; i++) {
+      sum += calcSingleAttrDamage({ card, usedAttr: ATTRS[i], targetJudgeAttr, stats, w, buffInfo, forceMatch: false });
+    }
+    return sum;
+  }
+  if (card.attackType === "EXE") {
+    return calcSingleAttrDamage({ card, usedAttr: targetJudgeAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch: true });
+  }
+  return 0;
+}
+
+function getCardAppealRate(card, usedAttr) {
+  if (card.attackType === "ALL") {
+    if (usedAttr === "Vo") return num(card.rateVo, 0);
+    if (usedAttr === "Da") return num(card.rateDa, 0);
+    if (usedAttr === "Vi") return num(card.rateVi, 0);
+    return 0;
+  }
+  return num(card.rate, 0);
+}
+
+function calcSingleAttrDamage({ card, usedAttr, targetJudgeAttr, stats, w, buffInfo, forceMatch }) {
+  const P = stats.p[usedAttr] || 0;
+  const S = stats.sTotal[usedAttr] || 0;
+  const ownerStats = card.kind === "S" ? (stats.supports[card.ownerId] || { Vo:0, Da:0, Vi:0 }) : null;
+  const iS = ownerStats ? (ownerStats[usedAttr] || 0) : 0;
+
+  let base = 0;
+  if (card.kind === "P") {
+    base = Math.floor(2 * P) + Math.floor(S * 0.2 * (1 + 0.1 * w));
+  } else {
+    base = Math.floor(0.5 * P) + Math.floor((S + 3 * iS) * 0.2 * (1 + 0.1 * w));
+  }
+
+  const buffPercent = buffInfo?.totalPercentByAttr?.[usedAttr] || 0;
+  const buffMul = 1 + buffPercent / 100;
+  const appealRate = getCardAppealRate(card, usedAttr);
+  const judgeMul = JUDGE_MULT[card.judge] || 1.0;
+  const matchMul = (forceMatch || usedAttr === targetJudgeAttr) ? 2 : 1;
+
+  let x = base;
+  x = Math.floor(x * buffMul);
+  x = Math.floor(x * appealRate);
+  x = Math.floor(x * judgeMul);
+  x = Math.floor(x * matchMul);
+  return x;
+}
+
+function applyRivalActions({ judgeHp, cfg, audition, turn }) {
+  let totalDamage = 0;
+  const logs = [];
+  const aliveTargets = aliveJudgeAttrs(judgeHp);
+  if (!aliveTargets.length) return { totalDamage, logs };
+
+  const rivals = audition.rivals || [];
+  for (let i = 0; i < rivals.length; i++) {
+    const rival = rivals[i];
+    const targetAttr = chooseRivalTarget(rival, judgeHp, cfg.popularity, turn);
+    if (!targetAttr) continue;
+    const raw = Math.floor(rival.baseAttack * (rival.attr === targetAttr ? 2 : 1) * cfg.rivalJudgeMultiplier);
+    const eff = Math.min(raw, Math.max(0, judgeHp[targetAttr]));
+    judgeHp[targetAttr] = Math.max(0, judgeHp[targetAttr] - eff);
+    totalDamage += eff;
+    logs.push(rival.name + ": " + targetAttr + " に " + eff);
+  }
+  return { totalDamage, logs };
+}
+
+function chooseRivalTarget(rival, judgeHp, popularity, turn) {
+  const alive = aliveJudgeAttrs(judgeHp);
+  if (!alive.length) return null;
+  if (rival.patternType === "spear") {
+    for (let i = 0; i < rival.pattern.length; i++) {
+      const rank = rival.pattern[i];
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+
+  if (rival.patternType === "transition") {
+    const seq = String(rival.pattern).split("").map(x => +x);
+    for (let shift = 0; shift < seq.length; shift++) {
+      const idx = ((turn - 1) + shift) % seq.length;
+      const rank = seq[idx];
+      const attr = popularity[rank - 1];
+      if (judgeHp[attr] > 0) return attr;
+    }
+    return alive[0] || null;
+  }
+  return alive[0] || null;
+}
+
+function applyJudgeReactionsSimplified({ playerMental, audition }) {
+  return Math.max(0, playerMental - (audition.meDamage || 0));
+}
+
+function aliveJudgeAttrs(judgeHp) { return ATTRS.filter(a => judgeHp[a] > 0); }
+function normalizeAttrKeys(obj) { return { Vo: obj.vo ?? obj.Vo ?? 0, Da: obj.da ?? obj.Da ?? 0, Vi: obj.vi ?? obj.Vi ?? 0 }; }
+function num(v, def=0) { const n = +v; return isFinite(n) ? n : def; }
+function shuffle(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+function deepClone(x) { return JSON.parse(JSON.stringify(x)); }
+`;
+
+let UTAHIME_WORKER_URL = null;
+function getUtahimeWorkerUrl() {
+  if (!UTAHIME_WORKER_URL) {
+    UTAHIME_WORKER_URL = URL.createObjectURL(new Blob([UTAHIME_WORKER_SCRIPT], { type: "text/javascript" }));
+  }
+  return UTAHIME_WORKER_URL;
+}
+
+function runWorkerTask(type, payload, onProgress) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(getUtahimeWorkerUrl());
+    const jobId = "job_" + Math.random().toString(36).slice(2);
+    worker.onmessage = (e) => {
+      const msg = e.data || {};
+      if (msg.jobId !== jobId) return;
+      if (msg.kind === "progress") {
+        if (onProgress) onProgress(msg.progress || {});
+        return;
+      }
+      if (msg.kind === "done") {
+        worker.terminate();
+        resolve(msg.result);
+        return;
+      }
+      if (msg.kind === "error") {
+        worker.terminate();
+        reject(new Error(msg.message || "Worker error"));
+      }
+    };
+    worker.onerror = (err) => {
+      worker.terminate();
+      reject(err);
+    };
+    worker.postMessage({ jobId, type, payload });
+  });
+}
+
 
 function triggerImportAppData() {
   const input = document.getElementById("importFileInput");
