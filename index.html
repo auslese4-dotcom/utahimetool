@@ -1,44 +1,239 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>歌姫計算ツール（限定公開）</title>
+  <style>
+    :root{
+      --bg1:#eef4ff;
+      --bg2:#f9fbff;
+      --card:#ffffff;
+      --line:#d9e3f2;
+      --text:#1d2433;
+      --muted:#667089;
+      --accent:#4063ff;
+      --accent2:#5b7bff;
+      --danger:#d83a52;
+      --shadow:0 18px 46px rgba(35,56,118,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, rgba(255,255,255,.75) 18%, rgba(255,255,255,0) 40%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      min-height:100vh;
+    }
 
-<!-- 検索除外 -->
-<meta name="robots" content="noindex, nofollow">
+    .screen{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
 
-<title>歌姫計算ツール（限定版）</title>
+    .auth-card{
+      width:min(100%, 460px);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
 
-<script>
-// ===== パスワードガード =====
-(function(){
-  const PASSWORD = "pya"; // ←ここ変更
-  const input = prompt("パスワードを入力してください");
+    .auth-head{
+      padding:28px 26px 18px;
+      background:
+        linear-gradient(135deg, rgba(64,99,255,.10), rgba(64,99,255,.02)),
+        linear-gradient(180deg,#ffffff,#fbfdff);
+      border-bottom:1px solid #edf2fb;
+    }
 
-  if(input !== PASSWORD){
-    document.write("<h2 style='text-align:center;margin-top:40px;'>アクセスできません</h2>");
-    throw new Error("Unauthorized");
-  }
-})();
-</script>
+    .auth-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#eef3ff;
+      color:#3150d5;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      margin-bottom:14px;
+    }
 
-<style>
-body{
-  font-family: system-ui, sans-serif;
-  padding:20px;
-}
-</style>
+    .auth-title{
+      margin:0 0 8px;
+      font-size:28px;
+      line-height:1.2;
+    }
 
+    .auth-sub{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    .auth-body{
+      padding:22px 26px 26px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:14px;
+    }
+
+    .label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .input-wrap{
+      position:relative;
+    }
+
+    .input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px 46px 14px 14px;
+      font-size:16px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+    }
+    .input:focus{
+      border-color:#aac0ff;
+      box-shadow:0 0 0 4px rgba(64,99,255,.12);
+    }
+
+    .toggle{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      border:0;
+      background:transparent;
+      color:#5870c8;
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      width:auto;
+      padding:6px 8px;
+      border-radius:10px;
+    }
+    .toggle:hover{background:#f3f6ff}
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:14px;
+    }
+
+    .btn{
+      width:100%;
+      border:0;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      box-shadow:0 12px 28px rgba(64,99,255,.22);
+    }
+
+    .hint{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px dashed #d8e1f4;
+      background:#fbfcff;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .error{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#fff1f3;
+      border:1px solid #ffd2da;
+      color:#c12947;
+      font-size:13px;
+      font-weight:700;
+    }
+    .error.show{display:block}
+
+    .content{
+      display:none;
+      min-height:100vh;
+    }
+    .content.show{display:block}
+
+    @media (max-width: 640px){
+      .screen{padding:14px}
+      .auth-card{border-radius:20px}
+      .auth-head{padding:24px 18px 16px}
+      .auth-body{padding:18px 18px 20px}
+      .auth-title{font-size:24px}
+    }
+  </style>
 </head>
-
 <body>
+  <div id="loginScreen" class="screen">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="auth-badge">限定公開 / Password Protected</div>
+        <h1 class="auth-title">歌姫計算ツール</h1>
+        <p class="auth-sub">
+          このページは限定公開です。<br>
+          パスワードを入力するとツール本体が表示されます。
+        </p>
+      </div>
 
-<h1>歌姫 全返し期待値計算機</h1>
-<p>このページはパスワード保護されています。</p>
+      <div class="auth-body">
+        <div class="field">
+          <label class="label" for="passwordInput">パスワード</label>
+          <div class="input-wrap">
+            <input id="passwordInput" class="input" type="password" placeholder="パスワードを入力" autocomplete="current-password" />
+            <button id="togglePasswordBtn" class="toggle" type="button">表示</button>
+          </div>
+        </div>
 
-<hr>
+        <button id="loginBtn" class="btn btn-primary" type="button">ログイン</button>
 
-<p><!doctype html>
+        <div id="loginError" class="error">パスワードが違います。</div>
+
+        <div class="hint">
+          GitHub Pages などの公開URLでも、検索除外（noindex）つきで簡易保護できます。<br>
+          強い秘匿には向かないので、仲間内共有向けです。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="appContent" class="content">
+  <!doctype html>
 <html>
 <head>
   <base target="_top">
@@ -3430,7 +3625,74 @@ function isValidImportData_(payload) {
 
 </script>
 </body>
-</html></p>
+</html>
+    <div style="padding:24px;max-width:980px;margin:0 auto;">
+      <div style="background:#fff;border:1px solid #d9e3f2;border-radius:20px;padding:24px;box-shadow:0 18px 46px rgba(35,56,118,.08);">
+        <h2 style="margin-top:0;">ツール本体をここに貼り付け</h2>
+        <p style="color:#667089;line-height:1.8;">
+          今使っている <strong>index.html の body 内ツール部分</strong> を、
+          この <code>#appContent</code> の中に貼り付けてください。<br>
+          ログイン成功後、この領域が表示されます。
+        </p>
+      </div>
+    </div>
+  </div>
 
+  <script>
+    (() => {
+      const PASSWORD = "pya"; // ←ここを変更
+      const STORAGE_KEY = "utahime_auth_ok_v1";
+
+      const loginScreen = document.getElementById("loginScreen");
+      const appContent = document.getElementById("appContent");
+      const passwordInput = document.getElementById("passwordInput");
+      const loginBtn = document.getElementById("loginBtn");
+      const loginError = document.getElementById("loginError");
+      const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+
+      function showApp() {
+        loginScreen.style.display = "none";
+        appContent.classList.add("show");
+      }
+
+      function showError() {
+        loginError.classList.add("show");
+        passwordInput.focus();
+        passwordInput.select();
+      }
+
+      function clearError() {
+        loginError.classList.remove("show");
+      }
+
+      function tryLogin() {
+        if ((passwordInput.value || "") === PASSWORD) {
+          sessionStorage.setItem(STORAGE_KEY, "1");
+          showApp();
+        } else {
+          showError();
+        }
+      }
+
+      if (sessionStorage.getItem(STORAGE_KEY) === "1") {
+        showApp();
+        return;
+      }
+
+      loginBtn.addEventListener("click", tryLogin);
+      passwordInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") tryLogin();
+      });
+      passwordInput.addEventListener("input", clearError);
+
+      togglePasswordBtn.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        togglePasswordBtn.textContent = isPassword ? "非表示" : "表示";
+      });
+
+      passwordInput.focus();
+    })();
+  </script>
 </body>
 </html>
