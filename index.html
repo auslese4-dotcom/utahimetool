@@ -542,7 +542,7 @@ button{margin-top:15px;width:100%;padding:12px;border:none;border-radius:10px;ba
   </div>
 
   <div class="help" style="margin-bottom:10px;">
-    この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。
+    この版は <b>URLを開いたら即使えるローカル保存専用版</b> です。保存はこの端末のブラウザに行います。シミュレーションは分割実行で固まりにくくしています。
     共有時はそのままHTMLを置くだけで使えます。
   </div>
 
@@ -1197,9 +1197,15 @@ function invalidatePreviewCache() {
 function saveLocalDebounced() {
   clearTimeout(saveLocalTimer);
   saveLocalTimer = setTimeout(() => {
-    saveLocalDebounced();
+    saveLocal();
   }, 350);
 }
+
+function yieldToUI() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+const MONTE_CARLO_CHUNK = 250;
 
 function nowTimeText() {
   const d = new Date();
@@ -1531,11 +1537,12 @@ function renameCurrentLoadout() {
   loadout.name = String(name).trim() || loadout.name;
   renderLoadoutSelectors();
   saveLocal();
-  addOperationLog('編成名を変更', current.name, 'undo-ready');
+  addOperationLog('編成名を変更', loadout.name, 'undo-ready');
 }
 
 function pinCurrentLoadout() {
   pushHistory('固定比較対象を変更');
+  const current = getActiveLoadout();
   STATE.pinnedLoadoutId = STATE.activeLoadoutId;
   renderLoadoutSelectors();
   saveLocal();
@@ -2291,7 +2298,7 @@ function normalizeAttrKeys(obj) {
   };
 }
 
-function runSimulation() {
+async function runSimulation() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2308,14 +2315,21 @@ function runSimulation() {
   }
 
   addOperationLog("単発シミュレーション開始", `${cfg.turnCount}T / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "単発シミュレーション中...");
-  setTimeout(() => {
-    const result = monteCarloSimulation({ cfg, stats, deck, buffs, audition });
-    renderResult(result, cfg);
-    setText("simStatus", "単発シミュレーション完了");
-    addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
-    saveLocal();
-  }, 30);
+  setText("simStatus", "単発シミュレーション中... 0%");
+  await yieldToUI();
+
+  const result = await monteCarloSimulationAsync({
+    cfg, stats, deck, buffs, audition,
+    onProgress: (done, total) => {
+      const p = Math.min(100, Math.floor(done / total * 100));
+      setText("simStatus", `単発シミュレーション中... ${p}%`);
+    }
+  });
+
+  renderResult(result, cfg);
+  setText("simStatus", "単発シミュレーション完了");
+  addOperationLog("単発シミュレーション完了", `全返し率 ${pct(result.killAllRate)}`, "op-log-run");
+  saveLocal();
 }
 
 function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
@@ -2337,6 +2351,53 @@ function monteCarloSimulation({ cfg, stats, deck, buffs, audition }) {
     playerDamageSum += r.playerDamage;
     rivalDamageSum += r.rivalDamage;
     if (i < 5) logs.push(r.logText);
+  }
+
+  return {
+    trials,
+    killAllRate: killAllCount / trials,
+    judgeKillRates: {
+      Vo: judgeKillCounts.Vo / trials,
+      Da: judgeKillCounts.Da / trials,
+      Vi: judgeKillCounts.Vi / trials
+    },
+    avgRemain: {
+      Vo: remainSum.Vo / trials,
+      Da: remainSum.Da / trials,
+      Vi: remainSum.Vi / trials
+    },
+    avgPlayerDamage: playerDamageSum / trials,
+    avgRivalDamage: rivalDamageSum / trials,
+    sampleLogs: logs
+  };
+}
+
+async function monteCarloSimulationAsync({ cfg, stats, deck, buffs, audition, onProgress }) {
+  let killAllCount = 0;
+  let judgeKillCounts = { Vo:0, Da:0, Vi:0 };
+  let remainSum = { Vo:0, Da:0, Vi:0 };
+  let playerDamageSum = 0;
+  let rivalDamageSum = 0;
+  const logs = [];
+  const trials = cfg.iterations;
+
+  for (let start = 0; start < trials; start += MONTE_CARLO_CHUNK) {
+    const end = Math.min(trials, start + MONTE_CARLO_CHUNK);
+
+    for (let i = start; i < end; i++) {
+      const r = simulateOneRun({ cfg, stats, deck, buffs, audition, log: i < 5 });
+      if (r.killAll) killAllCount++;
+      ATTRS.forEach(a => {
+        if (r.finalHp[a] <= 0) judgeKillCounts[a]++;
+        remainSum[a] += Math.max(0, r.finalHp[a]);
+      });
+      playerDamageSum += r.playerDamage;
+      rivalDamageSum += r.rivalDamage;
+      if (i < 5) logs.push(r.logText);
+    }
+
+    if (onProgress) onProgress(end, trials);
+    await yieldToUI();
   }
 
   return {
@@ -2784,7 +2845,7 @@ function buildCampaignSchedule(startPoint, routeMode, s28AuditionChoice) {
   return idx >= 0 ? full.slice(idx) : full;
 }
 
-function runCampaignAnalysis() {
+async function runCampaignAnalysis() {
   const cfg = readConfig();
   const stats = buildStats();
   const deck = STATE.cards.filter(c => c.enabled);
@@ -2802,14 +2863,18 @@ function runCampaignAnalysis() {
   }
 
   addOperationLog("周回分析開始", `${cfg.campaignRoute}回ルート / ${cfg.iterations}回`, "op-log-run");
-  setText("simStatus", "周回分析中...");
-  setTimeout(() => {
-    const result = analyzeCampaign({ cfg, stats, deck, buffs, schedule });
-    renderCampaignResult(result, cfg);
-    setText("simStatus", "周回分析完了");
-    addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
-    saveLocal();
-  }, 30);
+  setText("simStatus", "周回分析中... 0%");
+  await yieldToUI();
+
+  const result = await analyzeCampaignAsync({
+    cfg, stats, deck, buffs, schedule,
+    onProgress: (label) => setText("simStatus", label)
+  });
+
+  renderCampaignResult(result, cfg);
+  setText("simStatus", "周回分析完了");
+  addOperationLog("周回分析完了", `全部成功率 ${pct(result.allSuccessRate)}`, "op-log-run");
+  saveLocal();
 }
 
 function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
@@ -2857,7 +2922,80 @@ function analyzeCampaign({ cfg, stats, deck, buffs, schedule }) {
     }
 
     if (successAll) allSuccessCount++;
-    if (i < 5) logs.push(lines.join("\n"));
+    if (i < 5) logs.push(lines.join("
+"));
+  }
+
+  return {
+    remainCount: schedule.length,
+    perAudition,
+    allSuccessRate: allSuccessCount / trials,
+    trials,
+    sampleLogs: logs
+  };
+}
+
+async function analyzeCampaignAsync({ cfg, stats, deck, buffs, schedule, onProgress }) {
+  const perAudition = [];
+  for (let idx = 0; idx < schedule.length; idx++) {
+    const step = schedule[idx];
+    const baseCfg1 = buildCfgForCampaignStep(cfg, step, 1);
+    const baseCfg2 = buildCfgForCampaignStep(cfg, step, 2);
+    const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
+
+    if (onProgress) onProgress(`周回分析中... オデ別試算 ${idx + 1}/${schedule.length}`);
+    const res1 = await monteCarloSimulationAsync({ cfg: baseCfg1, stats, deck, buffs, audition });
+    const res2 = await monteCarloSimulationAsync({ cfg: baseCfg2, stats, deck, buffs, audition });
+
+    perAudition.push({
+      index: idx + 1,
+      point: step.point,
+      label: step.label,
+      auditionId: step.auditionId,
+      auditionName: APP_DATA.auditions[step.auditionId]?.name || step.auditionId,
+      w: step.w,
+      oneTurnRate: res1.killAllRate,
+      twoTurnRate: res2.killAllRate
+    });
+    await yieldToUI();
+  }
+
+  const trials = cfg.iterations;
+  let allSuccessCount = 0;
+  const logs = [];
+
+  for (let start = 0; start < trials; start += MONTE_CARLO_CHUNK) {
+    const end = Math.min(trials, start + MONTE_CARLO_CHUNK);
+
+    for (let i = start; i < end; i++) {
+      let successAll = true;
+      const lines = [];
+
+      for (let s = 0; s < schedule.length; s++) {
+        const step = schedule[s];
+        const stepCfg = buildCfgForCampaignStep(cfg, step, 2);
+        const audition = APP_DATA.auditions?.[step.auditionId]?.[cfg.difficulty];
+        const r = simulateOneRun({ cfg: stepCfg, stats, deck, buffs, audition, log: false });
+
+        if (r.killAll) {
+          if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 成功`);
+        } else {
+          successAll = false;
+          if (i < 5) lines.push(`${step.label} ${APP_DATA.auditions[step.auditionId]?.name}: 失敗`);
+          break;
+        }
+      }
+
+      if (successAll) allSuccessCount++;
+      if (i < 5) logs.push(lines.join("
+"));
+    }
+
+    if (onProgress) {
+      const p = Math.min(100, Math.floor(end / trials * 100));
+      onProgress(`周回分析中... 全体成功率集計 ${p}%`);
+    }
+    await yieldToUI();
   }
 
   return {
@@ -2914,7 +3052,7 @@ function renderCampaignResult(result, cfg) {
 }
 
 
-function runLoadoutCompare() {
+async function runLoadoutCompare() {
   const active = getActiveLoadout();
   const pinned = getPinnedLoadout();
   if (!active || !pinned) {
@@ -2928,14 +3066,21 @@ function runLoadoutCompare() {
     return;
   }
   addOperationLog('固定比較開始', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  setText('compareStatus', '固定比較を実行中...', true);
-  setTimeout(() => {
-    const activeResult = runSimulationForLoadout(active, cfg, audition);
-    const pinnedResult = runSimulationForLoadout(pinned, cfg, audition);
-    renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
-    setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
-    addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
-  }, 30);
+  setText('compareStatus', '固定比較を実行中... 0%', true);
+  await yieldToUI();
+
+  const activeResult = await runSimulationForLoadoutAsync(active, cfg, audition, (done, total) => {
+    const p = Math.floor(done / total * 50);
+    setText('compareStatus', `固定比較を実行中... ${p}%`, true);
+  });
+  const pinnedResult = await runSimulationForLoadoutAsync(pinned, cfg, audition, (done, total) => {
+    const p = 50 + Math.floor(done / total * 50);
+    setText('compareStatus', `固定比較を実行中... ${p}%`, true);
+  });
+
+  renderLoadoutCompare(active, activeResult, pinned, pinnedResult);
+  setText('compareStatus', `固定比較完了: ${active.name} vs ${pinned.name}`, true);
+  addOperationLog('固定比較完了', `${active.name} vs ${pinned.name}`, 'op-log-run');
 }
 
 function runSimulationForLoadout(loadout, cfg, audition) {
@@ -2958,6 +3103,28 @@ function runSimulationForLoadout(loadout, cfg, audition) {
     return { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
   }
   return monteCarloSimulation({ cfg, stats, deck, buffs, audition });
+}
+
+async function runSimulationForLoadoutAsync(loadout, cfg, audition, onProgress) {
+  const deck = (loadout.cards || []).filter(c => c.enabled);
+  const buffs = (loadout.buffs || []).filter(b => b.enabled);
+  const stats = {
+    p: { Vo: num(loadout.pVo, 0), Da: num(loadout.pDa, 0), Vi: num(loadout.pVi, 0) },
+    sTotal: normalizeAttrKeys((loadout.supports || []).reduce((acc, s) => {
+      acc.vo += +s.vo || 0;
+      acc.da += +s.da || 0;
+      acc.vi += +s.vi || 0;
+      return acc;
+    }, { vo:0, da:0, vi:0 })),
+    supports: (loadout.supports || []).reduce((acc, s) => {
+      acc[s.id] = { Vo:+s.vo||0, Da:+s.da||0, Vi:+s.vi||0 };
+      return acc;
+    }, {})
+  };
+  if (!deck.length) {
+    return { trials:0, killAllRate:0, judgeKillRates:{Vo:0,Da:0,Vi:0}, avgPlayerDamage:0 };
+  }
+  return await monteCarloSimulationAsync({ cfg, stats, deck, buffs, audition, onProgress });
 }
 
 function renderLoadoutCompare(active, activeResult, pinned, pinnedResult) {
@@ -3454,18 +3621,7 @@ function isValidImportData_(payload) {
 </script>
 </body>
 </html>
-    <div style="padding:24px;max-width:980px;margin:0 auto;">
-      <div style="background:#fff;border:1px solid #d9e3f2;border-radius:20px;padding:24px;box-shadow:0 18px 46px rgba(35,56,118,.08);">
-        <h2 style="margin-top:0;">ツール本体をここに貼り付け</h2>
-        <p style="color:#667089;line-height:1.8;">
-          今使っている <strong>index.html の body 内ツール部分</strong> を、
-          この <code>#appContent</code> の中に貼り付けてください。<br>
-          ログイン成功後、この領域が表示されます。
-        </p>
-      </div>
-    </div>
-  </div>
-
+   
   <script>
     (() => {
       const PASSWORD = "pya"; // ←ここを変更
